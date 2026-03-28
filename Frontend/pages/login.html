@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход - LogisticsPro</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-box">
+            <h1> LogisticsPro</h1>
+            <p class="subtitle">Система управления логистикой</p>
+            
+            <div class="auth-tabs">
+                <button class="active" onclick="switchTab('login')">Вход</button>
+                <button onclick="switchTab('register')">Регистрация</button>
+            </div>
+            
+            <!-- Форма входа -->
+            <form id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" placeholder="your@email.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="loginPassword">Пароль</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Войти</button>
+                
+                <p class="auth-footer">
+                    Нет аккаунта? <a href="#" onclick="switchTab('register'); return false;">Зарегистрироваться</a>
+                </p>
+            </form>
+            
+            <!-- Форма регистрации -->
+            <form id="registerForm" class="auth-form" style="display: none;">
+                <div class="form-group">
+                    <label for="registerName">ФИО</label>
+                    <input type="text" id="registerName" placeholder="Иванов Иван Иванович" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" id="registerEmail" placeholder="your@email.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="registerCompany">Название компании</label>
+                    <input type="text" id="registerCompany" placeholder="ООО «Ромашка»" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="registerType">Тип регистрации</label>
+                    <select id="registerType" onchange="toggleStaffCodeField()" required>
+                        <option value="customer">Клиент (заказчик)</option>
+                        <option value="staff">Сотрудник логистической компании</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="staffCodeGroup" style="display: none;">
+                    <label for="staffCode">Код сотрудника</label>
+                    <input type="text" id="staffCode" placeholder="Введите код, выданный компанией">
+                </div>
+                
+                <div class="form-group">
+                    <label for="registerPassword">Пароль</label>
+                    <input type="password" id="registerPassword" placeholder="••••••••" required minlength="6">
+                </div>
+                
+                <div class="form-group">
+                    <label for="registerPasswordConfirm">Подтверждение пароля</label>
+                    <input type="password" id="registerPasswordConfirm" placeholder="••••••••" required minlength="6">
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+                
+                <p class="auth-footer">
+                    Уже есть аккаунт? <a href="#" onclick="switchTab('login'); return false;">Войти</a>
+                </p>
+            </form>
+        </div>
+    </div>
+    
+    <script src="../js/auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Карта грузов - LogisticsPro</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .map-page .main-content {
+            padding: 0;
+        }
+        
+        .map-page .map-container {
+            margin: 0;
+            border-radius: 0;
+            box-shadow: none;
+        }
+        
+        .map-page .map-placeholder {
+            height: calc(100vh - 80px);
+            border: none;
+            border-radius: 0;
+        }
+        
+        .cargo-legend {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            background: var(--color-white);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            z-index: 100;
+            min-width: 200px;
+        }
+        
+        .cargo-legend h4 {
+            margin-bottom: 15px;
+            color: var(--color-dark);
+            font-size: 16px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .legend-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        
+        .legend-color.in-transit { background: #007bff; }
+        .legend-color.pending { background: #ffc107; }
+        .legend-color.delivered { background: #28a745; }
+        
+        .cargo-list-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 350px;
+            max-height: calc(100vh - 100px);
+            background: var(--color-white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            z-index: 100;
+            overflow-y: auto;
+        }
+        
+        .cargo-list-panel h4 {
+            padding: 20px;
+            margin: 0;
+            background: var(--color-bg-light);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            color: var(--color-dark);
+        }
+        
+        .cargo-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--color-bg-secondary);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .cargo-item:hover {
+            background: var(--color-bg-light);
+        }
+        
+        .cargo-item:last-child {
+            border-bottom: none;
+        }
+        
+        .cargo-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .cargo-item-order {
+            font-weight: 600;
+            color: var(--color-dark);
+        }
+        
+        .cargo-item-status {
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 12px;
+        }
+        
+        .cargo-item-route {
+            font-size: 13px;
+            color: var(--color-primary);
+            margin-bottom: 5px;
+        }
+        
+        .cargo-item-driver {
+            font-size: 12px;
+            color: var(--color-dark);
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body class="map-page">
+    <!-- Боковое меню -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>LogisticsPro</h2>
+            <span class="role-badge">Клиент</span>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html"><i class="icon-dashboard"></i> Дашборд</a></li>
+            <li><a href="orders.html"><i class="icon-box"></i> Мои заказы</a></li>
+            <li><a href="cargo-map.html" class="active"><i class="icon-map"></i> Карта грузов</a></li>
+            <li><a href="settings.html"><i class="icon-settings"></i> Настройки</a></li>
+        </ul>
+        
+        <div class="sidebar-user">
+            <div class="user-info">
+                <div class="avatar" id="userAvatar">ИИ</div>
+                <div class="user-details">
+                    <h4 id="userName">Иван Иванов</h4>
+                    <p id="userCompany">ООО «Ромашка»</p>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()">
+                <i class="icon-logout"></i> Выйти
+            </button>
+        </div>
+    </aside>
+    
+    <!-- Основной контент - Карта -->
+    <main class="main-content">
+        <div class="map-container" style="height: 100vh; margin: 0; border-radius: 0;">
+            <div class="map-header" style="position: absolute; top: 20px; left: 20px; right: 400px; z-index: 100; background: transparent; margin: 0;">
+                <div style="background: var(--color-white); padding: 20px; border-radius: var(--border-radius); box-shadow: var(--shadow); display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h2 style="margin-bottom: 5px;">Карта грузов</h2>
+                        <p style="margin: 0; font-size: 14px; color: var(--color-primary);">Отслеживание всех ваших грузов в реальном времени</p>
+                    </div>
+                    <div class="map-actions">
+                        <button class="btn-refresh" onclick="refreshMap()">
+                            <i class="icon-refresh"></i> Обновить
+                        </button>
+                        <button class="btn-route" onclick="toggleFullscreen()">
+                            <i class="icon-map"></i> На весь экран
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Панель со списком грузов -->
+            <div class="cargo-list-panel">
+                <h4>Ваши грузы (<span id="cargoCount"></span>)</h4>
+                
+                
+            </div>
+            
+            <!-- Легенда карты -->
+            <div class="cargo-legend">
+                <h4>Условные обозначения</h4>
+                <div class="legend-item">
+                    <div class="legend-color in-transit"></div>
+                    <span>В пути</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color pending"></div>
+                    <span>Ожидание</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color delivered"></div>
+                    <span>Доставлен</span>
+                </div>
+            </div>
+            
+            <!-- ЗАГЛУШКА ДЛЯ КАРТЫ - подключите здесь ваш API -->
+            <div id="cargoMap" class="map-placeholder" style="height: 100vh; border-radius: 0;">
+                <i class="icon-map"></i>
+                <p>Здесь будет интерактивная карта со всеми грузами</p>
+                <small>Подключите API карты (Leaflet/Google Maps/Яндекс.Карты)</small>
+                <p style="margin-top: 15px; font-size: 12px;">
+                    <strong>Рекомендация:</strong> Leaflet.js + OpenStreetMap (бесплатно)
+                </p>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Полноэкранный режим карты -->
+    <div id="fullscreenMap" class="map-fullscreen" style="display: none;">
+        <button class="close-map" onclick="toggleFullscreen()"><i class="icon-close"></i></button>
+        <div class="map-wrapper">
+            <div id="fullscreenMapContainer" class="map-placeholder" style="width: 100%; height: 100%; border-radius: 0;">
+                <i class="icon-map"></i>
+                <p>Здесь будет полноэкранная карта грузов</p>
+                <small>Подключите API карты в файле js/map-user.js</small>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../js/auth.js"></script>
+    <script>
+        // Выбор груза на карте
+        function selectCargo(orderId) {
+            console.log('Выбран груз:', orderId);
+            
+            // TODO: При подключении карты - центрировать на маркере груза
+            alert('Выбран заказ ' + orderId + '\n\nКарта сфокусируется на местоположении груза');
+        }
+        
+        // Обновление карты
+        function refreshMap() {
+            console.log('Обновление карты...');
+            
+            // TODO: Загрузить актуальные позиции грузов с бекенда
+            alert('Карта обновлена\n\nЗдесь будет загрузка данных с сервера');
+        }
+        
+        // Загрузка параметров из URL (если открыли из заказа)
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderId = urlParams.get('order');
+            
+            if (orderId) {
+                selectCargo(orderId);
+            }
+        });
+    </script>
+</body>
+</html>

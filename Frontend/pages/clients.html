@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Клиенты - LogisticsPro</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <!-- Боковое меню -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>LogisticsPro</h2>
+            <span class="role-badge">Администратор</span>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li><a href="admin.html"><i class="icon-dashboard"></i> Дашборд</a></li>
+            <li><a href="routes.html"><i class="icon-map"></i> Построение маршрутов</a></li>
+            <li><a href="drivers.html"><i class="icon-truck"></i> Водители</a></li>
+            <li><a href="all-orders.html"><i class="icon-box"></i> Все заказы</a></li>
+            <li><a href="clients.html" class="active"><i class="icon-user"></i> Клиенты</a></li>
+            <li><a href="admin-settings.html"><i class="icon-settings"></i> Настройки</a></li>
+        </ul>
+        
+        <div class="sidebar-user">
+            <div class="user-info">
+                <div class="avatar" id="userAvatar"></div>
+                <div class="user-details">
+                    <h4 id="adminName"></h4>
+                    <p id="adminCompany"></p>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()">
+                <i class="icon-logout"></i> Выйти
+            </button>
+        </div>
+    </aside>
+    
+    <!-- Основной контент -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Клиенты</h1>
+            <p>Управление клиентской базой</p>
+        </div>
+        
+        <!-- Панель фильтров -->
+        <div class="table-container fade-in" style="margin-bottom: 30px;">
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+                <div class="form-group" style="margin-bottom: 0; min-width: 200px;">
+                    <label for="clientTypeFilter">Тип</label>
+                    <select id="clientTypeFilter" onchange="filterClients()">
+                        <option value="all">Все типы</option>
+                        <option value="company">Компании</option>
+                        <option value="individual">Физ. лица</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 0; min-width: 250px;">
+                    <label for="searchClient">Поиск</label>
+                    <input type="text" id="searchClient" placeholder="Название, ИНН, email..." oninput="filterClients()">
+                </div>
+                
+                <button class="btn btn-primary" style="max-width: 180px; margin-top: 22px;" onclick="openAddClientModal()">
+                    <i class="icon-plus"></i> Добавить клиента
+                </button>
+            </div>
+        </div>
+        
+        <!-- Таблица клиентов -->
+        <div class="table-container fade-in">
+            <h2>Все клиенты</h2>
+            <table id="clientsTable">
+                <thead>
+                    <tr>
+                        <th>Название / ФИО</th>
+                        <th>Тип</th>
+                        <th>Контакты</th>
+                        <th>ИНН</th>
+                        <th>Заказов</th>
+                        <th>Статус</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Загружается из БД -->
+                    <tr>
+                        <td colspan="7" style="text-align: center; color: var(--color-primary);">
+                            Загрузка данных...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Статистика по клиентам -->
+        <div class="cards-grid fade-in" style="margin-top: 30px;">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon"><i class="icon-user"></i></div>
+                    <h3>Всего клиентов</h3>
+                </div>
+                <div class="value" id="totalClients">—</div>
+                <div class="description">в базе</div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon"><i class="icon-box"></i></div>
+                    <h3>Компании</h3>
+                </div>
+                <div class="value" id="companyClients">—</div>
+                <div class="description">юр. лица</div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon"><i class="icon-user"></i></div>
+                    <h3>Физ. лица</h3>
+                </div>
+                <div class="value" id="individualClients">—</div>
+                <div class="description">частные клиенты</div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon"><i class="icon-route"></i></div>
+                    <h3>Активные</h3>
+                </div>
+                <div class="value" id="activeClients">—</div>
+                <div class="description">с активными заказами</div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Модальное окно добавления/редактирования клиента -->
+    <div id="clientModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center;">
+        <div style="background: var(--color-white); border-radius: var(--border-radius); padding: 30px; max-width: 550px; width: 90%; max-height: 90vh; overflow-y: auto;">
+            <h2 id="modalTitle" style="margin-bottom: 20px;">Добавить клиента</h2>
+            
+            <form id="clientForm" onsubmit="saveClient(event)">
+                <input type="hidden" id="clientId">
+                
+                <div class="form-group">
+                    <label for="clientType">Тип клиента</label>
+                    <select id="clientType" onchange="toggleClientTypeFields()" required>
+                        <option value="company">Компания (юр. лицо)</option>
+                        <option value="individual">Физическое лицо</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="companyNameGroup">
+                    <label for="clientName">Название компании</label>
+                    <input type="text" id="clientName" placeholder="ООО «Ромашка»">
+                </div>
+                
+                <div class="form-group" id="individualNameGroup" style="display: none;">
+                    <label for="clientFullName">ФИО</label>
+                    <input type="text" id="clientFullName" placeholder="Иванов Иван Иванович">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="clientInn">ИНН</label>
+                        <input type="text" id="clientInn" placeholder="10 или 12 цифр">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="clientKpp">КПП</label>
+                        <input type="text" id="clientKpp" placeholder="9 цифр">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="clientEmail">Email</label>
+                    <input type="email" id="clientEmail" required placeholder="client@example.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="clientPhone">Телефон</label>
+                    <input type="tel" id="clientPhone" required placeholder="+7 (___) ___-__-__">
+                </div>
+                
+                <div class="form-group">
+                    <label for="clientAddress">Юридический адрес</label>
+                    <input type="text" id="clientAddress" placeholder="Город, улица, дом">
+                </div>
+                
+                <div class="form-group">
+                    <label for="clientNotes">Комментарий</label>
+                    <input type="text" id="clientNotes" placeholder="Дополнительная информация">
+                </div>
+                
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Сохранить</button>
+                    <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="closeClientModal()">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script src="../js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadClients();
+            loadClientStats();
+        });
+        
+        // Загрузка клиентов
+        async function loadClients() {
+            try {
+                // TODO: const response = await fetch('/api/clients');
+                // const clients = await response.json();
+                
+                const tbody = document.querySelector('#clientsTable tbody');
+                // Пример заполнения:
+                // tbody.innerHTML = clients.map(client => `
+                //     <tr>
+                //         <td><strong>${client.name || client.fullName}</strong></td>
+                //         <td><span class="status-badge ${client.type}">${client.typeText}</span></td>
+                //         <td>
+                //             <div style="font-size: 14px;">${client.email}</div>
+                //             <div style="font-size: 13px; color: var(--color-primary);">${client.phone}</div>
+                //         </td>
+                //         <td>${client.inn || '—'}</td>
+                //         <td>${client.ordersCount || 0}</td>
+                //         <td><span class="status-badge ${client.isActive ? 'delivered' : 'pending'}">${client.isActive ? 'Активен' : 'Не активен'}</span></td>
+                //         <td>
+                //             <button class="btn btn-secondary" style="padding: 8px 12px; font-size: 13px;" onclick="viewClient(${client.id})">Просмотр</button>
+                //             <button class="btn btn-secondary" style="padding: 8px 12px; font-size: 13px;" onclick="editClient(${client.id})">Изменить</button>
+                //         </td>
+                //     </tr>
+                // `).join('');
+                
+                // Заглушка
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; color: var(--color-primary);">
+                            Нет данных о клиентах
+                        </td>
+                    </tr>
+                `;
+            } catch (error) {
+                console.error('Ошибка загрузки клиентов:', error);
+            }
+        }
+        
+        // Загрузка статистики
+        async function loadClientStats() {
+            try {
+                // TODO: const response = await fetch('/api/clients/stats');
+                
+                document.getElementById('totalClients').textContent = '—';
+                document.getElementById('companyClients').textContent = '—';
+                document.getElementById('individualClients').textContent = '—';
+                document.getElementById('activeClients').textContent = '—';
+            } catch (error) {
+                console.error('Ошибка:', error);
+            }
+        }
+        
+        // Переключение полей типа клиента
+        function toggleClientTypeFields() {
+            const type = document.getElementById('clientType').value;
+            const companyGroup = document.getElementById('companyNameGroup');
+            const individualGroup = document.getElementById('individualNameGroup');
+            const innInput = document.getElementById('clientInn');
+            const kppInput = document.getElementById('clientKpp');
+            
+            if (type === 'company') {
+                companyGroup.style.display = 'block';
+                individualGroup.style.display = 'none';
+                innInput.placeholder = '10 цифр (ИНН юр. лица)';
+                kppInput.disabled = false;
+            } else {
+                companyGroup.style.display = 'none';
+                individualGroup.style.display = 'block';
+                innInput.placeholder = '12 цифр (ИНН физ. лица)';
+                kppInput.disabled = true;
+            }
+        }
+        
+        // Фильтрация
+        function filterClients() {
+            // TODO: Реализовать фильтрацию
+        }
+        
+        // Открытие модалки
+        function openAddClientModal() {
+            document.getElementById('modalTitle').textContent = 'Добавить клиента';
+            document.getElementById('clientForm').reset();
+            document.getElementById('clientId').value = '';
+            document.getElementById('clientType').value = 'company';
+            toggleClientTypeFields();
+            document.getElementById('clientModal').style.display = 'flex';
+        }
+        
+        // Закрытие модалки
+        function closeClientModal() {
+            document.getElementById('clientModal').style.display = 'none';
+        }
+        
+        // Просмотр клиента
+        function viewClient(clientId) {
+            alert('Просмотр клиента #' + clientId);
+        }
+        
+        // Редактирование клиента
+        function editClient(clientId) {
+            alert('Редактирование клиента #' + clientId);
+        }
+        
+        // Сохранение клиента
+        function saveClient(event) {
+            event.preventDefault();
+            
+            const type = document.getElementById('clientType').value;
+            const clientData = {
+                id: document.getElementById('clientId').value,
+                type: type,
+                name: type === 'company' ? document.getElementById('clientName').value : null,
+                fullName: type === 'individual' ? document.getElementById('clientFullName').value : null,
+                inn: document.getElementById('clientInn').value,
+                kpp: document.getElementById('clientKpp').value,
+                email: document.getElementById('clientEmail').value,
+                phone: document.getElementById('clientPhone').value,
+                address: document.getElementById('clientAddress').value,
+                notes: document.getElementById('clientNotes').value
+            };
+            
+            console.log('Сохранение клиента:', clientData);
+            
+            // TODO: Отправка на сервер
+            alert('Клиент сохранён (демо-режим)');
+            closeClientModal();
+            loadClients();
+        }
+        
+        // Закрытие модалки по клику вне
+        document.getElementById('clientModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeClientModal();
+            }
+        });
+    </script>
+</body>
+</html>

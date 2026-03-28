@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Настройки - LogisticsPro</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <!-- Боковое меню -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>LogisticsPro</h2>
+            <span class="role-badge">Администратор</span>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li><a href="admin.html"><i class="icon-dashboard"></i> Дашборд</a></li>
+            <li><a href="routes.html"><i class="icon-map"></i> Построение маршрутов</a></li>
+            <li><a href="drivers.html"><i class="icon-truck"></i> Водители</a></li>
+            <li><a href="all-orders.html"><i class="icon-box"></i> Все заказы</a></li>
+            <li><a href="clients.html"><i class="icon-user"></i> Клиенты</a></li>
+            <li><a href="admin-settings.html" class="active"><i class="icon-settings"></i> Настройки</a></li>
+        </ul>
+        
+        <div class="sidebar-user">
+            <div class="user-info">
+                <div class="avatar" id="userAvatar"></div>
+                <div class="user-details">
+                    <h4 id="adminName"></h4>
+                    <p id="adminCompany"></p>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()">
+                <i class="icon-logout"></i> Выйти
+            </button>
+        </div>
+    </aside>
+    
+    <!-- Основной контент -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Настройки системы</h1>
+            <p>Управление параметрами системы и профилем компании</p>
+        </div>
+        
+        <!-- Уведомления -->
+        <div id="alertContainer"></div>
+        
+        <div class="cards-grid" style="grid-template-columns: 1fr 1fr;">
+            <!-- Профиль администратора -->
+            <div class="table-container fade-in">
+                <h2>Профиль администратора</h2>
+                <form id="adminProfileForm" onsubmit="saveAdminProfile(event)">
+                    <div class="form-group">
+                        <label for="adminNameInput">ФИО</label>
+                        <input type="text" id="adminNameInput" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="adminEmailInput">Email</label>
+                        <input type="email" id="adminEmailInput" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="adminPhoneInput">Телефон</label>
+                        <input type="tel" id="adminPhoneInput" placeholder="+7 (___) ___-__-__">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                </form>
+                
+                <hr style="margin: 25px 0; border: none; border-top: 1px solid var(--color-bg-secondary);">
+                
+                <h3 style="margin-bottom: 15px; font-size: 16px;">Смена пароля</h3>
+                <form id="adminPasswordForm" onsubmit="changeAdminPassword(event)">
+                    <div class="form-group">
+                        <label for="currentPassword">Текущий пароль</label>
+                        <input type="password" id="currentPassword" required minlength="6">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="newPassword">Новый пароль</label>
+                        <input type="password" id="newPassword" required minlength="6">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmPassword">Подтверждение пароля</label>
+                        <input type="password" id="confirmPassword" required minlength="6">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Изменить пароль</button>
+                </form>
+            </div>
+            
+            <div class="table-container fade-in" style="animation-delay: 0.1s;">
+                <h2>Настройки компании</h2>
+                <form id="companyForm" onsubmit="saveCompanySettings(event)">
+                    <div class="form-group">
+                        <label for="companyName">Название компании</label>
+                        <input type="text" id="companyName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="companyInn">ИНН компании</label>
+                        <input type="text" id="companyInn" placeholder="10 цифр">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="companyKpp">КПП</label>
+                        <input type="text" id="companyKpp" placeholder="9 цифр">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="companyAddress">Юридический адрес</label>
+                        <input type="text" id="companyAddress">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="companyPhone">Контактный телефон</label>
+                        <input type="tel" id="companyPhone">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="companyEmail">Контактный email</label>
+                        <input type="email" id="companyEmail">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Сохранить настройки компании</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Настройки системы -->
+        <div class="table-container fade-in" style="margin-top: 30px;">
+            <h2>Настройки системы</h2>
+            
+            <div style="display: grid; gap: 20px; margin-top: 20px;">
+                <!-- Коды сотрудников -->
+                <div style="padding: 20px; background: var(--color-bg-light); border-radius: var(--border-radius);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3 style="margin: 0;">Коды для регистрации сотрудников</h3>
+                        <button class="btn btn-primary" style="max-width: 150px;" onclick="generateStaffCode()">
+                            <i class="icon-plus"></i> Создать код
+                        </button>
+                    </div>
+                    <p style="color: var(--color-primary); font-size: 14px; margin-bottom: 15px;">
+                        Сотрудники вводят этот код при регистрации, чтобы получить права администратора
+                    </p>
+                    <table id="staffCodesTable" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>Код</th>
+                                <th>Создан</th>
+                                <th>Использован</th>
+                                <th>Статус</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="5" style="text-align: center; color: var(--color-primary);">
+                                    Загрузка данных...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Уведомления -->
+                <div style="padding: 20px; background: var(--color-bg-light); border-radius: var(--border-radius);">
+                    <h3 style="margin: 0 0 15px 0;">Системные уведомления</h3>
+                    <p style="color: var(--color-primary); font-size: 14px; margin-bottom: 15px;">
+                        Настройте уведомления для администраторов системы
+                    </p>
+                    
+                    <div style="display: grid; gap: 15px;">
+                        <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                            <input type="checkbox" id="notifyNewOrders" checked style="width: auto;">
+                            <span>Новые заказы — уведомлять ответственного</span>
+                        </label>
+                        
+                        <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                            <input type="checkbox" id="notifyRouteComplete" checked style="width: auto;">
+                            <span>Завершение маршрута — уведомлять диспетчера</span>
+                        </label>
+                        
+                        <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                            <input type="checkbox" id="notifyDriverStatus" style="width: auto;">
+                            <span>Изменение статуса водителя — уведомлять</span>
+                        </label>
+                        
+                        <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                            <input type="checkbox" id="dailyReport" checked style="width: auto;">
+                            <span>Ежедневный отчёт — на email руководителя</span>
+                        </label>
+                    </div>
+                    
+                    <button class="btn btn-primary" style="max-width: 200px; margin-top: 20px;" onclick="saveNotificationSettings()">
+                        Сохранить настройки
+                    </button>
+                </div>
+                
+                <!-- Логирование -->
+                <div style="padding: 20px; background: var(--color-bg-light); border-radius: var(--border-radius);">
+                    <h3 style="margin: 0 0 15px 0;">Логирование и аудит</h3>
+                    <p style="color: var(--color-primary); font-size: 14px; margin-bottom: 15px;">
+                        Управление логами действий пользователей и администраторов
+                    </p>
+                    
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                        <button class="btn btn-secondary" style="max-width: 180px;" onclick="viewLogs()">
+                            Просмотр логов
+                        </button>
+                        <button class="btn btn-secondary" style="max-width: 180px;" onclick="exportLogs()">
+                            Экспорт логов
+                        </button>
+                        <button class="btn btn-secondary" style="max-width: 180px; background: #fff3cd; color: #856404;" onclick="clearLogs()">
+                            Очистить логи
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Резервное копирование -->
+                <div style="padding: 20px; background: var(--color-bg-light); border-radius: var(--border-radius);">
+                    <h3 style="margin: 0 0 15px 0;">Резервное копирование</h3>
+                    <p style="color: var(--color-primary); font-size: 14px; margin-bottom: 15px;">
+                        Управление резервными копиями базы данных
+                    </p>
+                    
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                        <button class="btn btn-primary" style="max-width: 200px;" onclick="createBackup()">
+                            Создать резервную копию
+                        </button>
+                        <button class="btn btn-secondary" style="max-width: 180px;" onclick="downloadBackup()">
+                            Скачать последнюю копию
+                        </button>
+                        <button class="btn btn-secondary" style="max-width: 180px;" onclick="configureAutoBackup()">
+                            Настроить авто-копирование
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Опасная зона -->
+        <div class="table-container fade-in" style="margin-top: 30px; border: 1px solid #f8d7da;">
+            <h2 style="color: #721c24;">Опасная зона</h2>
+            <p style="color: var(--color-primary); margin-bottom: 20px;">
+                Действия в этом разделе могут повлиять на работу системы
+            </p>
+            
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <button class="btn btn-secondary" style="max-width: 250px; background: #fff3cd; color: #856404;" onclick="maintenanceMode()">
+                    Режим обслуживания
+                </button>
+                <button class="btn btn-secondary" style="max-width: 250px; background: #f8d7da; color: #721c24;" onclick="resetSystem()">
+                    Сброс системы
+                </button>
+            </div>
+        </div>
+    </main>
+    
+    <script src="../js/auth.js"></script>
+    <script>
+        // Сохранение профиля администратора
+        function saveAdminProfile(event) {
+            event.preventDefault();
+            
+            const profileData = {
+                name: document.getElementById('adminNameInput').value,
+                email: document.getElementById('adminEmailInput').value,
+                phone: document.getElementById('adminPhoneInput').value
+            };
+            
+            console.log('Сохранение профиля:', profileData);
+            
+            // TODO: Отправка на сервер
+            showAlert('Профиль успешно обновлён!', 'success');
+        }
+        
+        // Смена пароля администратора
+        function changeAdminPassword(event) {
+            event.preventDefault();
+            
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (newPassword !== confirmPassword) {
+                showAlert('Пароли не совпадают!', 'error');
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                showAlert('Пароль должен быть не менее 6 символов!', 'error');
+                return;
+            }
+            
+            console.log('Смена пароля...');
+            
+            // TODO: Отправка на сервер
+            showAlert('Пароль успешно изменён!', 'success');
+            document.getElementById('adminPasswordForm').reset();
+        }
+        
+        // Сохранение настроек компании
+        function saveCompanySettings(event) {
+            event.preventDefault();
+            
+            const companyData = {
+                name: document.getElementById('companyName').value,
+                inn: document.getElementById('companyInn').value,
+                kpp: document.getElementById('companyKpp').value,
+                address: document.getElementById('companyAddress').value,
+                phone: document.getElementById('companyPhone').value,
+                email: document.getElementById('companyEmail').value
+            };
+            
+            console.log('Сохранение настроек компании:', companyData);
+            
+            // TODO: Отправка на сервер
+            showAlert('Настройки компании сохранены!', 'success');
+        }
+        
+        // Генерация кода сотрудника
+        function generateStaffCode() {
+            const code = 'STAFF' + Math.random().toString(36).substring(2, 7).toUpperCase();
+            alert('Новый код сотрудника:\n\n' + code + '\n\nСохраните код и передайте сотруднику');
+        }
+        
+        // Отзыв кода
+        function revokeCode(code) {
+            if (confirm('Отозвать код ' + code + '?\n\nСотрудники больше не смогут использовать этот код для регистрации.')) {
+                showAlert('Код отозван', 'success');
+            }
+        }
+        
+        // Сохранение настроек уведомлений
+        function saveNotificationSettings() {
+            const settings = {
+                newOrders: document.getElementById('notifyNewOrders').checked,
+                routeComplete: document.getElementById('notifyRouteComplete').checked,
+                driverStatus: document.getElementById('notifyDriverStatus').checked,
+                dailyReport: document.getElementById('dailyReport').checked
+            };
+            
+            console.log('Настройки уведомлений:', settings);
+            
+            // TODO: Отправка на сервер
+            showAlert('Настройки уведомлений сохранены!', 'success');
+        }
+        
+        // Просмотр логов
+        function viewLogs() {
+            alert('Просмотр логов\n\nЗдесь будет страница с историей действий');
+        }
+        
+        // Экспорт логов
+        function exportLogs() {
+            alert('Экспорт логов\n\nФайл будет сформирован и скачан');
+        }
+        
+        // Очистка логов
+        function clearLogs() {
+            if (confirm('Вы уверены, что хотите очистить все логи?\n\nЭто действие нельзя отменить.')) {
+                showAlert('Логи очищены', 'success');
+            }
+        }
+        
+        // Создание резервной копии
+        function createBackup() {
+            alert('Создание резервной копии...\n\nПроцесс может занять несколько минут');
+        }
+        
+        // Скачивание резервной копии
+        function downloadBackup() {
+            alert('Скачивание последней резервной копии\n\nФайл будет загружен');
+        }
+        
+        // Настройка авто-копирования
+        function configureAutoBackup() {
+            alert('Настройка автоматического резервного копирования\n\nЗдесь будет модальное окно с настройками расписания');
+        }
+        
+        // Режим обслуживания
+        function maintenanceMode() {
+            if (confirm('Включить режим обслуживания?\n\nСайт станет недоступен для пользователей до отключения режима.')) {
+                showAlert('Режим обслуживания включён', 'warning');
+            }
+        }
+        
+        // Сброс системы
+        function resetSystem() {
+            if (confirm('ВЫ УВЕРЕНЫ, ЧТО ХОТИТЕ ВЫПОЛНИТЬ СБРОС СИСТЕМЫ?\n\nЭто действие может привести к потере данных.')) {
+                if (confirm('Это последнее предупреждение! Продолжить?')) {
+                    showAlert('Сброс системы недоступен в демо-режиме', 'error');
+                }
+            }
+        }
+        
+        // Показ уведомления
+        function showAlert(message, type = 'info') {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            
+            container.innerHTML = '';
+            container.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

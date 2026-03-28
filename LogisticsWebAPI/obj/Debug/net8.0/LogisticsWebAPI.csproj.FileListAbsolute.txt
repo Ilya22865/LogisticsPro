@@ -1,0 +1,8 @@
+/home/user/IRVR/Kursach2/LogisticsWebAPI/obj/Debug/net8.0/LogisticsWebAPI.csproj.AssemblyReference.cache
+/home/user/IRVR/Kursach2/LogisticsWebAPI/obj/Debug/net8.0/rpswa.dswa.cache.json
+/home/user/IRVR/Kursach2/LogisticsWebAPI/obj/Debug/net8.0/LogisticsWebAPI.GeneratedMSBuildEditorConfig.editorconfig
+/home/user/IRVR/Kursach2/LogisticsWebAPI/obj/Debug/net8.0/LogisticsWebAPI.AssemblyInfoInputs.cache
+/home/user/IRVR/Kursach2/LogisticsWebAPI/obj/Debug/net8.0/LogisticsWebAPI.AssemblyInfo.cs
+/home/user/IRVR/Kursach2/LogisticsWebAPI/obj/Debug/net8.0/LogisticsWebAPI.csproj.CoreCompileInputs.cache
+/home/user/IRVR/Kursach2/LogisticsWebAPI/obj/Debug/net8.0/LogisticsWebAPI.MvcApplicationPartsAssemblyInfo.cs
+/home/user/IRVR/Kursach2/LogisticsWebAPI/obj/Debug/net8.0/LogisticsWebAPI.MvcApplicationPartsAssemblyInfo.cache

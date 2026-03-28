@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#638ECB">
+    <title>Панель администратора</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <!-- Кнопка меню для мобильных -->
+    <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Меню">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <!-- Боковое меню -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2 id="companyName"></h2>
+            <span id="companyPhone"></span>
+            <span class="role-badge">Администратор</span>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li><a href="admin.html" class="active">Дашборд</a></li>
+            <li><a href="routes.html">Построение маршрутов</a></li>
+            <li><a href="drivers.html">Водители</a></li>
+            <li><a href="all-orders.html">Все заказы</a></li>
+            <li><a href="clients.html">Клиенты</a></li>
+            <li><a href="admin-settings.html">Настройки</a></li>
+        </ul>
+
+        <div class="sidebar-user">
+            <div class="user-info">
+                <div class="avatar" id="userAvatar"></div>
+                <div class="user-details">
+                    <h4 id="adminName"></h4>
+                    <p id="adminCompany"></p>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()">
+                <i class="icon-logout"></i> Выйти
+            </button>
+        </div>
+    </aside>
+
+    <!-- Основной контент -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1 id="pageTitle"></h1>
+            <p id="pageDescription"></p>
+        </div>
+        
+        <!-- Карточки статистики -->
+        <div class="cards-grid">
+            <div class="card fade-in">
+                <div class="card-header">
+                    <h3>Активные заказы</h3>
+                </div>
+                <div class="value" id="totalActiveOrders">—</div>
+                <div class="description">в работе</div>
+            </div>
+            
+            <div class="card fade-in" style="animation-delay: 0.1s;">
+                <div class="card-header">
+                    <h3>Водители на линии</h3>
+                </div>
+                <div class="value" id="driversOnLine">—</div>
+                <div class="description">из <span id="totalDrivers">—</span></div>
+            </div>
+            
+            <div class="card fade-in" style="animation-delay: 0.2s;">
+                <div class="card-header">
+                    <h3>Маршрутов сегодня</h3>
+                </div>
+                <div class="value" id="routesToday">—</div>
+                <div class="description">построено</div>
+            </div>
+            
+            <div class="card fade-in" style="animation-delay: 0.3s;">
+                <div class="card-header">
+                    <h3>Доставлено</h3>
+                </div>
+                <div class="value" id="deliveredToday">—</div>
+                <div class="description">за сегодня</div>
+            </div>
+        </div>
+        
+        <!-- Уведомление -->
+        <div class="alert alert-info fade-in" style="animation-delay: 0.4s;">
+            <strong id="tipLabel"></strong>
+            <span id="tipText"></span>
+        </div>
+
+        <!-- Карта для построения маршрутов -->
+        <div class="map-container fade-in" style="animation-delay: 0.5s;">
+            <div class="map-header">
+                <h2 id="mapTitle"></h2>
+                <div class="map-actions">
+                    <button class="btn-refresh" onclick="clearRoute()" id="btnClear"></button>
+                    <button class="btn-route" onclick="startNewRoute()" id="btnNewRoute"></button>
+                </div>
+            </div>
+
+            <!-- ЗАГЛУШКА ДЛЯ КАРТЫ - подключите здесь ваш API -->
+            <div id="adminMap" class="map-placeholder">
+                <p id="mapPlaceholderText"></p>
+                <small id="mapPlaceholderHint"></small>
+            </div>
+        </div>
+        
+        <!-- Форма добавления маршрута -->
+        <div class="table-container fade-in" style="animation-delay: 0.6s;">
+            <h2 id="formTitle"></h2>
+            <form id="routeForm" onsubmit="saveRoute(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="orderSelect" id="lblOrder"></label>
+                        <select id="orderSelect" required>
+                            <option value="" id="optSelectOrder"></option>
+                            <!-- Загружается из БД -->
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="driverSelect" id="lblDriver"></label>
+                        <select id="driverSelect" required>
+                            <option value="" id="optSelectDriver"></option>
+                            <!-- Загружается из БД -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="routeStart" id="lblStart"></label>
+                        <input type="text" id="routeStart" placeholder="" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="routeEnd" id="lblEnd"></label>
+                        <input type="text" id="routeEnd" placeholder="" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="routeDistance" id="lblDistance"></label>
+                        <input type="number" id="routeDistance" placeholder="" min="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="routeTime" id="lblTime"></label>
+                        <input type="number" id="routeTime" placeholder="" min="0" step="0.5">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="routeDate" id="lblDate"></label>
+                        <input type="date" id="routeDate" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="routeNotes" id="lblNotes"></label>
+                    <input type="text" id="routeNotes" placeholder="">
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="max-width: 200px;" id="btnSaveRoute">
+                </button>
+            </form>
+        </div>
+
+        <!-- Таблица активных маршрутов -->
+        <div class="table-container fade-in" style="animation-delay: 0.7s; margin-top: 30px;">
+            <h2 id="activeRoutesTitle"></h2>
+            <table id="activeRoutesTable">
+                <thead>
+                    <tr>
+                        <th id="thOrderNum"></th>
+                        <th id="thRoute"></th>
+                        <th id="thDriver"></th>
+                        <th id="thStatus"></th>
+                        <th id="thDate"></th>
+                        <th id="thActions"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Загружается из БД -->
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: var(--color-primary);" id="loadingText">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+    
+    <!-- Полноэкранный режим карты -->
+    <div id="fullscreenMap" class="map-fullscreen" style="display: none;">
+        <button class="close-map" onclick="toggleFullscreen()"><i class="icon-close"></i></button>
+        <div class="map-wrapper">
+            <div id="fullscreenMapContainer" class="map-placeholder" style="width: 100%; height: 100%; border-radius: 0;">
+                <i class="icon-map"></i>
+                <p id="fullscreenMapText"></p>
+                <small id="fullscreenMapHint"></small>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../js/auth.js"></script>
+    <script src="../js/map-admin.js"></script>
+    <script>
+        // Загрузка данных с бекенда
+        document.addEventListener('DOMContentLoaded', async function() {
+            updateUserInfo();
+            await loadUiLabels();
+            await loadDashboardStats();
+            await loadOrdersForSelect();
+            await loadDriversForSelect();
+            await loadActiveRoutes();
+        });
+
+        // Загрузка текстов интерфейса
+        async function loadUiLabels() {
+            try {
+                // TODO: Замените на реальный API вызов для получения настроек компании и текстов
+                // const response = await fetch('/api/settings/ui-labels');
+                // const labels = await response.json();
+
+                // Заглушка - данные будут загружаться из БД
+                const labels = {};
+
+                document.getElementById('companyName').textContent = labels.companyName || '';
+                document.getElementById('companyPhone').textContent = labels.companyPhone || '';
+                document.getElementById('pageTitle').textContent = labels.adminPanelTitle || '';
+                document.getElementById('pageDescription').textContent = labels.adminPanelDescription || '';
+                document.getElementById('tipLabel').textContent = labels.tipLabel || '';
+                document.getElementById('tipText').textContent = labels.tipText || '';
+                document.getElementById('mapTitle').textContent = labels.mapTitle || '';
+                document.getElementById('btnClear').textContent = labels.btnClear || '';
+                document.getElementById('btnNewRoute').textContent = labels.btnNewRoute || '';
+                document.getElementById('mapPlaceholderText').textContent = labels.mapPlaceholderText || '';
+                document.getElementById('mapPlaceholderHint').textContent = labels.mapPlaceholderHint || '';
+                document.getElementById('formTitle').textContent = labels.formTitle || '';
+                document.getElementById('lblOrder').textContent = labels.lblOrder || '';
+                document.getElementById('optSelectOrder').textContent = labels.optSelectOrder || '';
+                document.getElementById('lblDriver').textContent = labels.lblDriver || '';
+                document.getElementById('optSelectDriver').textContent = labels.optSelectDriver || '';
+                document.getElementById('lblStart').textContent = labels.lblStart || '';
+                document.getElementById('lblEnd').textContent = labels.lblEnd || '';
+                document.getElementById('lblDistance').textContent = labels.lblDistance || '';
+                document.getElementById('lblTime').textContent = labels.lblTime || '';
+                document.getElementById('lblDate').textContent = labels.lblDate || '';
+                document.getElementById('lblNotes').textContent = labels.lblNotes || '';
+                document.getElementById('btnSaveRoute').textContent = labels.btnSaveRoute || '';
+                document.getElementById('activeRoutesTitle').textContent = labels.activeRoutesTitle || '';
+                document.getElementById('thOrderNum').textContent = labels.thOrderNum || '';
+                document.getElementById('thRoute').textContent = labels.thRoute || '';
+                document.getElementById('thDriver').textContent = labels.thDriver || '';
+                document.getElementById('thStatus').textContent = labels.thStatus || '';
+                document.getElementById('thDate').textContent = labels.thDate || '';
+                document.getElementById('thActions').textContent = labels.thActions || '';
+                document.getElementById('loadingText').textContent = labels.loadingText || '';
+                document.getElementById('fullscreenMapText').textContent = labels.fullscreenMapText || '';
+                document.getElementById('fullscreenMapHint').textContent = labels.fullscreenMapHint || '';
+
+                // Карточки статистики
+                document.getElementById('totalActiveOrders').previousElementSibling.textContent = labels.cardActiveOrders || '';
+                document.querySelector('#totalActiveOrders + .description').textContent = labels.cardActiveOrdersDesc || '';
+                document.getElementById('driversOnLine').previousElementSibling.textContent = labels.cardDriversOnLine || '';
+                document.querySelector('#driversOnLine + .description').childNodes[0].textContent = labels.cardDriversOnLineDescFrom || '';
+                document.getElementById('routesToday').previousElementSibling.textContent = labels.cardRoutesToday || '';
+                document.querySelector('#routesToday + .description').textContent = labels.cardRoutesTodayDesc || '';
+                document.getElementById('deliveredToday').previousElementSibling.textContent = labels.cardDelivered || '';
+                document.querySelector('#deliveredToday + .description').textContent = labels.cardDeliveredDesc || '';
+            } catch (error) {
+                console.error('Ошибка загрузки текстов интерфейса:', error);
+            }
+        }
+
+        // Загрузка статистики
+        async function loadDashboardStats() {
+            try {
+                // TODO: Замените на реальный API вызов
+                // const response = await fetch('/api/admin/stats');
+                // const stats = await response.json();
+
+                // Заглушка
+                document.getElementById('totalActiveOrders').textContent = '';
+                document.getElementById('driversOnLine').textContent = '';
+                document.getElementById('totalDrivers').textContent = '';
+                document.getElementById('routesToday').textContent = '';
+                document.getElementById('deliveredToday').textContent = '';
+            } catch (error) {
+                console.error('Ошибка загрузки статистики:', error);
+            }
+        }
+
+        // Загрузка заказов для селекта
+        async function loadOrdersForSelect() {
+            try {
+                // TODO: Замените на реальный API вызов
+                // const response = await fetch('/api/orders/active');
+                // const orders = await response.json();
+
+                const select = document.getElementById('orderSelect');
+                select.innerHTML = '<option value="" id="optSelectOrderDynamic"></option>';
+                // Пример заполнения:
+                // orders.forEach(order => {
+                //     const option = document.createElement('option');
+                //     option.value = order.id;
+                //     option.textContent = `#${order.number} — ${order.route}`;
+                //     select.appendChild(option);
+                // });
+            } catch (error) {
+                console.error('Ошибка загрузки заказов:', error);
+            }
+        }
+
+        // Загрузка водителей для селекта
+        async function loadDriversForSelect() {
+            try {
+                // TODO: Замените на реальный API вызов
+                // const response = await fetch('/api/drivers/available');
+                // const drivers = await response.json();
+
+                const select = document.getElementById('driverSelect');
+                select.innerHTML = '<option value="" id="optSelectDriverDynamic"></option>';
+                // Пример заполнения:
+                // drivers.forEach(driver => {
+                //     const option = document.createElement('option');
+                //     option.value = driver.id;
+                //     option.textContent = `${driver.name} — ${driver.vehicle} (${driver.licensePlate})`;
+                //     select.appendChild(option);
+                // });
+            } catch (error) {
+                console.error('Ошибка загрузки водителей:', error);
+            }
+        }
+
+        // Загрузка активных маршрутов
+        async function loadActiveRoutes() {
+            try {
+                // TODO: Замените на реальный API вызов
+                // const response = await fetch('/api/routes/active');
+                // const routes = await response.json();
+
+                const tbody = document.querySelector('#activeRoutesTable tbody');
+                // Пример заполнения:
+                // tbody.innerHTML = routes.map(route => `
+                //     <tr>
+                //         <td>#${route.orderNumber}</td>
+                //         <td>${route.start} → ${route.end}</td>
+                //         <td>${route.driverName}</td>
+                //         <td><span class="status-badge ${route.status}">${route.statusText}</span></td>
+                //         <td>${formatDate(route.startDate)}</td>
+                //         <td><button class="btn btn-secondary" style="padding: 8px 15px; font-size: 13px;">На карте</button></td>
+                //     </tr>
+                // `).join('');
+
+                // Заглушка
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: var(--color-primary);">
+                            ${document.getElementById('loadingText').textContent || ''}
+                        </td>
+                    </tr>
+                `;
+            } catch (error) {
+                console.error('Ошибка загрузки маршрутов:', error);
+            }
+        }
+
+        // Форматирование даты
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ru-RU');
+        }
+
+        // Сохранение маршрута
+        function saveRoute(event) {
+            event.preventDefault();
+
+            const routeData = {
+                orderId: document.getElementById('orderSelect').value,
+                driverId: document.getElementById('driverSelect').value,
+                start: document.getElementById('routeStart').value,
+                end: document.getElementById('routeEnd').value,
+                distance: document.getElementById('routeDistance').value,
+                time: document.getElementById('routeTime').value,
+                date: document.getElementById('routeDate').value,
+                notes: document.getElementById('routeNotes').value
+            };
+
+            console.log('Сохранение маршрута:', routeData);
+
+            // TODO: Отправка на сервер
+            // fetch('/api/routes', {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify(routeData)
+            // })
+
+            alert('Маршрут сохранён (демо-режим)');
+            event.target.reset();
+        }
+
+        // Переключение бокового меню на мобильных
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const menuToggle = document.querySelector('.menu-toggle');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            if (sidebar) {
+                sidebar.classList.toggle('active');
+            }
+            
+            // Анимация кнопки меню
+            if (menuToggle) {
+                menuToggle.classList.toggle('active');
+            }
+            
+            // Создаём или удаляем затемнение фона
+            if (overlay) {
+                overlay.remove();
+            } else {
+                const newOverlay = document.createElement('div');
+                newOverlay.id = 'sidebarOverlay';
+                newOverlay.className = 'sidebar-overlay';
+                newOverlay.onclick = toggleSidebar;
+                document.body.appendChild(newOverlay);
+            }
+        }
+
+        // Закрытие меню при клике на ссылку (для мобильных)
+        document.querySelectorAll('.sidebar-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    toggleSidebar();
+                }
+            });
+        });
+
+        // Обработка изменения размера окна
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                const sidebar = document.querySelector('.sidebar');
+                const overlay = document.getElementById('sidebarOverlay');
+                
+                if (window.innerWidth > 768) {
+                    if (sidebar) sidebar.classList.remove('active');
+                    if (overlay) overlay.remove();
+                }
+            }, 250);
+        });
+    </script>
+</body>
+</html>

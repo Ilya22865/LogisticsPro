@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Построение маршрутов - LogisticsPro</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .routes-page .main-content {
+            padding: 0;
+        }
+        
+        .routes-page .map-container {
+            margin: 0;
+            border-radius: 0;
+            box-shadow: none;
+            height: 100vh;
+            position: relative;
+        }
+        
+        .routes-page .map-placeholder {
+            height: 100vh;
+            border: none;
+            border-radius: 0;
+            width: 100%;
+        }
+        
+        .route-builder-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 400px;
+            max-height: calc(100vh - 40px);
+            background: var(--color-white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            z-index: 100;
+            overflow-y: auto;
+            padding: 25px;
+        }
+        
+        .route-builder-panel h3 {
+            margin-bottom: 20px;
+            color: var(--color-dark);
+        }
+        
+        .route-points-list {
+            margin-bottom: 20px;
+        }
+        
+        .route-point {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: var(--color-bg-light);
+            border-radius: var(--border-radius);
+            margin-bottom: 10px;
+        }
+        
+        .route-point-marker {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        
+        .route-point-info {
+            flex: 1;
+        }
+        
+        .route-point-address {
+            font-size: 14px;
+            color: var(--color-dark);
+        }
+        
+        .route-point-remove {
+            background: none;
+            border: none;
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 5px;
+        }
+        
+        .route-info-box {
+            background: var(--color-bg-light);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-top: 20px;
+        }
+        
+        .route-info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .route-info-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .route-info-label {
+            color: var(--color-primary);
+        }
+        
+        .route-info-value {
+            font-weight: 600;
+            color: var(--color-dark);
+        }
+    </style>
+</head>
+<body class="routes-page">
+    <!-- Боковое меню -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>LogisticsPro</h2>
+            <span class="role-badge">Администратор</span>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li><a href="admin.html">Дашборд</a></li>
+            <li><a href="routes.html" class="active">Построение маршрутов</a></li>
+            <li><a href="drivers.html">Водители</a></li>
+            <li><a href="all-orders.html">Все заказы</a></li>
+            <li><a href="clients.html">Клиенты</a></li>
+            <li><a href="admin-settings.html">Настройки</a></li>
+        </ul>
+        
+        <div class="sidebar-user">
+            <div class="user-info">
+                <div class="avatar" id="userAvatar">А</div>
+                <div class="user-details">
+                    <h4 id="adminName">Алексей Петров</h4>
+                    <p>Логистическая компания</p>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()">
+                <i class="icon-logout"></i> Выйти
+            </button>
+        </div>
+    </aside>
+    
+    <!-- Основной контент - Карта -->
+    <main class="main-content">
+        <div class="map-container">
+            <!-- Панель построения маршрута -->
+            <div class="route-builder-panel">
+                <h3>Построение маршрута</h3>
+                
+                <div class="alert alert-info" style="font-size: 13px; padding: 12px;">
+                    Кликните по карте, чтобы добавить точки маршрута
+                </div>
+                
+                <div class="route-points-list" id="routePointsList">
+                    <div class="route-point">
+                        <div class="route-point-marker">A</div>
+                        <div class="route-point-info">
+                            <div class="route-point-address">Точка отправления</div>
+                        </div>
+                    </div>
+                    <div class="route-point">
+                        <div class="route-point-marker">B</div>
+                        <div class="route-point-info">
+                            <div class="route-point-address">Точка назначения</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <button class="btn btn-primary" style="flex: 1;" onclick="addRoutePoint()">Добавить точку</button>
+                    <button class="btn btn-secondary" onclick="clearRoutePoints()">Очистить</button>
+                </div>
+                
+                <div class="route-info-box">
+                    <div class="route-info-item">
+                        <span class="route-info-label">Расстояние:</span>
+                        <span class="route-info-value" id="routeDistance">— км</span>
+                    </div>
+                    <div class="route-info-item">
+                        <span class="route-info-label">Время в пути:</span>
+                        <span class="route-info-value" id="routeTime">— ч</span>
+                    </div>
+                    <div class="route-info-item">
+                        <span class="route-info-label">Точек:</span>
+                        <span class="route-info-value" id="routePointsCount">2</span>
+                    </div>
+                </div>
+                
+                <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--color-bg-secondary);">
+                
+                <h4 style="margin-bottom: 15px;">Привязка к заказу</h4>
+                
+                <div class="form-group">
+                    <label for="orderSelect">Заказ</label>
+                    <select id="orderSelect">
+                        <option value="">Выберите заказ</option>
+                        <!-- Загружается из БД -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="driverSelect">Водитель</label>
+                    <select id="driverSelect">
+                        <option value="">Выберите водителя</option>
+                        <!-- Загружается из БД -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="routeDate">Дата отправления</label>
+                    <input type="date" id="routeDate">
+                </div>
+                
+                <button class="btn btn-primary" style="width: 100%;" onclick="saveRoute()">
+                    Сохранить маршрут
+                </button>
+            </div>
+            
+            <!-- ЗАГЛУШКА ДЛЯ КАРТЫ -->
+            <div id="adminMap" class="map-placeholder">
+                <i class="icon-map"></i>
+                <p>Здесь будет карта для построения маршрутов</p>
+                <small>Подключите API карты (Leaflet + OpenStreetMap + Routing Machine)</small>
+            </div>
+        </div>
+    </main>
+    
+    <script src="../js/auth.js"></script>
+    <script>
+        let routePoints = [];
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            loadOrdersForSelect();
+            loadDriversForSelect();
+        });
+        
+        // Добавление точки маршрута
+        function addRoutePoint() {
+            // TODO: При подключении карты - включить режим добавления точек по клику
+            const count = routePoints.length + 1;
+            const labels = ['A', 'B', 'C', 'D', 'E', 'F'];
+            
+            routePoints.push({
+                id: Date.now(),
+                label: labels[count - 1] || count,
+                lat: null,
+                lng: null,
+                address: 'Новая точка'
+            });
+            
+            renderRoutePoints();
+        }
+        
+        // Отрисовка точек
+        function renderRoutePoints() {
+            const container = document.getElementById('routePointsList');
+            const labels = ['A', 'B', 'C', 'D', 'E', 'F'];
+            
+            container.innerHTML = routePoints.map((point, index) => `
+                <div class="route-point">
+                    <div class="route-point-marker">${point.label || labels[index] || index + 1}</div>
+                    <div class="route-point-info">
+                        <div class="route-point-address">${point.address || 'Точка на карте'}</div>
+                    </div>
+                    <button class="route-point-remove" onclick="removeRoutePoint(${point.id})">×</button>
+                </div>
+            `).join('');
+            
+            document.getElementById('routePointsCount').textContent = routePoints.length;
+        }
+        
+        // Удаление точки
+        function removeRoutePoint(pointId) {
+            routePoints = routePoints.filter(p => p.id !== pointId);
+            renderRoutePoints();
+            
+            // TODO: Удалить маркер с карты
+        }
+        
+        // Очистка всех точек
+        function clearRoutePoints() {
+            routePoints = [];
+            renderRoutePoints();
+            
+            // TODO: Очистить карту
+            document.getElementById('routeDistance').textContent = '— км';
+            document.getElementById('routeTime').textContent = '— ч';
+        }
+        
+        // Загрузка заказов
+        async function loadOrdersForSelect() {
+            try {
+                // TODO: const response = await fetch('/api/orders/active');
+                const select = document.getElementById('orderSelect');
+                // orders.forEach(...)
+            } catch (error) {
+                console.error('Ошибка:', error);
+            }
+        }
+        
+        // Загрузка водителей
+        async function loadDriversForSelect() {
+            try {
+                // TODO: const response = await fetch('/api/drivers/available');
+                const select = document.getElementById('driverSelect');
+                // drivers.forEach(...)
+            } catch (error) {
+                console.error('Ошибка:', error);
+            }
+        }
+        
+        // Сохранение маршрута
+        function saveRoute() {
+            if (routePoints.length < 2) {
+                alert('Добавьте минимум 2 точки маршрута');
+                return;
+            }
+            
+            const routeData = {
+                points: routePoints,
+                orderId: document.getElementById('orderSelect').value,
+                driverId: document.getElementById('driverSelect').value,
+                date: document.getElementById('routeDate').value
+            };
+            
+            console.log('Сохранение маршрута:', routeData);
+            
+            // TODO: Отправка на сервер
+            alert('Маршрут сохранён (демо-режим)');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Новый заказ - LogisticsPro</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .order-form-container {
+            background: var(--color-white);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            max-width: 800px;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid var(--color-bg-secondary);
+        }
+
+        .form-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .form-section h3 {
+            color: var(--color-dark);
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .form-actions button {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        @media (max-width: 768px) {
+            .order-form-container {
+                padding: 20px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .form-actions button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>LogisticsPro</h2>
+            <span class="role-badge">Клиент</span>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html"><i class="icon-dashboard"></i> Дашборд</a></li>
+            <li><a href="orders.html"><i class="icon-box"></i> Мои заказы</a></li>
+            <li><a href="cargo-map.html"><i class="icon-map"></i> Карта грузов</a></li>
+            <li><a href="settings.html"><i class="icon-settings"></i> Настройки</a></li>
+        </ul>
+
+        <div class="sidebar-user">
+            <div class="user-info">
+                <div class="avatar" id="userAvatar"></div>
+                <div class="user-details">
+                    <h4 id="userName"></h4>
+                    <p id="userCompany"></p>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()">
+                <i class="icon-logout"></i> Выйти
+            </button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Новый заказ</h1>
+            <p>Заполните информацию о грузе и маршруте</p>
+        </div>
+
+        <div id="alertContainer"></div>
+
+        <div class="order-form-container fade-in">
+            <form id="orderForm" onsubmit="submitOrder(event)">
+                
+                <div class="form-section">
+                    <h3>Информация о маршруте</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="startLocation">Точка отправления *</label>
+                            <input type="text" id="startLocation" placeholder="Город, адрес" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="endLocation">Точка назначения *</label>
+                            <input type="text" id="endLocation" placeholder="Город, адрес" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="pickupDate">Дата и время забора *</label>
+                            <input type="datetime-local" id="pickupDate" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="deliveryDate">Желаемая дата доставки *</label>
+                            <input type="datetime-local" id="deliveryDate" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Информация о грузе</h3>
+                    
+                    <div class="form-group">
+                        <label for="cargoDescription">Описание груза *</label>
+                        <input type="text" id="cargoDescription" placeholder="Например: Электроника, запчасти, мебель" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="weight">Вес (кг) *</label>
+                            <input type="number" id="weight" placeholder="0" min="0.1" step="0.1" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="volume">Объём (м³)</label>
+                            <input type="number" id="volume" placeholder="0" min="0.1" step="0.1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Детали заказа</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="priority">Приоритет</label>
+                            <select id="priority">
+                                <option value="normal">Нормальный</option>
+                                <option value="low">Низкий</option>
+                                <option value="high">Высокий</option>
+                                <option value="urgent">Срочный</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cost">Ориентировочная стоимость (₽)</label>
+                            <input type="number" id="cost" placeholder="0" min="0" step="1">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notes">Комментарий к заказу</label>
+                        <input type="text" id="notes" placeholder="Дополнительная информация, пожелания">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="icon-plus"></i> Создать заказ
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="cancelOrder()">
+                        Отмена
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script src="../js/auth.js"></script>
+    <script>
+        const API_BASE_URL = '/api';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date();
+            today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+            document.getElementById('pickupDate').min = today.toISOString().slice(0, 16);
+            
+            const nextWeek = new Date(today);
+            nextWeek.setDate(nextWeek.getDate() + 7);
+            document.getElementById('deliveryDate').min = nextWeek.toISOString().slice(0, 16);
+        });
+
+        document.getElementById('pickupDate').addEventListener('change', function() {
+            const pickupDate = new Date(this.value);
+            const deliveryDateInput = document.getElementById('deliveryDate');
+            
+            const minDelivery = new Date(pickupDate);
+            minDelivery.setDate(minDelivery.getDate() + 1);
+            minDelivery.setMinutes(minDelivery.getMinutes() - minDelivery.getTimezoneOffset());
+            
+            deliveryDateInput.min = minDelivery.toISOString().slice(0, 16);
+        });
+
+        async function submitOrder(event) {
+            event.preventDefault();
+
+            const orderData = {
+                clientId: getCurrentUserId(),
+                clientName: getCurrentUserName(),
+                startLocation: document.getElementById('startLocation').value.trim(),
+                endLocation: document.getElementById('endLocation').value.trim(),
+                cargoDescription: document.getElementById('cargoDescription').value.trim(),
+                weight: parseFloat(document.getElementById('weight').value),
+                volume: parseFloat(document.getElementById('volume').value) || 0,
+                pickupDate: new Date(document.getElementById('pickupDate').value).toISOString(),
+                deliveryDate: new Date(document.getElementById('deliveryDate').value).toISOString(),
+                priority: document.getElementById('priority').value,
+                cost: parseFloat(document.getElementById('cost').value) || 0,
+                notes: document.getElementById('notes').value.trim()
+            };
+
+            if (!orderData.startLocation || !orderData.endLocation) {
+                showAlert('Укажите точки отправления и назначения', 'error');
+                return;
+            }
+
+            if (!orderData.cargoDescription) {
+                showAlert('Укажите описание груза', 'error');
+                return;
+            }
+
+            if (orderData.weight <= 0) {
+                showAlert('Вес должен быть больше 0', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/orders`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(orderData)
+                });
+
+                if (response.ok) {
+                    showAlert('Заказ успешно создан!', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'orders.html';
+                    }, 1500);
+                } else {
+                    const error = await response.json();
+                    showAlert(error.message || 'Ошибка при создании заказа', 'error');
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                showAlert('Ошибка соединения с сервером', 'error');
+            }
+        }
+
+        function cancelOrder() {
+            if (confirm('Вы уверены, что хотите отменить создание заказа?')) {
+                window.location.href = 'orders.html';
+            }
+        }
+
+        function getCurrentUserId() {
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+            return user?.id || 1;
+        }
+
+        function getCurrentUserName() {
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+            return user?.name || user?.email || 'Клиент';
+        }
+
+        function showAlert(message, type = 'info') {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+
+            container.innerHTML = '';
+            container.appendChild(alert);
+
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

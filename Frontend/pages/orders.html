@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мои заказы - LogisticsPro</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .loading-row td {
+            text-align: center;
+            padding: 40px;
+            color: var(--color-primary);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--color-primary);
+        }
+
+        .empty-state i {
+            font-size: 80px;
+            opacity: 0.3;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .table-actions {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .table-actions button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>LogisticsPro</h2>
+            <span class="role-badge">Клиент</span>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html"><i class="icon-dashboard"></i> Дашборд</a></li>
+            <li><a href="orders.html" class="active"><i class="icon-box"></i> Мои заказы</a></li>
+            <li><a href="cargo-map.html"><i class="icon-map"></i> Карта грузов</a></li>
+            <li><a href="settings.html"><i class="icon-settings"></i> Настройки</a></li>
+        </ul>
+
+        <div class="sidebar-user">
+            <div class="user-info">
+                <div class="avatar" id="userAvatar"></div>
+                <div class="user-details">
+                    <h4 id="userName"></h4>
+                    <p id="userCompany"></p>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()">
+                <i class="icon-logout"></i> Выйти
+            </button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Мои заказы</h1>
+            <p>Управление и отслеживание всех ваших заказов</p>
+        </div>
+
+        <div id="alertContainer"></div>
+
+        <div class="table-container fade-in" style="margin-bottom: 30px;">
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+                <div class="form-group" style="margin-bottom: 0; min-width: 180px; flex: 1;">
+                    <label for="statusFilter">Статус</label>
+                    <select id="statusFilter" onchange="loadOrders()">
+                        <option value="">Все статусы</option>
+                        <option value="pending">Ожидание</option>
+                        <option value="in-transit">В пути</option>
+                        <option value="delivered">Доставлен</option>
+                        <option value="cancelled">Отменён</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0; min-width: 150px; flex: 1;">
+                    <label for="dateFilter">Период</label>
+                    <select id="dateFilter" onchange="loadOrders()">
+                        <option value="all">За всё время</option>
+                        <option value="week">За неделю</option>
+                        <option value="month">За месяц</option>
+                        <option value="year">За год</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0; flex: 2; min-width: 200px;">
+                    <label for="searchOrder">Поиск</label>
+                    <input type="text" id="searchOrder" placeholder="№ заказа или маршрут..." oninput="debounceSearch()">
+                </div>
+
+                <button class="btn btn-primary" style="max-width: 160px; margin-top: 22px;" onclick="createNewOrder()">
+                    <i class="icon-plus"></i> Новый заказ
+                </button>
+            </div>
+        </div>
+
+        <div class="table-container fade-in">
+            <h2>Все заказы</h2>
+            <div style="overflow-x: auto;">
+                <table id="ordersTable">
+                    <thead>
+                        <tr>
+                            <th>№ заказа</th>
+                            <th>Маршрут</th>
+                            <th>Груз</th>
+                            <th>Статус</th>
+                            <th>Дата создания</th>
+                            <th>Дата доставки</th>
+                            <th>Стоимость</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="loading-row">
+                            <td colspan="8">Загрузка данных...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="table-container fade-in" style="margin-top: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                <p style="color: var(--color-primary); margin: 0;">
+                    Показано <span id="showingCount">0</span> из <span id="totalCount">0</span> заказов
+                </p>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-secondary" id="prevBtn" style="max-width: 100px; padding: 10px;" disabled>Назад</button>
+                    <button class="btn btn-secondary" id="nextBtn" style="max-width: 100px; padding: 10px;">Вперёд</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/auth.js"></script>
+    <script>
+        const API_BASE_URL = '/api';
+        let currentPage = 1;
+        let searchTimeout = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadOrders();
+        });
+
+        function debounceSearch() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => loadOrders(), 500);
+        }
+
+        function getDateRange() {
+            const dateFilter = document.getElementById('dateFilter').value;
+            const now = new Date();
+            let dateFrom = null;
+
+            switch (dateFilter) {
+                case 'week':
+                    dateFrom = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    break;
+                case 'month':
+                    dateFrom = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                    break;
+                case 'year':
+                    dateFrom = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+                    break;
+                default:
+                    return { from: null, to: null };
+            }
+
+            return { from: dateFrom.toISOString(), to: now.toISOString() };
+        }
+
+        async function loadOrders() {
+            const tbody = document.querySelector('#ordersTable tbody');
+            tbody.innerHTML = '<tr class="loading-row"><td colspan="8">Загрузка данных...</td></tr>';
+
+            const statusFilter = document.getElementById('statusFilter').value;
+            const searchQuery = document.getElementById('searchOrder').value.trim();
+            const dateRange = getDateRange();
+
+            const params = new URLSearchParams({
+                page: currentPage.toString(),
+                pageSize: '10'
+            });
+
+            if (statusFilter) params.append('status', statusFilter);
+            if (searchQuery) params.append('search', searchQuery);
+            if (dateRange.from) params.append('dateFrom', dateRange.from);
+            if (dateRange.to) params.append('dateTo', dateRange.to);
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/orders?${params}`);
+                
+                if (!response.ok) {
+                    throw new Error('Ошибка загрузки данных');
+                }
+
+                const data = await response.json();
+                const orders = data.items || data;
+                const totalCount = data.totalCount || data.length;
+
+                if (orders.length === 0) {
+                    tbody.innerHTML = `
+                        <tr class="empty-state">
+                            <td colspan="8">
+                                <i class="icon-box"></i>
+                                <p>Заказы не найдены</p>
+                                <button class="btn btn-primary" onclick="createNewOrder()" style="margin-top: 15px;">
+                                    Создать первый заказ
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                } else {
+                    tbody.innerHTML = orders.map(order => `
+                        <tr data-status="${order.status?.toLowerCase() || 'pending'}">
+                            <td><strong>#${order.id.toString().padStart(6, '0')}</strong></td>
+                            <td>${order.startLocation || '—'} → ${order.endLocation || '—'}</td>
+                            <td>${order.cargoDescription || '—'}${order.weight ? ` (${order.weight} кг)` : ''}</td>
+                            <td><span class="status-badge ${getStatusClass(order.status)}">${getStatusText(order.status)}</span></td>
+                            <td>${formatDate(order.createdDate)}</td>
+                            <td>${order.deliveryDate ? formatDate(order.deliveryDate) : '—'}</td>
+                            <td><strong>${formatCost(order.cost)}</strong></td>
+                            <td class="table-actions">
+                                <button class="btn btn-secondary" style="padding: 8px 12px; font-size: 13px;" onclick="viewOrder(${order.id})">Просмотр</button>
+                                <button class="btn btn-secondary" style="padding: 8px 12px; font-size: 13px;" onclick="trackOrder(${order.id})">На карте</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+
+                document.getElementById('showingCount').textContent = orders.length;
+                document.getElementById('totalCount').textContent = totalCount;
+                document.getElementById('prevBtn').disabled = currentPage === 1;
+                document.getElementById('nextBtn').disabled = currentPage >= (data.totalPages || 1);
+
+            } catch (error) {
+                console.error('Ошибка:', error);
+                tbody.innerHTML = '<tr class="empty-state"><td colspan="8">Ошибка загрузки данных. Попробуйте позже.</td></tr>';
+            }
+        }
+
+        function getStatusClass(status) {
+            const statusMap = {
+                'pending': 'pending',
+                'in-transit': 'in-transit',
+                'delivered': 'delivered',
+                'cancelled': 'pending'
+            };
+            return statusMap[status?.toLowerCase()] || 'pending';
+        }
+
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': 'Ожидание',
+                'in-transit': 'В пути',
+                'delivered': 'Доставлен',
+                'cancelled': 'Отменён'
+            };
+            return statusMap[status?.toLowerCase()] || 'Неизвестно';
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '—';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        }
+
+        function formatCost(cost) {
+            if (!cost && cost !== 0) return '—';
+            return new Intl.NumberFormat('ru-RU').format(Math.round(cost)) + ' ₽';
+        }
+
+        function createNewOrder() {
+            window.location.href = 'create-order.html';
+        }
+
+        function viewOrder(orderId) {
+            alert('Просмотр заказа #' + orderId + '\n\nДетальная информация о заказе будет доступна в следующей версии.');
+        }
+
+        function trackOrder(orderId) {
+            window.location.href = 'cargo-map.html?order=' + orderId;
+        }
+
+        document.getElementById('prevBtn').addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                loadOrders();
+            }
+        });
+
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            currentPage++;
+            loadOrders();
+        });
+
+        function showAlert(message, type = 'info') {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            container.innerHTML = '';
+            container.appendChild(alert);
+            setTimeout(() => alert.remove(), 5000);
+        }
+    </script>
+</body>
+</html>

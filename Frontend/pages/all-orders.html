@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Все заказы - LogisticsPro</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .loading-row td {
+            text-align: center;
+            padding: 40px;
+            color: var(--color-primary);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--color-primary);
+        }
+
+        .empty-state i {
+            font-size: 80px;
+            opacity: 0.3;
+            margin-bottom: 20px;
+        }
+
+        .modal-responsive {
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @media (max-width: 768px) {
+            .filters-panel {
+                flex-direction: column;
+                align-items: stretch !important;
+            }
+
+            .filters-panel .form-group,
+            .filters-panel .btn {
+                min-width: 100% !important;
+                max-width: 100% !important;
+            }
+
+            .table-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .table-container table {
+                min-width: 900px;
+            }
+
+            .pagination-panel {
+                flex-direction: column;
+                gap: 15px !important;
+                align-items: center !important;
+            }
+
+            .modal-responsive {
+                width: 95%;
+                padding: 20px !important;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-header h1 {
+                font-size: 22px;
+            }
+
+            .table-container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>LogisticsPro</h2>
+            <span class="role-badge">Администратор</span>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li><a href="admin.html">Дашборд</a></li>
+            <li><a href="routes.html">Построение маршрутов</a></li>
+            <li><a href="drivers.html">Водители</a></li>
+            <li><a href="all-orders.html" class="active">Все заказы</a></li>
+            <li><a href="clients.html">Клиенты</a></li>
+            <li><a href="admin-settings.html">Настройки</a></li>
+        </ul>
+
+        <div class="sidebar-user">
+            <div class="user-info">
+                <div class="avatar" id="userAvatar"></div>
+                <div class="user-details">
+                    <h4 id="adminName"></h4>
+                    <p id="adminCompany"></p>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()">Выйти</button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Все заказы</h1>
+            <p>Управление всеми заказами системы</p>
+        </div>
+
+        <div id="alertContainer"></div>
+
+        <div class="table-container fade-in filters-panel" style="margin-bottom: 30px;">
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+                <div class="form-group" style="margin-bottom: 0; min-width: 160px; flex: 1;">
+                    <label for="statusFilter">Статус</label>
+                    <select id="statusFilter" onchange="loadOrders()">
+                        <option value="">Все статусы</option>
+                        <option value="pending">Ожидание</option>
+                        <option value="in-transit">В пути</option>
+                        <option value="delivered">Доставлен</option>
+                        <option value="cancelled">Отменён</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0; min-width: 160px; flex: 1;">
+                    <label for="priorityFilter">Приоритет</label>
+                    <select id="priorityFilter" onchange="loadOrders()">
+                        <option value="">Все приоритеты</option>
+                        <option value="low">Низкий</option>
+                        <option value="normal">Нормальный</option>
+                        <option value="high">Высокий</option>
+                        <option value="urgent">Срочный</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0; min-width: 140px; flex: 1;">
+                    <label for="dateFrom">Период с</label>
+                    <input type="date" id="dateFrom" onchange="loadOrders()">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0; min-width: 140px; flex: 1;">
+                    <label for="dateTo">Период по</label>
+                    <input type="date" id="dateTo" onchange="loadOrders()">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0; flex: 2; min-width: 200px;">
+                    <label for="searchOrder">Поиск</label>
+                    <input type="text" id="searchOrder" placeholder="№ заказа, клиент, маршрут..." oninput="debounceSearch()">
+                </div>
+
+                <button class="btn btn-primary" style="max-width: 150px; margin-top: 22px;" onclick="openOrderModal()">Новый заказ</button>
+            </div>
+        </div>
+
+        <div class="table-container fade-in">
+            <h2>Заказы</h2>
+            <div style="overflow-x: auto;">
+                <table id="ordersTable">
+                    <thead>
+                        <tr>
+                            <th>№ заказа</th>
+                            <th>Клиент</th>
+                            <th>Маршрут</th>
+                            <th>Груз</th>
+                            <th>Статус</th>
+                            <th>Приоритет</th>
+                            <th>Дата создания</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="loading-row">
+                            <td colspan="8">Загрузка данных...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="table-container fade-in pagination-panel" style="margin-top: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 15px;">
+                <p style="color: var(--color-primary); margin: 0;">
+                    Показано <span id="showingCount">0</span> из <span id="totalCount">0</span> заказов
+                </p>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-secondary" id="prevBtn" style="max-width: 100px; padding: 10px;" disabled>Назад</button>
+                    <button class="btn btn-secondary" id="nextBtn" style="max-width: 100px; padding: 10px;">Вперёд</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="orderModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; padding: 20px;">
+        <div class="modal-responsive" style="background: var(--color-white); border-radius: var(--border-radius); padding: 30px;">
+            <h2 id="modalTitle" style="margin-bottom: 20px;">Новый заказ</h2>
+
+            <form id="orderForm" onsubmit="saveOrder(event)">
+                <input type="hidden" id="orderId">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="orderClient">Клиент</label>
+                        <input type="text" id="orderClientName" placeholder="ФИО или название компании" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="orderPriority">Приоритет</label>
+                        <select id="orderPriority" required>
+                            <option value="normal">Нормальный</option>
+                            <option value="low">Низкий</option>
+                            <option value="high">Высокий</option>
+                            <option value="urgent">Срочный</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="orderStart">Точка отправления</label>
+                        <input type="text" id="orderStart" placeholder="Город, адрес" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="orderEnd">Точка назначения</label>
+                        <input type="text" id="orderEnd" placeholder="Город, адрес" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="orderCargo">Описание груза</label>
+                    <input type="text" id="orderCargo" placeholder="Например: Электроника, 50 кг" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="orderWeight">Вес (кг)</label>
+                        <input type="number" id="orderWeight" placeholder="0" min="0" step="0.1">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="orderVolume">Объём (м³)</label>
+                        <input type="number" id="orderVolume" placeholder="0" min="0" step="0.1">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="orderDatePickup">Дата забора</label>
+                        <input type="datetime-local" id="orderDatePickup" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="orderDateDelivery">Дата доставки</label>
+                        <input type="datetime-local" id="orderDateDelivery" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="orderNotes">Комментарий</label>
+                    <input type="text" id="orderNotes" placeholder="Дополнительная информация">
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1; min-width: 150px;">Сохранить</button>
+                    <button type="button" class="btn btn-secondary" style="flex: 1; min-width: 150px;" onclick="closeOrderModal()">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script>
+        const API_BASE_URL = '/api';
+        let currentPage = 1;
+        let searchTimeout = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadOrders();
+        });
+
+        function debounceSearch() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => loadOrders(), 500);
+        }
+
+        async function loadOrders() {
+            const tbody = document.querySelector('#ordersTable tbody');
+            tbody.innerHTML = '<tr class="loading-row"><td colspan="8">Загрузка данных...</td></tr>';
+
+            const statusFilter = document.getElementById('statusFilter').value;
+            const priorityFilter = document.getElementById('priorityFilter').value;
+            const searchQuery = document.getElementById('searchOrder').value.trim();
+            const dateFrom = document.getElementById('dateFrom').value;
+            const dateTo = document.getElementById('dateTo').value;
+
+            const params = new URLSearchParams({
+                page: currentPage.toString(),
+                pageSize: '10'
+            });
+
+            if (statusFilter) params.append('status', statusFilter);
+            if (priorityFilter) params.append('priority', priorityFilter);
+            if (searchQuery) params.append('search', searchQuery);
+            if (dateFrom) params.append('dateFrom', new Date(dateFrom).toISOString());
+            if (dateTo) {
+                const endDate = new Date(dateTo);
+                endDate.setHours(23, 59, 59);
+                params.append('dateTo', endDate.toISOString());
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/orders?${params}`);
+                
+                if (!response.ok) {
+                    throw new Error('Ошибка загрузки данных');
+                }
+
+                const data = await response.json();
+                const orders = data.items || data;
+                const totalCount = data.totalCount || data.length;
+
+                if (orders.length === 0) {
+                    tbody.innerHTML = `
+                        <tr class="empty-state">
+                            <td colspan="8">
+                                <i class="icon-box"></i>
+                                <p>Заказы не найдены</p>
+                            </td>
+                        </tr>
+                    `;
+                } else {
+                    tbody.innerHTML = orders.map(order => `
+                        <tr data-status="${order.status?.toLowerCase() || 'pending'}">
+                            <td><strong>#${order.id.toString().padStart(6, '0')}</strong></td>
+                            <td>${order.clientName || '—'}</td>
+                            <td>${order.startLocation || '—'} → ${order.endLocation || '—'}</td>
+                            <td>${order.cargoDescription || '—'}</td>
+                            <td><span class="status-badge ${getStatusClass(order.status)}">${getStatusText(order.status)}</span></td>
+                            <td><span class="status-badge ${getPriorityClass(order.priority)}">${getPriorityText(order.priority)}</span></td>
+                            <td>${formatDate(order.createdDate)}</td>
+                            <td>
+                                <button class="btn btn-secondary" style="padding: 8px 12px; font-size: 13px;" onclick="viewOrder(${order.id})">Просмотр</button>
+                                <button class="btn btn-secondary" style="padding: 8px 12px; font-size: 13px;" onclick="editOrder(${order.id})">Изменить</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+
+                document.getElementById('showingCount').textContent = orders.length;
+                document.getElementById('totalCount').textContent = totalCount;
+                document.getElementById('prevBtn').disabled = currentPage === 1;
+                document.getElementById('nextBtn').disabled = currentPage >= (data.totalPages || 1);
+
+            } catch (error) {
+                console.error('Ошибка:', error);
+                tbody.innerHTML = '<tr class="empty-state"><td colspan="8">Ошибка загрузки данных. Попробуйте позже.</td></tr>';
+            }
+        }
+
+        function getStatusClass(status) {
+            const statusMap = {
+                'pending': 'pending',
+                'in-transit': 'in-transit',
+                'delivered': 'delivered',
+                'cancelled': 'pending'
+            };
+            return statusMap[status?.toLowerCase()] || 'pending';
+        }
+
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': 'Ожидание',
+                'in-transit': 'В пути',
+                'delivered': 'Доставлен',
+                'cancelled': 'Отменён'
+            };
+            return statusMap[status?.toLowerCase()] || 'Неизвестно';
+        }
+
+        function getPriorityClass(priority) {
+            const priorityMap = {
+                'low': 'pending',
+                'normal': 'in-transit',
+                'high': 'pending',
+                'urgent': 'delivered'
+            };
+            return priorityMap[priority?.toLowerCase()] || 'pending';
+        }
+
+        function getPriorityText(priority) {
+            const priorityMap = {
+                'low': 'Низкий',
+                'normal': 'Нормальный',
+                'high': 'Высокий',
+                'urgent': 'Срочный'
+            };
+            return priorityMap[priority?.toLowerCase()] || 'Нормальный';
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '—';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        }
+
+        function openOrderModal() {
+            document.getElementById('modalTitle').textContent = 'Новый заказ';
+            document.getElementById('orderForm').reset();
+            document.getElementById('orderId').value = '';
+            document.getElementById('orderModal').style.display = 'flex';
+        }
+
+        function closeOrderModal() {
+            document.getElementById('orderModal').style.display = 'none';
+        }
+
+        async function saveOrder(event) {
+            event.preventDefault();
+
+            const orderId = document.getElementById('orderId').value;
+            const orderData = {
+                clientName: document.getElementById('orderClientName').value.trim(),
+                priority: document.getElementById('orderPriority').value,
+                startLocation: document.getElementById('orderStart').value.trim(),
+                endLocation: document.getElementById('orderEnd').value.trim(),
+                cargoDescription: document.getElementById('orderCargo').value.trim(),
+                weight: parseFloat(document.getElementById('orderWeight').value) || 0,
+                volume: parseFloat(document.getElementById('orderVolume').value) || 0,
+                pickupDate: new Date(document.getElementById('orderDatePickup').value).toISOString(),
+                deliveryDate: new Date(document.getElementById('orderDateDelivery').value).toISOString(),
+                notes: document.getElementById('orderNotes').value.trim()
+            };
+
+            try {
+                const url = orderId ? `${API_BASE_URL}/orders/${orderId}` : `${API_BASE_URL}/orders`;
+                const method = orderId ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(orderData)
+                });
+
+                if (response.ok) {
+                    showAlert(orderId ? 'Заказ обновлён' : 'Заказ создан', 'success');
+                    closeOrderModal();
+                    loadOrders();
+                } else {
+                    const error = await response.json();
+                    showAlert(error.message || 'Ошибка сохранения', 'error');
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                showAlert('Ошибка соединения с сервером', 'error');
+            }
+        }
+
+        function viewOrder(orderId) {
+            alert('Просмотр заказа #' + orderId);
+        }
+
+        async function editOrder(orderId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/orders/${orderId}`);
+                if (!response.ok) {
+                    throw new Error('Ошибка загрузки данных');
+                }
+
+                const order = await response.json();
+                
+                document.getElementById('modalTitle').textContent = 'Редактирование заказа';
+                document.getElementById('orderId').value = order.id;
+                document.getElementById('orderClientName').value = order.clientName || '';
+                document.getElementById('orderPriority').value = order.priority?.toLowerCase() || 'normal';
+                document.getElementById('orderStart').value = order.startLocation || '';
+                document.getElementById('orderEnd').value = order.endLocation || '';
+                document.getElementById('orderCargo').value = order.cargoDescription || '';
+                document.getElementById('orderWeight').value = order.weight || 0;
+                document.getElementById('orderVolume').value = order.volume || 0;
+                
+                if (order.pickupDate) {
+                    const pickup = new Date(order.pickupDate);
+                    pickup.setMinutes(pickup.getMinutes() - pickup.getTimezoneOffset());
+                    document.getElementById('orderDatePickup').value = pickup.toISOString().slice(0, 16);
+                }
+                
+                if (order.deliveryDate) {
+                    const delivery = new Date(order.deliveryDate);
+                    delivery.setMinutes(delivery.getMinutes() - delivery.getTimezoneOffset());
+                    document.getElementById('orderDateDelivery').value = delivery.toISOString().slice(0, 16);
+                }
+                
+                document.getElementById('orderNotes').value = order.notes || '';
+                document.getElementById('orderModal').style.display = 'flex';
+            } catch (error) {
+                console.error('Ошибка:', error);
+                showAlert('Ошибка загрузки данных заказа', 'error');
+            }
+        }
+
+        document.getElementById('prevBtn').addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                loadOrders();
+            }
+        });
+
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            currentPage++;
+            loadOrders();
+        });
+
+        document.getElementById('orderModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeOrderModal();
+            }
+        });
+
+        function showAlert(message, type = 'info') {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            container.innerHTML = '';
+            container.appendChild(alert);
+            setTimeout(() => alert.remove(), 5000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Настройки - LogisticsPro</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <!-- Боковое меню -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>LogisticsPro</h2>
+            <span class="role-badge">Клиент</span>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html"><i class="icon-dashboard"></i> Дашборд</a></li>
+            <li><a href="orders.html"><i class="icon-box"></i> Мои заказы</a></li>
+            <li><a href="cargo-map.html"><i class="icon-map"></i> Карта грузов</a></li>
+            <li><a href="settings.html" class="active"><i class="icon-settings"></i> Настройки</a></li>
+        </ul>
+        
+        <div class="sidebar-user">
+            <div class="user-info">
+                <div class="avatar" id="userAvatar"></div>
+                <div class="user-details">
+                    <h4 id="userName"></h4>
+                    <p id="userCompany"></p>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()">
+                <i class="icon-logout"></i> Выйти
+            </button>
+        </div>
+    </aside>
+    
+    <!-- Основной контент -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Настройки</h1>
+            <p>Управление профилем и параметрами аккаунта</p>
+        </div>
+        
+        <!-- Уведомления -->
+        <div id="alertContainer"></div>
+        
+        <div class="cards-grid" style="grid-template-columns: 1fr 1fr;">
+            <!-- Профиль пользователя -->
+            <div class="table-container fade-in">
+                <h2>Профиль пользователя</h2>
+                <form id="profileForm" onsubmit="saveProfile(event)">
+                    <div class="form-group">
+                        <label for="profileName">ФИО</label>
+                        <input type="text" id="profileName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="profileEmail">Email</label>
+                        <input type="email" id="profileEmail" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="profilePhone">Телефон</label>
+                        <input type="tel" id="profilePhone" placeholder="+7 (___) ___-__-__">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="profileCompany">Компания</label>
+                        <input type="text" id="profileCompany" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="profileInn">ИНН</label>
+                        <input type="text" id="profileInn" placeholder="10 цифр">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                </form>
+            </div>
+            
+            <!-- Смена пароля -->
+            <div class="table-container fade-in" style="animation-delay: 0.1s;">
+                <h2>Безопасность</h2>
+                <form id="passwordForm" onsubmit="changePassword(event)">
+                    <div class="form-group">
+                        <label for="currentPassword">Текущий пароль</label>
+                        <input type="password" id="currentPassword" required minlength="6">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="newPassword">Новый пароль</label>
+                        <input type="password" id="newPassword" required minlength="6">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmPassword">Подтверждение пароля</label>
+                        <input type="password" id="confirmPassword" required minlength="6">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Изменить пароль</button>
+                </form>
+                
+                <hr style="margin: 25px 0; border: none; border-top: 1px solid var(--color-bg-secondary);">
+                
+                <h3 style="margin-bottom: 15px; font-size: 16px;">Двухфакторная аутентификация</h3>
+                <p style="color: var(--color-primary); font-size: 14px; margin-bottom: 15px;">
+                    Повысьте безопасность аккаунта, подключив SMS-уведомления при входе
+                </p>
+                <button class="btn btn-secondary" onclick="enable2FA()">Подключить 2FA</button>
+            </div>
+        </div>
+        
+        <!-- Уведомления -->
+        <div class="table-container fade-in" style="margin-top: 30px;">
+            <h2>Уведомления</h2>
+            <p style="color: var(--color-primary); margin-bottom: 20px;">
+                Настройте способы получения уведомлений о статусах заказов
+            </p>
+            
+            <div style="display: grid; gap: 15px;">
+                <label class="form-group" style="display: flex; align-items: center; gap: 12px; margin-bottom: 0; cursor: pointer;">
+                    <input type="checkbox" id="notifyEmail" checked style="width: auto;">
+                    <span>Email-уведомления о изменении статуса заказа</span>
+                </label>
+                
+                <label class="form-group" style="display: flex; align-items: center; gap: 12px; margin-bottom: 0; cursor: pointer;">
+                    <input type="checkbox" id="notifySms" style="width: auto;">
+                    <span>SMS-уведомления о доставке</span>
+                </label>
+                
+                <label class="form-group" style="display: flex; align-items: center; gap: 12px; margin-bottom: 0; cursor: pointer;">
+                    <input type="checkbox" id="notifyPush" checked style="width: auto;">
+                    <span>Push-уведомления в браузере</span>
+                </label>
+                
+                <label class="form-group" style="display: flex; align-items: center; gap: 12px; margin-bottom: 0; cursor: pointer;">
+                    <input type="checkbox" id="notifyMarketing" style="width: auto;">
+                    <span>Рекламные рассылки и специальные предложения</span>
+                </label>
+            </div>
+            
+            <button class="btn btn-primary" style="max-width: 200px; margin-top: 20px;" onclick="saveNotifications()">
+                Сохранить настройки
+            </button>
+        </div>
+        
+        <!-- Интеграции -->
+        <div class="table-container fade-in" style="margin-top: 30px;">
+            <h2>Интеграции</h2>
+            <p style="color: var(--color-primary); margin-bottom: 20px;">
+                Подключите внешние сервисы для удобной работы
+            </p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                <div style="padding: 20px; background: var(--color-bg-light); border-radius: var(--border-radius);">
+                    <h4 style="margin-bottom: 10px;">API для 1С</h4>
+                    <p style="font-size: 14px; color: var(--color-primary); margin-bottom: 15px;">
+                        Получите API-ключ для интеграции с вашей учётной системой
+                    </p>
+                    <button class="btn btn-secondary" style="max-width: 150px;" onclick="generateApiKey()">
+                        Получить ключ
+                    </button>
+                </div>
+                
+                <div style="padding: 20px; background: var(--color-bg-light); border-radius: var(--border-radius);">
+                    <h4 style="margin-bottom: 10px;">Экспорт данных</h4>
+                    <p style="font-size: 14px; color: var(--color-primary); margin-bottom: 15px;">
+                        Выгрузите все заказы в формате Excel или CSV
+                    </p>
+                    <button class="btn btn-secondary" style="max-width: 150px;" onclick="exportData('excel')">
+                        Excel
+                    </button>
+                    <button class="btn btn-secondary" style="max-width: 150px; margin-left: 10px;" onclick="exportData('csv')">
+                        CSV
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Опасная зона -->
+        <div class="table-container fade-in" style="margin-top: 30px; border: 1px solid #f8d7da;">
+            <h2 style="color: #721c24;">Опасная зона</h2>
+            <p style="color: var(--color-primary); margin-bottom: 20px;">
+                Действия в этом разделе нельзя отменить
+            </p>
+            
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <button class="btn btn-secondary" style="max-width: 200px; background: #fff3cd; color: #856404;" onclick="deactivateAccount()">
+                    Деактивировать аккаунт
+                </button>
+                <button class="btn btn-secondary" style="max-width: 200px; background: #f8d7da; color: #721c24;" onclick="deleteAccount()">
+                    Удалить аккаунт
+                </button>
+            </div>
+        </div>
+    </main>
+    
+    <script src="../js/auth.js"></script>
+    <script>
+        // Сохранение профиля
+        function saveProfile(event) {
+            event.preventDefault();
+            
+            const profileData = {
+                name: document.getElementById('profileName').value,
+                email: document.getElementById('profileEmail').value,
+                phone: document.getElementById('profilePhone').value,
+                company: document.getElementById('profileCompany').value,
+                inn: document.getElementById('profileInn').value
+            };
+            
+            console.log('Сохранение профиля:', profileData);
+            
+            // TODO: Отправка на сервер
+            showAlert('Профиль успешно обновлён!', 'success');
+        }
+        
+        // Смена пароля
+        function changePassword(event) {
+            event.preventDefault();
+            
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (newPassword !== confirmPassword) {
+                showAlert('Пароли не совпадают!', 'error');
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                showAlert('Пароль должен быть не менее 6 символов!', 'error');
+                return;
+            }
+            
+            console.log('Смена пароля...');
+            
+            // TODO: Отправка на сервер
+            showAlert('Пароль успешно изменён!', 'success');
+            document.getElementById('passwordForm').reset();
+        }
+        
+        // Включение 2FA
+        function enable2FA() {
+            alert('Подключение двухфакторной аутентификации\n\n1. Введите номер телефона\n2. Получите SMS с кодом\n3. Подтвердите код');
+        }
+        
+        // Сохранение настроек уведомлений
+        function saveNotifications() {
+            const settings = {
+                email: document.getElementById('notifyEmail').checked,
+                sms: document.getElementById('notifySms').checked,
+                push: document.getElementById('notifyPush').checked,
+                marketing: document.getElementById('notifyMarketing').checked
+            };
+            
+            console.log('Настройки уведомлений:', settings);
+            
+            // TODO: Отправка на сервер
+            showAlert('Настройки уведомлений сохранены!', 'success');
+        }
+        
+        // Генерация API-ключа
+        function generateApiKey() {
+            const apiKey = 'lgs_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+            alert('Ваш API-ключ:\n\n' + apiKey + '\n\nСохраните его в безопасном месте!');
+        }
+        
+        // Экспорт данных
+        function exportData(format) {
+            alert('Экспорт данных в формате ' + format.toUpperCase() + '\n\nФайл будет сформирован и скачан');
+        }
+        
+        // Деактивация аккаунта
+        function deactivateAccount() {
+            if (confirm('Вы уверены, что хотите деактивировать аккаунт?\n\nВы не сможете войти в систему до повторной активации.')) {
+                showAlert('Аккаунт деактивирован', 'warning');
+            }
+        }
+        
+        // Удаление аккаунта
+        function deleteAccount() {
+            if (confirm('ВЫ УВЕРЕНЫ, ЧТО ХОТИТЕ УДАЛИТЬ АККАУНТ?\n\nЭто действие нельзя отменить. Все данные будут потеряны.')) {
+                if (confirm('Это последнее предупреждение! Продолжить?')) {
+                    showAlert('Функция удаления недоступна в демо-режиме', 'error');
+                }
+            }
+        }
+        
+        // Показ уведомления
+        function showAlert(message, type = 'info') {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            
+            container.innerHTML = '';
+            container.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
