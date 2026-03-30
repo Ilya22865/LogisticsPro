@@ -4,8 +4,136 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#638ECB">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>Панель администратора</title>
     <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        /* Адаптация карты для мобильных */
+        @media (max-width: 768px) {
+            .map-container {
+                margin-bottom: 20px;
+            }
+
+            .map-placeholder {
+                height: 300px;
+            }
+
+            .map-actions {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .map-actions button {
+                width: 100%;
+            }
+
+            .table-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .table-container table {
+                min-width: 700px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .card .value {
+                font-size: 24px;
+            }
+
+            .page-header {
+                margin-bottom: 20px;
+                padding-top: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            .card .value {
+                font-size: 22px;
+            }
+
+            .map-placeholder {
+                height: 250px;
+            }
+
+            .table-container {
+                padding: 10px;
+            }
+
+            .table-container h2 {
+                font-size: 16px;
+            }
+
+            .form-group {
+                margin-bottom: 15px;
+            }
+        }
+
+        /* Планшетная версия */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .map-placeholder {
+                height: 350px;
+            }
+        }
+
+        /* Версия для больших экранов */
+        @media (min-width: 1441px) {
+            .cards-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .map-placeholder {
+                height: 550px;
+            }
+
+            .main-content {
+                padding: 40px;
+            }
+        }
+
+        /* Пейзажная ориентация на мобильных */
+        @media (max-height: 500px) and (orientation: landscape) and (max-width: 768px) {
+            .sidebar {
+                max-width: 180px;
+            }
+
+            .cards-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .card {
+                padding: 10px;
+            }
+
+            .card .value {
+                font-size: 18px;
+            }
+
+            .map-container {
+                display: none;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Кнопка меню для мобильных -->

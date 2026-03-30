@@ -2,7 +2,10 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#638ECB">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>Новый заказ - LogisticsPro</title>
     <link rel="stylesheet" href="../css/styles.css">
     <style>
@@ -54,10 +57,80 @@
             .form-actions button {
                 width: 100%;
             }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .form-section h3 {
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .order-form-container {
+                padding: 15px;
+            }
+
+            .form-section {
+                padding-bottom: 15px;
+            }
+
+            .form-section h3 {
+                font-size: 15px;
+            }
+
+            .form-group input,
+            .form-group select {
+                font-size: 14px;
+                padding: 10px 12px;
+            }
+
+            .btn {
+                min-height: 44px;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .order-form-container {
+                max-width: 700px;
+            }
+        }
+
+        @media (min-width: 1441px) {
+            .order-form-container {
+                max-width: 900px;
+                padding: 40px;
+            }
+
+            .form-section h3 {
+                font-size: 20px;
+            }
+        }
+
+        /* Пейзажная ориентация */
+        @media (max-height: 500px) and (orientation: landscape) and (max-width: 768px) {
+            .order-form-container {
+                padding: 15px;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+
+            .form-section {
+                padding-bottom: 10px;
+                margin-bottom: 15px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Кнопка меню для мобильных -->
+    <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Меню">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
     <aside class="sidebar">
         <div class="sidebar-header">
             <h2>LogisticsPro</h2>
@@ -295,6 +368,40 @@
                 alert.remove();
             }, 5000);
         }
+
+        // Переключение бокового меню на мобильных
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const menuToggle = document.querySelector('.menu-toggle');
+
+            if (sidebar) {
+                sidebar.classList.toggle('active');
+            }
+
+            if (menuToggle) {
+                menuToggle.classList.toggle('active');
+            }
+
+            let overlay = document.getElementById('sidebarOverlay');
+            if (overlay) {
+                overlay.remove();
+            } else {
+                const newOverlay = document.createElement('div');
+                newOverlay.id = 'sidebarOverlay';
+                newOverlay.className = 'sidebar-overlay';
+                newOverlay.onclick = toggleSidebar;
+                document.body.appendChild(newOverlay);
+            }
+        }
+
+        // Закрытие меню при клике на ссылку (для мобильных)
+        document.querySelectorAll('.sidebar-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    toggleSidebar();
+                }
+            });
+        });
     </script>
 </body>
 </html>

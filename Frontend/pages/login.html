@@ -2,9 +2,59 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#638ECB">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>Вход - LogisticsPro</title>
     <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        /* Дополнительные стили для страницы входа */
+        @media (max-width: 768px) {
+            .auth-box {
+                padding: 30px 25px;
+            }
+
+            .auth-tabs {
+                flex-direction: row;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .auth-box {
+                padding: 25px 20px;
+            }
+
+            .auth-box h1 {
+                font-size: 24px;
+            }
+
+            .form-group {
+                margin-bottom: 15px;
+            }
+        }
+
+        /* Адаптация для пейзажной ориентации */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .auth-container {
+                align-items: flex-start;
+                padding-top: 20px;
+            }
+
+            .auth-box {
+                max-width: 500px;
+                padding: 20px;
+            }
+
+            .auth-tabs {
+                margin-bottom: 15px;
+            }
+
+            .form-group {
+                margin-bottom: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="auth-container">

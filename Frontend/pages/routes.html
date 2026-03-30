@@ -2,14 +2,15 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#638ECB">
     <title>Построение маршрутов - LogisticsPro</title>
     <link rel="stylesheet" href="../css/styles.css">
     <style>
         .routes-page .main-content {
             padding: 0;
         }
-        
+
         .routes-page .map-container {
             margin: 0;
             border-radius: 0;
@@ -17,14 +18,14 @@
             height: 100vh;
             position: relative;
         }
-        
+
         .routes-page .map-placeholder {
             height: 100vh;
             border: none;
             border-radius: 0;
             width: 100%;
         }
-        
+
         .route-builder-panel {
             position: absolute;
             top: 20px;
@@ -38,16 +39,16 @@
             overflow-y: auto;
             padding: 25px;
         }
-        
+
         .route-builder-panel h3 {
             margin-bottom: 20px;
             color: var(--color-dark);
         }
-        
+
         .route-points-list {
             margin-bottom: 20px;
         }
-        
+
         .route-point {
             display: flex;
             align-items: center;
@@ -57,7 +58,7 @@
             border-radius: var(--border-radius);
             margin-bottom: 10px;
         }
-        
+
         .route-point-marker {
             width: 30px;
             height: 30px;
@@ -71,16 +72,16 @@
             font-size: 14px;
             flex-shrink: 0;
         }
-        
+
         .route-point-info {
             flex: 1;
         }
-        
+
         .route-point-address {
             font-size: 14px;
             color: var(--color-dark);
         }
-        
+
         .route-point-remove {
             background: none;
             border: none;
@@ -89,36 +90,58 @@
             font-size: 18px;
             padding: 5px;
         }
-        
+
         .route-info-box {
             background: var(--color-bg-light);
             padding: 15px;
             border-radius: var(--border-radius);
             margin-top: 20px;
         }
-        
+
         .route-info-item {
             display: flex;
             justify-content: space-between;
             margin-bottom: 10px;
             font-size: 14px;
         }
-        
+
         .route-info-item:last-child {
             margin-bottom: 0;
         }
-        
+
         .route-info-label {
             color: var(--color-primary);
         }
-        
+
         .route-info-value {
             font-weight: 600;
             color: var(--color-dark);
         }
+
+        @media (max-width: 768px) {
+            .route-builder-panel {
+                width: calc(100% - 40px);
+                left: 20px;
+                right: 20px;
+                top: auto;
+                bottom: 20px;
+                max-height: 50vh;
+            }
+
+            .routes-page .map-placeholder {
+                height: 100vh;
+            }
+        }
     </style>
 </head>
 <body class="routes-page">
+    <!-- Кнопка меню для мобильных -->
+    <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Меню">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
     <!-- Боковое меню -->
     <aside class="sidebar">
         <div class="sidebar-header">
@@ -324,19 +347,53 @@
                 alert('Добавьте минимум 2 точки маршрута');
                 return;
             }
-            
+
             const routeData = {
                 points: routePoints,
                 orderId: document.getElementById('orderSelect').value,
                 driverId: document.getElementById('driverSelect').value,
                 date: document.getElementById('routeDate').value
             };
-            
+
             console.log('Сохранение маршрута:', routeData);
-            
+
             // TODO: Отправка на сервер
             alert('Маршрут сохранён (демо-режим)');
         }
+
+        // Переключение бокового меню на мобильных
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const menuToggle = document.querySelector('.menu-toggle');
+
+            if (sidebar) {
+                sidebar.classList.toggle('active');
+            }
+
+            if (menuToggle) {
+                menuToggle.classList.toggle('active');
+            }
+
+            let overlay = document.getElementById('sidebarOverlay');
+            if (overlay) {
+                overlay.remove();
+            } else {
+                const newOverlay = document.createElement('div');
+                newOverlay.id = 'sidebarOverlay';
+                newOverlay.className = 'sidebar-overlay';
+                newOverlay.onclick = toggleSidebar;
+                document.body.appendChild(newOverlay);
+            }
+        }
+
+        // Закрытие меню при клике на ссылку (для мобильных)
+        document.querySelectorAll('.sidebar-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    toggleSidebar();
+                }
+            });
+        });
     </script>
 </body>
 </html>

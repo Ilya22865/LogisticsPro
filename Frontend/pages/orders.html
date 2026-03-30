@@ -2,7 +2,10 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#638ECB">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>Мои заказы - LogisticsPro</title>
     <link rel="stylesheet" href="../css/styles.css">
     <style>
@@ -34,10 +37,86 @@
             .table-actions button {
                 width: 100%;
             }
+
+            .table-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .table-container table {
+                min-width: 900px;
+            }
+
+            .filters-panel > div {
+                flex-direction: column;
+                align-items: stretch !important;
+            }
+
+            .filters-panel .form-group {
+                min-width: 100% !important;
+                margin-bottom: 10px !important;
+            }
+
+            .filters-panel .btn {
+                width: 100%;
+                margin-top: 10px !important;
+            }
+
+            .pagination-panel {
+                flex-direction: column;
+                gap: 15px !important;
+                align-items: center !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .table-container table {
+                min-width: 700px;
+            }
+
+            .page-header h1 {
+                font-size: 20px;
+            }
+
+            .table-container {
+                padding: 10px;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .table-container table {
+                min-width: 800px;
+            }
+        }
+
+        @media (min-width: 1441px) {
+            .table-container th,
+            .table-container td {
+                padding: 16px;
+                font-size: 15px;
+            }
+        }
+
+        /* Пейзажная ориентация */
+        @media (max-height: 500px) and (orientation: landscape) and (max-width: 768px) {
+            .filters-panel {
+                display: none;
+            }
+
+            .table-container table {
+                min-width: 600px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Кнопка меню для мобильных -->
+    <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Меню">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
     <aside class="sidebar">
         <div class="sidebar-header">
             <h2>LogisticsPro</h2>
@@ -316,6 +395,40 @@
             container.appendChild(alert);
             setTimeout(() => alert.remove(), 5000);
         }
+
+        // Переключение бокового меню на мобильных
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const menuToggle = document.querySelector('.menu-toggle');
+
+            if (sidebar) {
+                sidebar.classList.toggle('active');
+            }
+
+            if (menuToggle) {
+                menuToggle.classList.toggle('active');
+            }
+
+            let overlay = document.getElementById('sidebarOverlay');
+            if (overlay) {
+                overlay.remove();
+            } else {
+                const newOverlay = document.createElement('div');
+                newOverlay.id = 'sidebarOverlay';
+                newOverlay.className = 'sidebar-overlay';
+                newOverlay.onclick = toggleSidebar;
+                document.body.appendChild(newOverlay);
+            }
+        }
+
+        // Закрытие меню при клике на ссылку (для мобильных)
+        document.querySelectorAll('.sidebar-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    toggleSidebar();
+                }
+            });
+        });
     </script>
 </body>
 </html>

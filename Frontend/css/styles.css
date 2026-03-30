@@ -996,17 +996,31 @@ tbody tr:hover {
     button,
     a,
     input,
-    select {
+    select,
+    textarea {
         min-height: 44px;
+        min-width: 44px;
     }
 
     /* Убираем hover эффекты на тач-устройствах */
     .card:hover {
         transform: none;
+        box-shadow: var(--shadow);
     }
 
-    .sidebar-menu a:hover {
-        background: transparent;
+    .sidebar-menu a:hover,
+    .sidebar-menu a:active {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Увеличиваем области нажатия для кнопок */
+    .btn {
+        min-height: 48px;
+    }
+
+    /* Улучшаем читаемость на мобильных */
+    body {
+        -webkit-text-size-adjust: 100%;
     }
 }
 
@@ -1025,6 +1039,568 @@ tbody tr:hover {
     .cards-grid {
         grid-template-columns: repeat(2, 1fr);
     }
+
+    .modal-content {
+        max-height: 95vh;
+    }
+}
+
+/* ========================================
+   Адаптация для планшетов (768px - 1024px)
+   ======================================== */
+@media (min-width: 769px) and (max-width: 1024px) {
+    :root {
+        --sidebar-width: 240px;
+    }
+
+    .sidebar {
+        width: var(--sidebar-width);
+    }
+
+    .main-content {
+        margin-left: var(--sidebar-width);
+        padding: 25px;
+    }
+
+    .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .card {
+        padding: 20px;
+    }
+
+    .card .value {
+        font-size: 28px;
+    }
+
+    /* Таблицы */
+    .table-container {
+        padding: 20px;
+    }
+
+    .table-container th,
+    .table-container td {
+        padding: 12px;
+        font-size: 14px;
+    }
+
+    /* Формы */
+    .form-row {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    /* Карта */
+    .map-placeholder {
+        height: 400px;
+    }
+
+    /* Модальные окна */
+    .modal-content {
+        max-width: 550px;
+        width: 85%;
+    }
+
+    /* Боковое меню */
+    .sidebar-header h2 {
+        font-size: 20px;
+    }
+
+    .sidebar-menu a {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+
+    /* Статистика */
+    .page-header h1 {
+        font-size: 24px;
+    }
+
+    .page-header p {
+        font-size: 14px;
+    }
+}
+
+/* ========================================
+   Адаптация для десктопов (1025px - 1440px)
+   ======================================== */
+@media (min-width: 1025px) and (max-width: 1440px) {
+    :root {
+        --sidebar-width: 260px;
+    }
+
+    .cards-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 25px;
+    }
+
+    .main-content {
+        padding: 30px;
+    }
+
+    .table-container {
+        padding: 25px;
+    }
+
+    .map-placeholder {
+        height: 500px;
+    }
+}
+
+/* ========================================
+   Адаптация для больших экранов (1441px+)
+   ======================================== */
+@media (min-width: 1441px) {
+    :root {
+        --sidebar-width: 280px;
+        --border-radius: 10px;
+    }
+
+    body {
+        font-size: 16px;
+    }
+
+    .sidebar {
+        width: var(--sidebar-width);
+    }
+
+    .sidebar-header h2 {
+        font-size: 24px;
+    }
+
+    .sidebar-menu a {
+        padding: 16px 25px;
+        font-size: 15px;
+    }
+
+    .main-content {
+        margin-left: var(--sidebar-width);
+        padding: 40px;
+    }
+
+    .page-header h1 {
+        font-size: 32px;
+    }
+
+    .page-header p {
+        font-size: 16px;
+    }
+
+    .cards-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 30px;
+    }
+
+    .card {
+        padding: 30px;
+    }
+
+    .card .value {
+        font-size: 36px;
+    }
+
+    .card h3 {
+        font-size: 18px;
+    }
+
+    .table-container {
+        padding: 30px;
+    }
+
+    .table-container th,
+    .table-container td {
+        padding: 18px;
+        font-size: 15px;
+    }
+
+    .map-placeholder {
+        height: 600px;
+    }
+
+    .modal-content {
+        max-width: 700px;
+        padding: 40px;
+    }
+
+    .form-row {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 25px;
+    }
+
+    .btn {
+        padding: 16px 24px;
+        font-size: 16px;
+    }
+}
+
+/* ========================================
+   Адаптация для ультра-больших экранов (1920px+)
+   ======================================== */
+@media (min-width: 1920px) {
+    :root {
+        --sidebar-width: 320px;
+    }
+
+    body {
+        font-size: 18px;
+    }
+
+    .main-content {
+        padding: 50px;
+    }
+
+    .cards-grid {
+        gap: 40px;
+    }
+
+    .card {
+        padding: 35px;
+    }
+
+    .card .value {
+        font-size: 42px;
+    }
+
+    .map-placeholder {
+        height: 700px;
+    }
+}
+
+/* ========================================
+   Адаптация для маленьких планшетов (600px - 768px)
+   ======================================== */
+@media (min-width: 600px) and (max-width: 768px) {
+    .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .card .value {
+        font-size: 26px;
+    }
+
+    .form-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ========================================
+   Адаптация для очень маленьких экранов (320px - 480px)
+   ======================================== */
+@media (max-width: 480px) {
+    :root {
+        --border-radius: 6px;
+    }
+
+    body {
+        font-size: 14px;
+    }
+
+    /* Auth page */
+    .auth-box {
+        padding: 25px 20px;
+        max-width: 100%;
+    }
+
+    .auth-box h1 {
+        font-size: 22px;
+    }
+
+    .auth-tabs button {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    /* Forms */
+    .form-group input,
+    .form-group select {
+        padding: 10px 12px;
+        font-size: 14px;
+    }
+
+    .form-group label {
+        font-size: 13px;
+    }
+
+    /* Buttons */
+    .btn {
+        padding: 12px 16px;
+        font-size: 14px;
+        min-height: 44px;
+    }
+
+    /* Cards */
+    .card {
+        padding: 15px;
+    }
+
+    .card .value {
+        font-size: 22px;
+    }
+
+    .card h3 {
+        font-size: 14px;
+    }
+
+    .card .description {
+        font-size: 12px;
+    }
+
+    /* Tables */
+    .table-container {
+        padding: 10px;
+    }
+
+    .table-container h2 {
+        font-size: 16px;
+    }
+
+    .table-container th,
+    .table-container td {
+        padding: 8px 6px;
+        font-size: 12px;
+    }
+
+    /* Map */
+    .map-placeholder {
+        height: 200px;
+    }
+
+    .map-header h2 {
+        font-size: 16px;
+    }
+
+    /* Modals */
+    .modal-content {
+        padding: 15px;
+        width: 98%;
+    }
+
+    .modal-content h2 {
+        font-size: 18px;
+    }
+
+    /* Sidebar on mobile */
+    .sidebar {
+        width: 220px;
+    }
+
+    .sidebar-header h2 {
+        font-size: 16px;
+    }
+
+    .sidebar-menu a {
+        padding: 10px 15px;
+        font-size: 13px;
+    }
+
+    .sidebar-user .avatar {
+        width: 35px;
+        height: 35px;
+        font-size: 14px;
+    }
+
+    .sidebar-user .user-details h4 {
+        font-size: 13px;
+    }
+
+    .sidebar-user .user-details p {
+        font-size: 11px;
+    }
+
+    /* Alerts */
+    .alert {
+        padding: 10px 12px;
+        font-size: 12px;
+    }
+
+    /* Page header */
+    .page-header h1 {
+        font-size: 18px;
+    }
+
+    .page-header p {
+        font-size: 12px;
+    }
+}
+
+/* ========================================
+   Специфичные размеры для iPhone SE (375px)
+   ======================================== */
+@media (max-width: 375px) {
+    .auth-box {
+        padding: 20px 15px;
+    }
+
+    .auth-box h1 {
+        font-size: 20px;
+    }
+
+    .btn {
+        padding: 10px 14px;
+        font-size: 13px;
+    }
+
+    .card .value {
+        font-size: 20px;
+    }
+
+    .table-container th,
+    .table-container td {
+        padding: 6px 4px;
+        font-size: 11px;
+    }
+}
+
+/* ========================================
+   Специфичные размеры для iPad Mini (768px)
+   ======================================== */
+@media (min-width: 768px) and (max-width: 834px) {
+    .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+    }
+
+    .card {
+        padding: 18px;
+    }
+
+    .main-content {
+        padding: 20px;
+    }
+}
+
+/* ========================================
+   Специфичные размеры для iPad Pro (1024px)
+   ======================================== */
+@media (min-width: 1024px) and (max-width: 1112px) {
+    .cards-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .sidebar {
+        width: 250px;
+    }
+}
+
+/* ========================================
+   Улучшения для Retina дисплеев
+   ======================================== */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    .card,
+    .table-container,
+    .map-container,
+    .auth-box {
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+    }
+}
+
+/* ========================================
+   Печать и сохранение в PDF
+   ======================================== */
+@media print {
+    .sidebar,
+    .menu-toggle,
+    .map-container,
+    .btn,
+    .sidebar-overlay {
+        display: none !important;
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding: 20px;
+    }
+
+    body {
+        background: white;
+        color: black;
+    }
+
+    .card,
+    .table-container {
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+
+    .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ========================================
+   Предпочтение уменьшенной анимации
+   ======================================== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ========================================
+   Предпочтение темной темы (future-proof)
+   ======================================== */
+@media (prefers-color-scheme: dark) {
+    /* Закомментировано - можно раскомментировать при добавлении темной темы */
+    /*
+    :root {
+        --color-bg-light: #1a1a2e;
+        --color-bg-secondary: #16213e;
+        --color-accent: #0f3460;
+        --color-primary: #533483;
+        --color-dark: #eaeaea;
+        --color-white: #1a1a2e;
+    }
+    */
+}
+
+/* ========================================
+   Ориентация устройства
+   ======================================== */
+@media (orientation: landscape) and (max-width: 768px) {
+    .sidebar {
+        max-width: 180px;
+    }
+
+    .sidebar-menu {
+        padding-bottom: 60px;
+    }
+
+    .main-content {
+        padding-top: 70px;
+    }
+
+    .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .modal-content {
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+}
+
+@media (orientation: portrait) and (max-width: 768px) {
+    .cards-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cargo-list-panel {
+        width: calc(100% - 40px);
+        max-height: 50vh;
+    }
 }
 
 /* ========================================
@@ -1042,10 +1618,13 @@ tbody tr:hover {
     justify-content: center;
     padding: 20px;
     display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .modal-dialog.active {
     display: flex;
+    opacity: 1;
 }
 
 .modal-content {
@@ -1056,6 +1635,56 @@ tbody tr:hover {
     width: 90%;
     max-height: 90vh;
     overflow-y: auto;
+    box-shadow: var(--shadow-hover);
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Стили для модальных окон с inline display:flex */
+.modal-dialog[style*="display: flex"] {
+    display: flex !important;
+}
+
+/* Улучшение прокрутки в модальных окнах */
+.modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: var(--color-bg-light);
+    border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: var(--color-primary);
+    border-radius: 4px;
+}
+
+/* Формы в модальных окнах */
+.modal-content .form-group {
+    margin-bottom: 20px;
+}
+
+.modal-content .form-group:last-child {
+    margin-bottom: 0;
+}
+
+.modal-content .form-row {
+    margin-bottom: 20px;
+}
+
+.modal-content .btn {
+    min-height: 44px;
 }
 
 @media (max-width: 768px) {
@@ -1107,5 +1736,170 @@ tbody tr:hover {
         right: 10px;
         left: 10px;
         max-width: none;
+    }
+}
+
+/* ========================================
+   Дополнительные утилиты
+   ======================================== */
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-muted {
+    color: var(--color-primary) !important;
+}
+
+.font-weight-bold {
+    font-weight: 700;
+}
+
+.mt-0 { margin-top: 0 !important; }
+.mt-1 { margin-top: 10px !important; }
+.mt-2 { margin-top: 20px !important; }
+.mt-3 { margin-top: 30px !important; }
+
+.mb-0 { margin-bottom: 0 !important; }
+.mb-1 { margin-bottom: 10px !important; }
+.mb-2 { margin-bottom: 20px !important; }
+.mb-3 { margin-bottom: 30px !important; }
+
+.d-flex {
+    display: flex;
+}
+
+.justify-content-between {
+    justify-content: space-between;
+}
+
+.align-items-center {
+    align-items: center;
+}
+
+.gap-1 { gap: 10px !important; }
+.gap-2 { gap: 15px !important; }
+.gap-3 { gap: 20px !important; }
+
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
+.w-100 {
+    width: 100% !important;
+}
+
+/* ========================================
+   Улучшения для таблиц
+   ======================================== */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table-responsive table {
+    min-width: 100%;
+}
+
+/* Плавная прокрутка таблиц на мобильных */
+@media (max-width: 768px) {
+    .table-container {
+        padding: 15px;
+    }
+
+    .table-container table {
+        font-size: 13px;
+    }
+
+    .table-container th,
+    .table-container td {
+        padding: 12px 10px;
+        white-space: nowrap;
+    }
+
+    /* Кнопки в таблицах */
+    .table-container .btn {
+        padding: 8px 12px;
+        font-size: 12px;
+        min-height: 36px;
+    }
+}
+
+/* ========================================
+   Улучшения для форм
+   ======================================== */
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(99, 142, 203, 0.15);
+}
+
+.form-group input:disabled,
+.form-group select:disabled,
+.form-group textarea:disabled {
+    background: var(--color-bg-light);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: var(--color-primary);
+    opacity: 0.7;
+}
+
+/*Textarea*/
+.form-group textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid var(--color-bg-secondary);
+    border-radius: var(--border-radius);
+    font-size: 15px;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 100px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Checkbox и radio */
+.form-group input[type="checkbox"],
+.form-group input[type="radio"] {
+    width: auto;
+    min-height: auto;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.form-group label:has(input[type="checkbox"]),
+.form-group label:has(input[type="radio"]) {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 0;
+}
+
+/* ========================================
+   Пейзажная ориентация на мобильных
+   ======================================== */
+@media (max-width: 768px) and (orientation: landscape) {
+    .sidebar {
+        max-width: 200px;
+    }
+
+    .map-placeholder {
+        height: 200px;
+    }
+
+    .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .modal-content {
+        max-height: 95vh;
     }
 }

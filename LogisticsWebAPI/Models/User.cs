@@ -6,6 +6,8 @@ public class User
     public string FullName { get; set; } = null!;
     public string Email { get; set; } = null!;
     public string NameOfCompany { get; set; } = null!;
+    public string PasswordHash { get; set; } = null!;
+    public string Role { get; set; } = "user";
 }
 
 public class Admin : User

@@ -2,26 +2,27 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#638ECB">
     <title>Карта грузов - LogisticsPro</title>
     <link rel="stylesheet" href="../css/styles.css">
     <style>
         .map-page .main-content {
             padding: 0;
         }
-        
+
         .map-page .map-container {
             margin: 0;
             border-radius: 0;
             box-shadow: none;
         }
-        
+
         .map-page .map-placeholder {
             height: calc(100vh - 80px);
             border: none;
             border-radius: 0;
         }
-        
+
         .cargo-legend {
             position: absolute;
             bottom: 30px;
@@ -33,35 +34,35 @@
             z-index: 100;
             min-width: 200px;
         }
-        
+
         .cargo-legend h4 {
             margin-bottom: 15px;
             color: var(--color-dark);
             font-size: 16px;
         }
-        
+
         .legend-item {
             display: flex;
             align-items: center;
             margin-bottom: 10px;
             font-size: 14px;
         }
-        
+
         .legend-item:last-child {
             margin-bottom: 0;
         }
-        
+
         .legend-color {
             width: 16px;
             height: 16px;
             border-radius: 4px;
             margin-right: 10px;
         }
-        
+
         .legend-color.in-transit { background: #007bff; }
         .legend-color.pending { background: #ffc107; }
         .legend-color.delivered { background: #28a745; }
-        
+
         .cargo-list-panel {
             position: absolute;
             top: 20px;
@@ -74,7 +75,7 @@
             z-index: 100;
             overflow-y: auto;
         }
-        
+
         .cargo-list-panel h4 {
             padding: 20px;
             margin: 0;
@@ -82,54 +83,100 @@
             border-radius: var(--border-radius) var(--border-radius) 0 0;
             color: var(--color-dark);
         }
-        
+
         .cargo-item {
             padding: 15px 20px;
             border-bottom: 1px solid var(--color-bg-secondary);
             cursor: pointer;
             transition: background 0.2s;
         }
-        
+
         .cargo-item:hover {
             background: var(--color-bg-light);
         }
-        
+
         .cargo-item:last-child {
             border-bottom: none;
         }
-        
+
         .cargo-item-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 8px;
         }
-        
+
         .cargo-item-order {
             font-weight: 600;
             color: var(--color-dark);
         }
-        
+
         .cargo-item-status {
             font-size: 12px;
             padding: 3px 8px;
             border-radius: 12px;
         }
-        
+
         .cargo-item-route {
             font-size: 13px;
             color: var(--color-primary);
             margin-bottom: 5px;
         }
-        
+
         .cargo-item-driver {
             font-size: 12px;
             color: var(--color-dark);
             opacity: 0.8;
         }
+
+        @media (max-width: 768px) {
+            .cargo-list-panel {
+                width: calc(100% - 40px);
+                right: 20px;
+                left: 20px;
+                top: auto;
+                bottom: 20px;
+                max-height: 40vh;
+            }
+
+            .cargo-legend {
+                bottom: 10px;
+                left: 10px;
+                min-width: 150px;
+                padding: 15px;
+            }
+
+            .map-page .map-header {
+                left: 10px !important;
+                right: 10px !important;
+                top: 10px !important;
+            }
+
+            .map-page .map-header > div {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .map-actions {
+                width: 100%;
+                display: flex;
+                gap: 10px;
+            }
+
+            .map-actions button {
+                flex: 1;
+            }
+        }
     </style>
 </head>
 <body class="map-page">
+    <!-- Кнопка меню для мобильных -->
+    <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Меню">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
     <!-- Боковое меню -->
     <aside class="sidebar">
         <div class="sidebar-header">
@@ -231,27 +278,61 @@
         // Выбор груза на карте
         function selectCargo(orderId) {
             console.log('Выбран груз:', orderId);
-            
+
             // TODO: При подключении карты - центрировать на маркере груза
             alert('Выбран заказ ' + orderId + '\n\nКарта сфокусируется на местоположении груза');
         }
-        
+
         // Обновление карты
         function refreshMap() {
             console.log('Обновление карты...');
-            
+
             // TODO: Загрузить актуальные позиции грузов с бекенда
             alert('Карта обновлена\n\nЗдесь будет загрузка данных с сервера');
         }
-        
+
         // Загрузка параметров из URL (если открыли из заказа)
         window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const orderId = urlParams.get('order');
-            
+
             if (orderId) {
                 selectCargo(orderId);
             }
+        });
+
+        // Переключение бокового меню на мобильных
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const menuToggle = document.querySelector('.menu-toggle');
+
+            if (sidebar) {
+                sidebar.classList.toggle('active');
+            }
+
+            if (menuToggle) {
+                menuToggle.classList.toggle('active');
+            }
+
+            let overlay = document.getElementById('sidebarOverlay');
+            if (overlay) {
+                overlay.remove();
+            } else {
+                const newOverlay = document.createElement('div');
+                newOverlay.id = 'sidebarOverlay';
+                newOverlay.className = 'sidebar-overlay';
+                newOverlay.onclick = toggleSidebar;
+                document.body.appendChild(newOverlay);
+            }
+        }
+
+        // Закрытие меню при клике на ссылку (для мобильных)
+        document.querySelectorAll('.sidebar-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    toggleSidebar();
+                }
+            });
         });
     </script>
 </body>

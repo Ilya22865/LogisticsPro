@@ -2,11 +2,91 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#638ECB">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>Настройки - LogisticsPro</title>
     <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        @media (max-width: 768px) {
+            .cards-grid[style*="grid-template-columns: 1fr 1fr"] {
+                grid-template-columns: 1fr !important;
+            }
+
+            .table-container {
+                padding: 15px;
+            }
+
+            .form-group {
+                margin-bottom: 15px;
+            }
+
+            .table-container h3 {
+                font-size: 16px;
+            }
+
+            .table-container .form-group label:has(input[type="checkbox"]) {
+                flex-direction: row;
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .table-container h2 {
+                font-size: 18px;
+            }
+
+            .table-container h3 {
+                font-size: 15px;
+            }
+
+            .form-group input,
+            .form-group select {
+                font-size: 14px;
+            }
+
+            .btn {
+                min-height: 44px;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .cards-grid[style*="grid-template-columns: 1fr 1fr"] {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        @media (min-width: 1441px) {
+            .cards-grid[style*="grid-template-columns: 1fr 1fr"] {
+                grid-template-columns: 1fr 1fr !important;
+            }
+
+            .table-container {
+                padding: 30px;
+            }
+        }
+
+        /* Пейзажная ориентация */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .table-container {
+                padding: 10px;
+            }
+
+            .form-group {
+                margin-bottom: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
+    <!-- Кнопка меню для мобильных -->
+    <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Меню">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
     <!-- Боковое меню -->
     <aside class="sidebar">
         <div class="sidebar-header">
@@ -293,14 +373,48 @@
             const alert = document.createElement('div');
             alert.className = `alert alert-${type}`;
             alert.textContent = message;
-            
+
             container.innerHTML = '';
             container.appendChild(alert);
-            
+
             setTimeout(() => {
                 alert.remove();
             }, 5000);
         }
+
+        // Переключение бокового меню на мобильных
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const menuToggle = document.querySelector('.menu-toggle');
+
+            if (sidebar) {
+                sidebar.classList.toggle('active');
+            }
+
+            if (menuToggle) {
+                menuToggle.classList.toggle('active');
+            }
+
+            let overlay = document.getElementById('sidebarOverlay');
+            if (overlay) {
+                overlay.remove();
+            } else {
+                const newOverlay = document.createElement('div');
+                newOverlay.id = 'sidebarOverlay';
+                newOverlay.className = 'sidebar-overlay';
+                newOverlay.onclick = toggleSidebar;
+                document.body.appendChild(newOverlay);
+            }
+        }
+
+        // Закрытие меню при клике на ссылку (для мобильных)
+        document.querySelectorAll('.sidebar-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    toggleSidebar();
+                }
+            });
+        });
     </script>
 </body>
 </html>

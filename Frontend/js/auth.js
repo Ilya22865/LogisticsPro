@@ -4,7 +4,7 @@
  * Подключите ваш ASP.NET бекенд и замените mock-функции на реальные API вызовы.
  */
 
-const API_BASE_URL = '/api';
+const API_BASE_URL = 'http://localhost:5000/api';
 
 function switchTab(tab) {
     const loginForm = document.getElementById('loginForm');
@@ -98,7 +98,7 @@ if (registerForm) {
         }
 
         try {
-            const response = await fetch(`${API_BASE_URL}/auth/register`, {
+            const response = await fetch(`${API_BASE_URL}/Auth/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

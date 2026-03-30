@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#638ECB">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>Все заказы - LogisticsPro</title>
     <link rel="stylesheet" href="../css/styles.css">
     <style>
@@ -43,6 +46,10 @@
                 max-width: 100% !important;
             }
 
+            .filters-panel .form-group {
+                margin-bottom: 10px !important;
+            }
+
             .table-container {
                 overflow-x: auto;
                 -webkit-overflow-scrolling: touch;
@@ -66,15 +73,60 @@
             .form-row {
                 grid-template-columns: 1fr !important;
             }
+
+            .page-header h1 {
+                font-size: 22px;
+            }
         }
 
         @media (max-width: 480px) {
             .page-header h1 {
-                font-size: 22px;
+                font-size: 20px;
             }
 
             .table-container {
-                padding: 15px;
+                padding: 10px;
+            }
+
+            .table-container table {
+                min-width: 700px;
+            }
+
+            .modal-responsive {
+                padding: 15px !important;
+                width: 98%;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .table-container table {
+                min-width: 800px;
+            }
+
+            .filters-panel {
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (min-width: 1441px) {
+            .table-container table {
+                font-size: 15px;
+            }
+
+            .table-container th,
+            .table-container td {
+                padding: 16px;
+            }
+        }
+
+        /* Пейзажная ориентация */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .filters-panel {
+                display: none;
+            }
+
+            .table-container table {
+                min-width: 600px;
             }
         }
     </style>
