@@ -134,13 +134,13 @@ if (registerForm) {
 function logout() {
     localStorage.removeItem('user');
     localStorage.removeItem('token');
-    window.location.href = 'login.html';
+    window.location.href = 'index.html';
 }
 
 function checkAuth() {
     const user = JSON.parse(localStorage.getItem('user') || 'null');
 
-    if (user && window.location.pathname.includes('login.html')) {
+    if (user && window.location.pathname.includes('index.html')) {
         if (user.role === 'admin' || user.role === 'staff') {
             window.location.href = 'admin.html';
         } else {
@@ -149,8 +149,8 @@ function checkAuth() {
         return null;
     }
 
-    if (!user && !window.location.pathname.includes('login.html')) {
-        window.location.href = 'login.html';
+    if (!user && !window.location.pathname.includes('index.html')) {
+        window.location.href = 'index.html';
         return null;
     }
 
