@@ -6,6 +6,10 @@
     <meta name="theme-color" content="#638ECB">
     <title>Построение маршрутов - LogisticsPro</title>
     <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
     <style>
         .routes-page .main-content {
             padding: 0;
@@ -35,7 +39,7 @@
             background: var(--color-white);
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
-            z-index: 100;
+            z-index: 1000;
             overflow-y: auto;
             padding: 25px;
         }
@@ -248,75 +252,136 @@
                 </button>
             </div>
             
-            <!-- ЗАГЛУШКА ДЛЯ КАРТЫ -->
-            <div id="adminMap" class="map-placeholder">
-                <i class="icon-map"></i>
-                <p>Здесь будет карта для построения маршрутов</p>
-                <small>Подключите API карты (Leaflet + OpenStreetMap + Routing Machine)</small>
-            </div>
+            <div id="adminMap" class="map-placeholder" onclick="addPointFromMap()"></div>
         </div>
     </main>
     
     <script src="../js/auth.js"></script>
+    <script src="../js/map-admin.js"></script>
     <script>
         let routePoints = [];
-        
-        document.addEventListener('DOMContentLoaded', function() {
+
+        function initRoutePage() {
             loadOrdersForSelect();
             loadDriversForSelect();
-        });
+            initAdminMap();
+            if (adminMapInstance) {
+                adminMapInstance.on('click', function(e) {
+                    addPointFromMap(e.latlng.lat, e.latlng.lng);
+                });
+            } else {
+                console.error('Карта не инициализирована');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initRoutePage);
         
-        // Добавление точки маршрута
         function addRoutePoint() {
-            // TODO: При подключении карты - включить режим добавления точек по клику
-            const count = routePoints.length + 1;
-            const labels = ['A', 'B', 'C', 'D', 'E', 'F'];
-            
-            routePoints.push({
-                id: Date.now(),
-                label: labels[count - 1] || count,
-                lat: null,
-                lng: null,
-                address: 'Новая точка'
-            });
-            
-            renderRoutePoints();
+            alert('Кликните по карте, чтобы добавить точку');
         }
         
-        // Отрисовка точек
+        function addPointFromMap(lat, lng) {
+            const count = routePoints.length;
+            const labels = ['A', 'B', 'C', 'D', 'E', 'F'];
+            const label = labels[count] || (count + 1);
+
+
+            if (adminMapInstance) {
+                const marker = L.marker([lat, lng], { draggable: 'true'}).addTo(adminMapInstance);
+                marker.bindPopup(`<b>Точка ${label}</b><br>${lat.toFixed(4)}, ${lng.toFixed(4)}`).openPopup();
+
+                routePoints.push({
+                    id: Date.now(),
+                    label: label,
+                    lat: lat,
+                    lng: lng,
+                    address: 'Точка на карте',
+                    marker: marker
+                });
+
+                console.log('routePoints after push:', routePoints);
+                console.log('New point label:', routePoints[routePoints.length - 1].label);
+
+                renderRoutePoints();
+                updateRouteInfo();
+            }
+        }
+        
         function renderRoutePoints() {
             const container = document.getElementById('routePointsList');
             const labels = ['A', 'B', 'C', 'D', 'E', 'F'];
             
-            container.innerHTML = routePoints.map((point, index) => `
+            console.log('renderRoutePoints called, routePoints:', routePoints);
+            console.log('container exists:', !!container);
+
+            container.innerHTML = routePoints.map((point, index) => {
+                const pointLabel = point.label || labels[index] || (index + 1);
+                console.log(`Point ${index}: label=${pointLabel}, point.label=${point.label}`);
+                return `
                 <div class="route-point">
-                    <div class="route-point-marker">${point.label || labels[index] || index + 1}</div>
+                    <div class="route-point-marker">${pointLabel}</div>
                     <div class="route-point-info">
                         <div class="route-point-address">${point.address || 'Точка на карте'}</div>
                     </div>
                     <button class="route-point-remove" onclick="removeRoutePoint(${point.id})">×</button>
                 </div>
-            `).join('');
-            
+            `}).join('');
+
             document.getElementById('routePointsCount').textContent = routePoints.length;
+            console.log('renderRoutePoints completed, HTML:', container.innerHTML);
         }
         
-        // Удаление точки
         function removeRoutePoint(pointId) {
+            const point = routePoints.find(p => p.id === pointId);
+            if (point && point.marker) {
+                adminMapInstance.removeLayer(point.marker);
+            }
             routePoints = routePoints.filter(p => p.id !== pointId);
             renderRoutePoints();
-            
-            // TODO: Удалить маркер с карты
+            updateRouteInfo();
         }
-        
-        // Очистка всех точек
+
         function clearRoutePoints() {
+            routePoints.forEach(point => {
+                if (point.marker) {
+                    adminMapInstance.removeLayer(point.marker);
+                }
+            });
             routePoints = [];
             renderRoutePoints();
-            
-            // TODO: Очистить карту
+            updateRouteInfo();
             document.getElementById('routeDistance').textContent = '— км';
             document.getElementById('routeTime').textContent = '— ч';
+        }
+        
+        function updateRouteInfo() {
+            if (routePoints.length < 2) {
+                return;
+            }
+            
+            let totalDistance = 0;
+            for (let i = 1; i < routePoints.length; i++) {
+                const prev = routePoints[i - 1];
+                const curr = routePoints[i];
+                totalDistance += calculateDistance(prev.lat, prev.lng, curr.lat, curr.lng);
+            }
+            
+            const distanceKm = totalDistance.toFixed(1);
+            const timeHours = (totalDistance / 80).toFixed(1); 
+            
+            document.getElementById('routeDistance').textContent = distanceKm + ' км';
+            document.getElementById('routeTime').textContent = timeHours + ' ч';
+        }
+        
+        function calculateDistance(lat1, lng1, lat2, lng2) {
+            const R = 6371; 
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLng = (lng2 - lng1) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLng / 2) * Math.sin(dLng / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c;
         }
         
         // Загрузка заказов
@@ -349,16 +414,32 @@
             }
 
             const routeData = {
-                points: routePoints,
+                points: routePoints.map(p => ({
+                    lat: p.lat,
+                    lng: p.lng,
+                    label: p.label
+                })),
                 orderId: document.getElementById('orderSelect').value,
                 driverId: document.getElementById('driverSelect').value,
-                date: document.getElementById('routeDate').value
+                date: document.getElementById('routeDate').value,
+                distance: document.getElementById('routeDistance').textContent,
+                time: document.getElementById('routeTime').textContent
             };
 
             console.log('Сохранение маршрута:', routeData);
-
+            
             // TODO: Отправка на сервер
-            alert('Маршрут сохранён (демо-режим)');
+            // await fetch('/api/routes', {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify(routeData)
+            // });
+            
+            alert('Маршрут сохранён!\nТочек: ' + routePoints.length + 
+                  '\nРасстояние: ' + routeData.distance +
+                  '\nВремя: ' + routeData.time);
+            
+            clearRoutePoints();
         }
 
         // Переключение бокового меню на мобильных

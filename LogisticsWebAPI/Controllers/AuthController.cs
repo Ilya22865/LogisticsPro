@@ -27,7 +27,7 @@ public class AuthController : ControllerBase
         if(admin != null)
         {
             if(!VerifyPassword(dto.Password, admin.PasswordHash))
-                return Unauthorized(new { message = "Неверный логин или пароль!"});
+                return Unauthorized(new { message = "Неверный логин или пароль!" });
 
             var adminToken = GenerateToken(admin.Id, admin.Email, admin.FullName);
 
@@ -81,20 +81,30 @@ public class AuthController : ControllerBase
             }
         }
 
+        var company = _context.Companies.FirstOrDefault(c => c.Name == dto.NameOfCompany);
+        
+        if (company == null)
+        {
+            company = new Company { Name = dto.NameOfCompany };
+            _context.Companies.Add(company);
+            await _context.SaveChangesAsync();
+        }
+
         var user = new User
         {
             FullName = dto.FullName,
             Email = dto.Email,
             NameOfCompany = dto.NameOfCompany,
-            PasswordHash = HashPassword(dto.Password)
+            PasswordHash = HashPassword(dto.Password),
+            CompanyId = company.CompanyId
         };
 
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
 
         var token = GenerateToken(user.Id, user.Email, user.FullName);
-        
-        return Ok(new { token, user.Id, user.Email, user.FullName, role = "User"});
+
+        return Ok(new { token, user.Id, user.Email, user.FullName, user.CompanyId, role = "User"});
     }
 
     private string GenerateToken(int Id, string Email, string FullName)

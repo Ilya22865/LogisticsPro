@@ -8,6 +8,8 @@ public class User
     public string NameOfCompany { get; set; } = null!;
     public string PasswordHash { get; set; } = null!;
     public string Role { get; set; } = "user";
+    public int CompanyId { get; set; }
+    public Company Company { get; set; }
 }
 
 public class Admin : User

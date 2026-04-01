@@ -1,3 +1,5 @@
+using LogisticsWebAPI.Models;
+
 namespace LogisticsWebAPI.DTOs.Auth;
 
 public class RegisterDto

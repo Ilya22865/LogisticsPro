@@ -199,12 +199,11 @@
                             <th>Дата создания</th>
                             <th>Дата доставки</th>
                             <th>Стоимость</th>
-                            <th>Действия</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr class="loading-row">
-                            <td colspan="8">Загрузка данных...</td>
+                            <td colspan="7">Загрузка данных...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -263,7 +262,7 @@
 
         async function loadOrders() {
             const tbody = document.querySelector('#ordersTable tbody');
-            tbody.innerHTML = '<tr class="loading-row"><td colspan="8">Загрузка данных...</td></tr>';
+            tbody.innerHTML = '<tr class="loading-row"><td colspan="7">Загрузка данных...</td></tr>';
 
             const statusFilter = document.getElementById('statusFilter').value;
             const searchQuery = document.getElementById('searchOrder').value.trim();
@@ -293,7 +292,7 @@
                 if (orders.length === 0) {
                     tbody.innerHTML = `
                         <tr class="empty-state">
-                            <td colspan="8">
+                            <td colspan="7">
                                 <i class="icon-box"></i>
                                 <p>Заказы не найдены</p>
                                 <button class="btn btn-primary" onclick="createNewOrder()" style="margin-top: 15px;">
@@ -312,10 +311,6 @@
                             <td>${formatDate(order.createdDate)}</td>
                             <td>${order.deliveryDate ? formatDate(order.deliveryDate) : '—'}</td>
                             <td><strong>${formatCost(order.cost)}</strong></td>
-                            <td class="table-actions">
-                                <button class="btn btn-secondary" style="padding: 8px 12px; font-size: 13px;" onclick="viewOrder(${order.id})">Просмотр</button>
-                                <button class="btn btn-secondary" style="padding: 8px 12px; font-size: 13px;" onclick="trackOrder(${order.id})">На карте</button>
-                            </td>
                         </tr>
                     `).join('');
                 }

@@ -66,7 +66,6 @@
         .cargo-list-panel {
             position: absolute;
             top: 20px;
-            right: 20px;
             width: 350px;
             max-height: calc(100vh - 100px);
             background: var(--color-white);
@@ -147,9 +146,9 @@
             }
 
             .map-page .map-header {
-                left: 10px !important;
-                right: 10px !important;
-                top: 10px !important;
+                left: 20px !important;
+                right: 20px !important;
+                top: 70px !important;
             }
 
             .map-page .map-header > div {
@@ -208,7 +207,7 @@
     <!-- Основной контент - Карта -->
     <main class="main-content">
         <div class="map-container" style="height: 100vh; margin: 0; border-radius: 0;">
-            <div class="map-header" style="position: absolute; top: 20px; left: 20px; right: 400px; z-index: 100; background: transparent; margin: 0;">
+            <div class="map-header" style="position: absolute; top: 20px; right: 20px; z-index: 100; background: transparent; margin: 0;">
                 <div style="background: var(--color-white); padding: 20px; border-radius: var(--border-radius); box-shadow: var(--shadow); display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <h2 style="margin-bottom: 5px;">Карта грузов</h2>
@@ -224,12 +223,13 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Панель со списком грузов -->
             <div class="cargo-list-panel">
-                <h4>Ваши грузы (<span id="cargoCount"></span>)</h4>
-                
-                
+                <h4>Ваши грузы (<span id="cargoCount">0</span>)</h4>
+                <div id="cargoListContainer">
+                    <!-- Сюда будут загружаться грузы -->
+                </div>
             </div>
             
             <!-- Легенда карты -->
@@ -275,31 +275,135 @@
     
     <script src="../js/auth.js"></script>
     <script>
+        // Глобальная переменная для хранения карты
+        let cargoMapInstance = null;
+        let cargoMarkers = [];
+
+        // Загрузка списка грузов
+        async function loadCargoList() {
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+            
+            if (!user) {
+                console.error('Пользователь не авторизован');
+                document.getElementById('cargoCount').textContent = '0';
+                return;
+            }
+
+            try {
+                // TODO: Замените на реальный API вызов к вашему ASP.NET бекенду
+                // const response = await fetch(`/api/cargo/user/${user.id}`);
+                // const cargoes = await response.json();
+                
+                // Имитация данных для демонстрации
+                
+                renderCargoList(userCargoes);
+                renderCargoMarkers(userCargoes);
+                
+            } catch (error) {
+                console.error('Ошибка загрузки списка грузов:', error);
+                document.getElementById('cargoListContainer').innerHTML = 
+                    '<div style="padding: 20px; text-align: center; color: var(--color-primary);">Ошибка загрузки данных</div>';
+            }
+        }
+
+        // Отрисовка списка грузов
+        function renderCargoList(cargoes) {
+            const container = document.getElementById('cargoListContainer');
+            const countSpan = document.getElementById('cargoCount');
+            
+            countSpan.textContent = cargoes.length;
+            
+            if (cargoes.length === 0) {
+                container.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--color-primary);">У вас пока нет грузов</div>';
+                return;
+            }
+            
+            container.innerHTML = cargoes.map(cargo => `
+                <div class="cargo-item" onclick="selectCargo('${cargo.orderId}', ${cargo.latitude}, ${cargo.longitude})">
+                    <div class="cargo-item-header">
+                        <span class="cargo-item-order">${cargo.orderId}</span>
+                        <span class="cargo-item-status ${cargo.status}">${cargo.statusText}</span>
+                    </div>
+                    <div class="cargo-item-route">${cargo.route}</div>
+                    <div class="cargo-item-driver">🚚 ${cargo.driver || 'Не назначен'}</div>
+                </div>
+            `).join('');
+        }
+
+        // Отрисовка маркеров на карте (будет вызвана при подключении Leaflet)
+        function renderCargoMarkers(cargoes) {
+            console.log('Отрисовка маркеров грузов:', cargoes.length);
+            
+            // TODO: При подключении Leaflet.js раскомментируйте код ниже
+            /*
+            if (cargoMapInstance) {
+                // Очищаем старые маркеры
+                cargoMarkers.forEach(marker => marker.remove());
+                cargoMarkers = [];
+                
+                cargoes.forEach(cargo => {
+                    const marker = L.marker([cargo.latitude, cargo.longitude]).addTo(cargoMapInstance);
+                    marker.bindPopup(`
+                        <b>${cargo.orderId}</b><br>
+                        ${cargo.route}<br>
+                        Статус: ${cargo.statusText}<br>
+                        Водитель: ${cargo.driver || 'Не назначен'}
+                    `);
+                    cargoMarkers.push(marker);
+                });
+            }
+            */
+        }
+
         // Выбор груза на карте
-        function selectCargo(orderId) {
+        function selectCargo(orderId, latitude, longitude) {
             console.log('Выбран груз:', orderId);
 
             // TODO: При подключении карты - центрировать на маркере груза
-            alert('Выбран заказ ' + orderId + '\n\nКарта сфокусируется на местоположении груза');
+            /*
+            if (cargoMapInstance) {
+                cargoMapInstance.setView([latitude, longitude], 12);
+            }
+            */
+            
+            // Визуальное выделение
+            document.querySelectorAll('.cargo-item').forEach(item => {
+                item.style.background = '';
+            });
+            event.currentTarget.style.background = 'var(--color-bg-light)';
+            
+            const currentItem = event.currentTarget;
+            const route = currentItem.querySelector('.cargo-item-route').textContent;
+            alert(`Выбран заказ ${orderId}\n\nМаршрут: ${route}\n\nКарта сфокусируется на местоположении груза`);
         }
 
         // Обновление карты
         function refreshMap() {
             console.log('Обновление карты...');
+            loadCargoList();
 
-            // TODO: Загрузить актуальные позиции грузов с бекенда
-            alert('Карта обновлена\n\nЗдесь будет загрузка данных с сервера');
+            // Визуальный эффект обновления
+            const mapContainer = document.getElementById('cargoMap');
+            if (mapContainer) {
+                mapContainer.style.opacity = '0.5';
+                setTimeout(() => {
+                    mapContainer.style.opacity = '1';
+                }, 300);
+            }
         }
 
-        // Загрузка параметров из URL (если открыли из заказа)
-        window.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const orderId = urlParams.get('order');
-
-            if (orderId) {
-                selectCargo(orderId);
+        // Переключение полноэкранного режима
+        function toggleFullscreen() {
+            const fullscreen = document.getElementById('fullscreenMap');
+            if (fullscreen.style.display === 'none') {
+                fullscreen.style.display = 'block';
+                document.querySelector('.btn-route i').className = 'icon-close';
+                document.querySelector('.btn-route').innerHTML = '<i class="icon-close"></i> Закрыть';
+            } else {
+                fullscreen.style.display = 'none';
+                document.querySelector('.btn-route').innerHTML = '<i class="icon-map"></i> На весь экран';
             }
-        });
+        }
 
         // Переключение бокового меню на мобильных
         function toggleSidebar() {
@@ -333,6 +437,14 @@
                     toggleSidebar();
                 }
             });
+        });
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCargoList();
+            
+            // Автообновление каждые 30 секунд
+            setInterval(loadCargoList, 30000);
         });
     </script>
 </body>

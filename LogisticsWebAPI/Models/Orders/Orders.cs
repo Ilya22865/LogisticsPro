@@ -8,14 +8,6 @@ public enum OrderStatus
     Cancelled
 }
 
-public enum OrderPriority
-{
-    Low,
-    Normal,
-    High,
-    Urgent
-}
-
 public class Order
 {
     public int Id { get; set; }
@@ -24,6 +16,6 @@ public class Order
     public double CargoWeight { get; set; }
     public DateTime CreateDate { get; set; }
     public DateTime DeliveryDate { get; set; }
-    public string Status { get; set; } = null!;
+    public OrderStatus Status { get; set; } 
 
 }

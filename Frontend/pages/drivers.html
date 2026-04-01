@@ -170,13 +170,12 @@
                         <th>Госномер</th>
                         <th>Статус</th>
                         <th>Текущий маршрут</th>
-                        <th>Действия</th>
                     </tr>
                 </thead>
                 <tbody>
                     <!-- Загружается из БД -->
                     <tr>
-                        <td colspan="7" style="text-align: center; color: var(--color-primary);">
+                        <td colspan="6" style="text-align: center; color: var(--color-primary);">
                             Загрузка данных...
                         </td>
                     </tr>
@@ -239,7 +238,7 @@
                 
                 <div class="form-group">
                     <label for="driverPhone">Телефон</label>
-                    <input type="tel" id="driverPhone" required placeholder="+7 (___) ___-__-__">
+                    <input type="tel" id="driverPhone" required placeholder="+375 (__) ___-__-__">
                 </div>
                 
                 <div class="form-group">
@@ -305,17 +304,13 @@
                 //         <td>${driver.licensePlate}</td>
                 //         <td><span class="status-badge ${driver.status}">${driver.statusText}</span></td>
                 //         <td>${driver.currentRoute || '—'}</td>
-                //         <td>
-                //             <button class="btn btn-secondary" style="padding: 8px 12px; font-size: 13px;" onclick="editDriver(${driver.id})">Изменить</button>
-                //             <button class="btn btn-secondary" style="padding: 8px 12px; font-size: 13px;" onclick="viewDriver(${driver.id})">Просмотр</button>
-                //         </td>
                 //     </tr>
                 // `).join('');
-                
+
                 // Заглушка
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="7" style="text-align: center; color: var(--color-primary);">
+                        <td colspan="6" style="text-align: center; color: var(--color-primary);">
                             Нет данных о водителях
                         </td>
                     </tr>

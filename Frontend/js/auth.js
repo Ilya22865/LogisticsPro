@@ -1,9 +1,3 @@
-/**
- * Логика авторизации и регистрации
- *
- * Подключите ваш ASP.NET бекенд и замените mock-функции на реальные API вызовы.
- */
-
 const API_BASE_URL = 'http://localhost:5000/api';
 
 function switchTab(tab) {
