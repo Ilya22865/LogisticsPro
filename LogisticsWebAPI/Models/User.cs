@@ -9,7 +9,7 @@ public class User
     public string PasswordHash { get; set; } = null!;
     public string Role { get; set; } = "user";
     public int CompanyId { get; set; }
-    public Company Company { get; set; }
+    public Company Company { get; set; } = null!;
 }
 
 public class Admin : User
