@@ -8,36 +8,50 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>Новый заказ - LogisticsPro</title>
     <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .order-form-container {
             background: var(--color-white);
-            border-radius: var(--border-radius);
+            border-radius: var(--border-radius-lg);
             padding: 30px;
-            box-shadow: var(--shadow);
+            box-shadow: var(--shadow-soft);
             max-width: 800px;
+            border: 1px solid rgba(99, 142, 203, 0.1);
         }
 
         .form-section {
             margin-bottom: 30px;
-            padding-bottom: 25px;
-            border-bottom: 1px solid var(--color-bg-secondary);
+            padding: 25px;
+            background: var(--color-bg-light);
+            border-radius: var(--border-radius-lg);
+            border-left: 4px solid var(--color-primary);
         }
 
-        .form-section:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-        }
+        .form-section:nth-child(2) { border-left-color: var(--color-accent-warm); }
+        .form-section:nth-child(3) { border-left-color: var(--color-accent-green); }
 
         .form-section h3 {
             color: var(--color-dark);
             font-size: 18px;
             margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
+
+        .form-section h3 i {
+            color: var(--color-primary);
+            font-size: 20px;
+        }
+
+        .form-section:nth-child(2) h3 i { color: var(--color-accent-warm); }
+        .form-section:nth-child(3) h3 i { color: var(--color-accent-green); }
 
         .form-actions {
             display: flex;
             gap: 15px;
             margin-top: 25px;
+            flex-wrap: wrap;
         }
 
         .form-actions button {
@@ -45,8 +59,30 @@
             min-width: 150px;
         }
 
+        .form-hint {
+            background: var(--color-white);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 14px;
+            color: var(--color-dark);
+        }
+
+        .form-hint i {
+            color: var(--color-primary);
+            font-size: 18px;
+            margin-top: 2px;
+        }
+
         @media (max-width: 768px) {
             .order-form-container {
+                padding: 20px;
+            }
+
+            .form-section {
                 padding: 20px;
             }
 
@@ -73,7 +109,7 @@
             }
 
             .form-section {
-                padding-bottom: 15px;
+                padding: 15px;
             }
 
             .form-section h3 {
@@ -108,7 +144,6 @@
             }
         }
 
-        /* Пейзажная ориентация */
         @media (max-height: 500px) and (orientation: landscape) and (max-width: 768px) {
             .order-form-container {
                 padding: 15px;
@@ -117,33 +152,28 @@
             }
 
             .form-section {
-                padding-bottom: 10px;
+                padding: 10px;
                 margin-bottom: 15px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Кнопка меню для мобильных -->
     <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Меню">
-        <span></span>
-        <span></span>
-        <span></span>
+        <span></span><span></span><span></span>
     </button>
 
     <aside class="sidebar">
         <div class="sidebar-header">
-            <h2>LogisticsPro</h2>
-            <span class="role-badge">Клиент</span>
+            <h2><i class="fas fa-truck" style="margin-right: 8px;"></i>LogisticsPro</h2>
+            <span class="role-badge"><i class="fas fa-user-tie"></i> Клиент</span>
         </div>
-
         <ul class="sidebar-menu">
-            <li><a href="dashboard.html"><i class="icon-dashboard"></i> Дашборд</a></li>
-            <li><a href="orders.html"><i class="icon-box"></i> Мои заказы</a></li>
-            <li><a href="cargo-map.html"><i class="icon-map"></i> Карта грузов</a></li>
-            <li><a href="settings.html"><i class="icon-settings"></i> Настройки</a></li>
+            <li><a href="dashboard.html"><i class="fas fa-chart-line"></i> Дашборд</a></li>
+            <li><a href="orders.html"><i class="fas fa-box"></i> Мои заказы</a></li>
+            <li><a href="cargo-map.html"><i class="fas fa-map-marked-alt"></i> Карта грузов</a></li>
+            <li><a href="settings.html"><i class="fas fa-cog"></i> Настройки</a></li>
         </ul>
-
         <div class="sidebar-user">
             <div class="user-info">
                 <div class="avatar" id="userAvatar"></div>
@@ -152,78 +182,88 @@
                     <p id="userCompany"></p>
                 </div>
             </div>
-            <button class="logout-btn" onclick="logout()">
-                <i class="icon-logout"></i> Выйти
-            </button>
+            <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Выйти</button>
         </div>
     </aside>
 
     <main class="main-content">
+        <div id="alertContainer"></div>
+
         <div class="page-header">
-            <h1>Новый заказ</h1>
+            <h1><i class="fas fa-plus-circle" style="color: var(--color-primary); margin-right: 10px;"></i>Новый заказ</h1>
             <p>Заполните информацию о грузе и маршруте</p>
         </div>
 
-        <div id="alertContainer"></div>
+        <div class="form-hint fade-in">
+            <i class="fas fa-info-circle"></i>
+            <div>
+                <strong>Обратите внимание:</strong> Все поля, отмеченные звездочкой (*), обязательны для заполнения.
+                После создания заказа менеджер свяжется с вами для подтверждения деталей.
+            </div>
+        </div>
 
         <div class="order-form-container fade-in">
             <form id="orderForm" onsubmit="submitOrder(event)">
-                
+
                 <div class="form-section">
-                    <h3>Информация о маршруте</h3>
-                    
+                    <h3><i class="fas fa-route"></i> Информация о маршруте</h3>
+
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="startLocation">Точка отправления *</label>
+                            <label for="startLocation"><i class="fas fa-map-marker-alt"></i> Точка отправления *</label>
                             <input type="text" id="startLocation" placeholder="Город, адрес" required>
+                            <small class="hint">Укажите полный адрес забора груза</small>
                         </div>
 
                         <div class="form-group">
-                            <label for="endLocation">Точка назначения *</label>
+                            <label for="endLocation"><i class="fas fa-location-arrow"></i> Точка назначения *</label>
                             <input type="text" id="endLocation" placeholder="Город, адрес" required>
+                            <small class="hint">Укажите полный адрес доставки</small>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="pickupDate">Дата и время забора *</label>
+                            <label for="pickupDate"><i class="fas fa-calendar-plus"></i> Дата и время забора *</label>
                             <input type="datetime-local" id="pickupDate" required>
                         </div>
 
                         <div class="form-group">
-                            <label for="deliveryDate">Желаемая дата доставки *</label>
+                            <label for="deliveryDate"><i class="fas fa-calendar-check"></i> Желаемая дата доставки *</label>
                             <input type="datetime-local" id="deliveryDate" required>
                         </div>
                     </div>
                 </div>
 
                 <div class="form-section">
-                    <h3>Информация о грузе</h3>
-                    
+                    <h3><i class="fas fa-box-open"></i> Информация о грузе</h3>
+
                     <div class="form-group">
-                        <label for="cargoDescription">Описание груза *</label>
+                        <label for="cargoDescription"><i class="fas fa-align-left"></i> Описание груза *</label>
                         <input type="text" id="cargoDescription" placeholder="Например: Электроника, запчасти, мебель" required>
+                        <small class="hint">Укажите тип груза и особенности упаковки</small>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="weight">Вес (кг) *</label>
+                            <label for="weight"><i class="fas fa-weight-hanging"></i> Вес (кг) *</label>
                             <input type="number" id="weight" placeholder="0" min="0.1" step="0.1" required>
                         </div>
 
                         <div class="form-group">
-                            <label for="volume">Объём (м³)</label>
+                            <label for="volume"><i class="fas fa-cube"></i> Объём (м³)</label>
                             <input type="number" id="volume" placeholder="0" min="0.1" step="0.1">
+                            <small class="hint">Необязательное поле</small>
                         </div>
                     </div>
                 </div>
 
                 <div class="form-section">
-                    <h3>Детали заказа</h3>
-                    
+                    <h3><i class="fas fa-clipboard-list"></i> Детали заказа</h3>
+
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="priority">Приоритет</label>
+                            <label for="priority"><i class="fas fa-flag"></i> Приоритет</label>
                             <select id="priority">
                                 <option value="normal">Нормальный</option>
                                 <option value="low">Низкий</option>
@@ -233,23 +273,24 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="cost">Ориентировочная стоимость (₽)</label>
+                            <label for="cost"><i class="fas fa-ruble-sign"></i> Ориентировочная стоимость (₽)</label>
                             <input type="number" id="cost" placeholder="0" min="0" step="1">
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="notes">Комментарий к заказу</label>
+                        <label for="notes"><i class="fas fa-comment-alt"></i> Комментарий к заказу</label>
                         <input type="text" id="notes" placeholder="Дополнительная информация, пожелания">
+                        <small class="hint">Укажите особые требования или пожелания</small>
                     </div>
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="icon-plus"></i> Создать заказ
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-check-circle"></i> Создать заказ
                     </button>
-                    <button type="button" class="btn btn-secondary" onclick="cancelOrder()">
-                        Отмена
+                    <button type="button" class="btn btn-secondary btn-lg" onclick="cancelOrder()">
+                        <i class="fas fa-times-circle"></i> Отмена
                     </button>
                 </div>
             </form>
@@ -264,7 +305,7 @@
             const today = new Date();
             today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
             document.getElementById('pickupDate').min = today.toISOString().slice(0, 16);
-            
+
             const nextWeek = new Date(today);
             nextWeek.setDate(nextWeek.getDate() + 7);
             document.getElementById('deliveryDate').min = nextWeek.toISOString().slice(0, 16);
@@ -273,11 +314,11 @@
         document.getElementById('pickupDate').addEventListener('change', function() {
             const pickupDate = new Date(this.value);
             const deliveryDateInput = document.getElementById('deliveryDate');
-            
+
             const minDelivery = new Date(pickupDate);
             minDelivery.setDate(minDelivery.getDate() + 1);
             minDelivery.setMinutes(minDelivery.getMinutes() - minDelivery.getTimezoneOffset());
-            
+
             deliveryDateInput.min = minDelivery.toISOString().slice(0, 16);
         });
 
@@ -359,7 +400,7 @@
             const container = document.getElementById('alertContainer');
             const alert = document.createElement('div');
             alert.className = `alert alert-${type}`;
-            alert.textContent = message;
+            alert.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i> ${message}`;
 
             container.innerHTML = '';
             container.appendChild(alert);
@@ -369,23 +410,16 @@
             }, 5000);
         }
 
-        // Переключение бокового меню на мобильных
         function toggleSidebar() {
             const sidebar = document.querySelector('.sidebar');
             const menuToggle = document.querySelector('.menu-toggle');
 
-            if (sidebar) {
-                sidebar.classList.toggle('active');
-            }
-
-            if (menuToggle) {
-                menuToggle.classList.toggle('active');
-            }
+            if (sidebar) sidebar.classList.toggle('active');
+            if (menuToggle) menuToggle.classList.toggle('active');
 
             let overlay = document.getElementById('sidebarOverlay');
-            if (overlay) {
-                overlay.remove();
-            } else {
+            if (overlay) overlay.remove();
+            else {
                 const newOverlay = document.createElement('div');
                 newOverlay.id = 'sidebarOverlay';
                 newOverlay.className = 'sidebar-overlay';
@@ -394,12 +428,9 @@
             }
         }
 
-        // Закрытие меню при клике на ссылку (для мобильных)
         document.querySelectorAll('.sidebar-menu a').forEach(link => {
             link.addEventListener('click', () => {
-                if (window.innerWidth <= 768) {
-                    toggleSidebar();
-                }
+                if (window.innerWidth <= 768) toggleSidebar();
             });
         });
     </script>

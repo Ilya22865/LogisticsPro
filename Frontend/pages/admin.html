@@ -8,6 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>Панель администратора</title>
     <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Адаптация карты для мобильных */
         @media (max-width: 768px) {
@@ -146,30 +147,30 @@
     <!-- Боковое меню -->
     <aside class="sidebar">
         <div class="sidebar-header">
-            <h2 id="companyName"></h2>
+            <h2 id="companyName"><i class="fas fa-truck" style="margin-right: 8px;"></i>LogisticsPro</h2>
             <span id="companyPhone"></span>
-            <span class="role-badge">Администратор</span>
+            <span class="role-badge"><i class="fas fa-user-shield"></i> Администратор</span>
         </div>
 
         <ul class="sidebar-menu">
-            <li><a href="admin.html" class="active">Дашборд</a></li>
-            <li><a href="routes.html">Построение маршрутов</a></li>
-            <li><a href="drivers.html">Водители</a></li>
-            <li><a href="all-orders.html">Все заказы</a></li>
-            <li><a href="clients.html">Клиенты</a></li>
-            <li><a href="admin-settings.html">Настройки</a></li>
+            <li><a href="admin.html" class="active"><i class="fas fa-chart-line"></i> Дашборд</a></li>
+            <li><a href="routes.html"><i class="fas fa-route"></i> Построение маршрутов</a></li>
+            <li><a href="drivers.html"><i class="fas fa-users"></i> Водители</a></li>
+            <li><a href="all-orders.html"><i class="fas fa-clipboard-list"></i> Все заказы</a></li>
+            <li><a href="clients.html"><i class="fas fa-user-friends"></i> Клиенты</a></li>
+            <li><a href="admin-settings.html"><i class="fas fa-cog"></i> Настройки</a></li>
         </ul>
 
         <div class="sidebar-user">
             <div class="user-info">
-                <div class="avatar" id="userAvatar"></div>
+                <div class="avatar" id="userAvatar">ГИ</div>
                 <div class="user-details">
-                    <h4 id="adminName"></h4>
-                    <p id="adminCompany"></p>
+                    <h4 id="adminName">Грибанов Илья Олегович</h4>
+                    <p id="adminCompany">ООО "Ромашка"</p>
                 </div>
             </div>
             <button class="logout-btn" onclick="logout()">
-                <i class="icon-logout"></i> Выйти
+                <i class="fas fa-sign-out-alt"></i> Выйти
             </button>
         </div>
     </aside>
@@ -177,85 +178,93 @@
     <!-- Основной контент -->
     <main class="main-content">
         <div class="page-header">
-            <h1 id="pageTitle"></h1>
-            <p id="pageDescription"></p>
+            <h1><i class="fas fa-chart-line" style="color: var(--color-primary); margin-right: 10px;"></i>Панель управления</h1>
+            <p>Управление логистикой и мониторинг в реальном времени</p>
         </div>
-        
+
         <!-- Карточки статистики -->
         <div class="cards-grid">
-            <div class="card fade-in">
+            <div class="card card-warm fade-in">
                 <div class="card-header">
+                    <div class="card-icon"><i class="fas fa-box"></i></div>
                     <h3>Активные заказы</h3>
                 </div>
                 <div class="value" id="totalActiveOrders">—</div>
                 <div class="description">в работе</div>
             </div>
-            
-            <div class="card fade-in" style="animation-delay: 0.1s;">
+
+            <div class="card card-green fade-in" style="animation-delay: 0.1s;">
                 <div class="card-header">
+                    <div class="card-icon"><i class="fas fa-truck-moving"></i></div>
                     <h3>Водители на линии</h3>
                 </div>
                 <div class="value" id="driversOnLine">—</div>
                 <div class="description">из <span id="totalDrivers">—</span></div>
             </div>
-            
-            <div class="card fade-in" style="animation-delay: 0.2s;">
+
+            <div class="card card-purple fade-in" style="animation-delay: 0.2s;">
                 <div class="card-header">
+                    <div class="card-icon"><i class="fas fa-route"></i></div>
                     <h3>Маршрутов сегодня</h3>
                 </div>
                 <div class="value" id="routesToday">—</div>
                 <div class="description">построено</div>
             </div>
-            
+
             <div class="card fade-in" style="animation-delay: 0.3s;">
                 <div class="card-header">
+                    <div class="card-icon"><i class="fas fa-check-circle"></i></div>
                     <h3>Доставлено</h3>
                 </div>
                 <div class="value" id="deliveredToday">—</div>
                 <div class="description">за сегодня</div>
             </div>
         </div>
-        
+
         <!-- Уведомление -->
         <div class="alert alert-info fade-in" style="animation-delay: 0.4s;">
-            <strong id="tipLabel"></strong>
-            <span id="tipText"></span>
+            <i class="fas fa-info-circle"></i>
+            <div>
+                <strong id="tipLabel">Совет:</strong>
+                <span id="tipText">Используйте карту для построения оптимальных маршрутов доставки</span>
+            </div>
         </div>
 
         <!-- Карта для построения маршрутов -->
         <div class="map-container fade-in" style="animation-delay: 0.5s;">
             <div class="map-header">
-                <h2 id="mapTitle"></h2>
+                <h2><i class="fas fa-map-marked-alt" style="color: var(--color-primary); margin-right: 8px;"></i>Построение маршрута</h2>
                 <div class="map-actions">
-                    <button class="btn-refresh" onclick="clearRoute()" id="btnClear"></button>
-                    <button class="btn-route" onclick="startNewRoute()" id="btnNewRoute"></button>
+                    <button class="btn-refresh" onclick="clearRoute()" id="btnClear"><i class="fas fa-eraser"></i> Очистить</button>
+                    <button class="btn-route" onclick="startNewRoute()" id="btnNewRoute"><i class="fas fa-plus"></i> Новый маршрут</button>
                 </div>
             </div>
 
             <!-- ЗАГЛУШКА ДЛЯ КАРТЫ - подключите здесь ваш API -->
             <div id="adminMap" class="map-placeholder">
-                <p id="mapPlaceholderText"></p>
-                <small id="mapPlaceholderHint"></small>
+                <i class="fas fa-map" style="font-size: 60px; margin-bottom: 15px; opacity: 0.5;"></i>
+                <p id="mapPlaceholderText">Здесь будет интерактивная карта</p>
+                <small id="mapPlaceholderHint">Подключите API карты (Яндекс.Карты, Google Maps и т.д.)</small>
             </div>
         </div>
         
         <!-- Форма добавления маршрута -->
         <div class="table-container fade-in" style="animation-delay: 0.6s;">
-            <h2 id="formTitle"></h2>
+            <h2><i class="fas fa-plus-circle" style="color: var(--color-primary); margin-right: 8px;"></i>Добавить маршрут</h2>
             <form id="routeForm" onsubmit="saveRoute(event)">
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="orderSelect" id="lblOrder"></label>
+                        <label for="orderSelect"><i class="fas fa-clipboard-list"></i> Заказ</label>
                         <select id="orderSelect" required>
-                            <option value="" id="optSelectOrder"></option>
+                            <option value="">Выберите заказ...</option>
                             <!-- Загружается из БД -->
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label for="driverSelect" id="lblDriver"></label>
+                        <label for="driverSelect"><i class="fas fa-user"></i> Водитель</label>
                         <select id="driverSelect" required>
-                            <option value="" id="optSelectDriver"></option>
+                            <option value="">Выберите водителя...</option>
                             <!-- Загружается из БД -->
                         </select>
                     </div>
@@ -263,39 +272,40 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="routeStart" id="lblStart"></label>
-                        <input type="text" id="routeStart" placeholder="" required>
+                        <label for="routeStart"><i class="fas fa-map-marker-alt"></i> Начальная точка</label>
+                        <input type="text" id="routeStart" placeholder="Адрес отправления" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="routeEnd" id="lblEnd"></label>
-                        <input type="text" id="routeEnd" placeholder="" required>
+                        <label for="routeEnd"><i class="fas fa-flag-checkered"></i> Конечная точка</label>
+                        <input type="text" id="routeEnd" placeholder="Адрес доставки" required>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="routeDistance" id="lblDistance"></label>
-                        <input type="number" id="routeDistance" placeholder="" min="0">
+                        <label for="routeDistance"><i class="fas fa-road"></i> Расстояние (км)</label>
+                        <input type="number" id="routeDistance" placeholder="0" min="0">
                     </div>
 
                     <div class="form-group">
-                        <label for="routeTime" id="lblTime"></label>
-                        <input type="number" id="routeTime" placeholder="" min="0" step="0.5">
+                        <label for="routeTime"><i class="fas fa-clock"></i> Время (часы)</label>
+                        <input type="number" id="routeTime" placeholder="0" min="0" step="0.5">
                     </div>
 
                     <div class="form-group">
-                        <label for="routeDate" id="lblDate"></label>
+                        <label for="routeDate"><i class="fas fa-calendar"></i> Дата</label>
                         <input type="date" id="routeDate" required>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="routeNotes" id="lblNotes"></label>
-                    <input type="text" id="routeNotes" placeholder="">
+                    <label for="routeNotes"><i class="fas fa-sticky-note"></i> Примечания</label>
+                    <input type="text" id="routeNotes" placeholder="Дополнительная информация...">
                 </div>
 
-                <button type="submit" class="btn btn-primary" style="max-width: 200px;" id="btnSaveRoute">
+                <button type="submit" class="btn btn-primary" style="max-width: 250px;" id="btnSaveRoute">
+                    <i class="fas fa-save"></i> Сохранить маршрут
                 </button>
             </form>
         </div>

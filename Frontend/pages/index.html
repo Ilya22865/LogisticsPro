@@ -8,8 +8,179 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>Вход - LogisticsPro</title>
     <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Дополнительные стили для страницы входа */
+        .auth-container {
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(99, 142, 203, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(224, 123, 83, 0.08) 0%, transparent 50%);
+        }
+
+        .auth-box {
+            position: relative;
+        }
+
+        .auth-box::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-accent-warm), var(--color-accent-green));
+            border-radius: inherit;
+            z-index: -1;
+            opacity: 0.3;
+            filter: blur(10px);
+        }
+
+        .auth-box h1 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .auth-box h1::before {
+            content: '📦';
+            font-size: 32px;
+        }
+
+        .auth-tabs {
+            box-shadow: var(--shadow-soft);
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-group label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .form-group label i {
+            color: var(--color-primary);
+            font-size: 14px;
+        }
+
+        .form-group input {
+            padding-left: 40px;
+        }
+
+        .form-group .input-icon {
+            position: absolute;
+            left: 14px;
+            top: 42px;
+            color: var(--color-primary);
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus + .input-icon,
+        .form-group input:focus ~ label i {
+            color: var(--color-accent-warm);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 14px;
+            top: 42px;
+            color: var(--color-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: none;
+            border: none;
+            font-size: 16px;
+            padding: 4px;
+        }
+
+        .password-toggle:hover {
+            color: var(--color-accent-warm);
+        }
+
+        .form-footer-links {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+
+        .form-footer-links a {
+            color: var(--color-primary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-footer-links a:hover {
+            color: var(--color-accent-warm);
+            text-decoration: underline;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 25px 0;
+            color: var(--color-primary);
+            font-size: 13px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--color-bg-secondary);
+        }
+
+        .divider span {
+            padding: 0 15px;
+        }
+
+        .social-auth {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            border: 2px solid var(--color-bg-secondary);
+            border-radius: var(--border-radius);
+            background: var(--color-white);
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            font-size: 20px;
+            color: var(--color-dark);
+        }
+
+        .social-btn:hover {
+            border-color: var(--color-primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .social-btn.google:hover {
+            border-color: #DB4437;
+            color: #DB4437;
+        }
+
+        .social-btn.facebook:hover {
+            border-color: #4267B2;
+            color: #4267B2;
+        }
+
+        .social-btn.apple:hover {
+            border-color: #000;
+            color: #000;
+        }
+
         @media (max-width: 768px) {
             .auth-box {
                 padding: 30px 25px;
@@ -17,6 +188,12 @@
 
             .auth-tabs {
                 flex-direction: row;
+            }
+
+            .form-footer-links {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
             }
         }
 
@@ -31,6 +208,10 @@
 
             .form-group {
                 margin-bottom: 15px;
+            }
+
+            .social-auth {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -53,88 +234,196 @@
             .form-group {
                 margin-bottom: 10px;
             }
+
+            .divider, .social-auth {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
     <div class="auth-container">
         <div class="auth-box">
-            <h1> LogisticsPro</h1>
+            <h1>LogisticsPro</h1>
             <p class="subtitle">Система управления логистикой</p>
-            
+
             <div class="auth-tabs">
-                <button class="active" onclick="switchTab('login')">Вход</button>
-                <button onclick="switchTab('register')">Регистрация</button>
+                <button class="active" onclick="switchTab('login')"><i class="fas fa-sign-in-alt"></i> Вход</button>
+                <button onclick="switchTab('register')"><i class="fas fa-user-plus"></i> Регистрация</button>
             </div>
-            
+
             <!-- Форма входа -->
             <form id="loginForm" class="auth-form">
                 <div class="form-group">
-                    <label for="loginEmail">Email</label>
+                    <label for="loginEmail"><i class="fas fa-envelope"></i> Email</label>
                     <input type="email" id="loginEmail" placeholder="your@email.com" required>
+                    <i class="fas fa-envelope input-icon"></i>
                 </div>
-                
+
                 <div class="form-group">
-                    <label for="loginPassword">Пароль</label>
+                    <label for="loginPassword"><i class="fas fa-lock"></i> Пароль</label>
                     <input type="password" id="loginPassword" placeholder="••••••••" required>
+                    <i class="fas fa-lock input-icon"></i>
+                    <button type="button" class="password-toggle" onclick="togglePassword('loginPassword', this)">
+                        <i class="fas fa-eye"></i>
+                    </button>
                 </div>
-                
-                <button type="submit" class="btn btn-primary">Войти</button>
-                
+
+                <div class="form-footer-links">
+                    <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                        <input type="checkbox" id="rememberMe" style="width: auto; margin: 0;">
+                        <span style="font-size: 13px;">Запомнить меня</span>
+                    </label>
+                    <a href="#" onclick="alert('Функция восстановления пароля будет доступна в следующей версии'); return false;">
+                        <i class="fas fa-key"></i> Забыли пароль?
+                    </a>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg" style="margin-top: 20px;">
+                    <i class="fas fa-sign-in-alt"></i> Войти в систему
+                </button>
+
+                <div class="divider">
+                    <span>или войти через</span>
+                </div>
+
+                <div class="social-auth">
+                    <button type="button" class="social-btn google" onclick="alert('Google авторизация будет доступна позже')">
+                        <i class="fab fa-google"></i>
+                    </button>
+                    <button type="button" class="social-btn facebook" onclick="alert('Facebook авторизация будет доступна позже')">
+                        <i class="fab fa-facebook"></i>
+                    </button>
+                    <button type="button" class="social-btn apple" onclick="alert('Apple авторизация будет доступна позже')">
+                        <i class="fab fa-apple"></i>
+                    </button>
+                </div>
+
                 <p class="auth-footer">
                     Нет аккаунта? <a href="#" onclick="switchTab('register'); return false;">Зарегистрироваться</a>
                 </p>
             </form>
-            
+
             <!-- Форма регистрации -->
             <form id="registerForm" class="auth-form" style="display: none;">
                 <div class="form-group">
-                    <label for="registerName">ФИО</label>
+                    <label for="registerName"><i class="fas fa-user"></i> ФИО</label>
                     <input type="text" id="registerName" placeholder="Иванов Иван Иванович" required>
+                    <i class="fas fa-user input-icon"></i>
                 </div>
-                
+
                 <div class="form-group">
-                    <label for="registerEmail">Email</label>
+                    <label for="registerEmail"><i class="fas fa-envelope"></i> Email</label>
                     <input type="email" id="registerEmail" placeholder="your@email.com" required>
+                    <i class="fas fa-envelope input-icon"></i>
                 </div>
-                
+
                 <div class="form-group">
-                    <label for="registerCompany">Название компании</label>
+                    <label for="registerCompany"><i class="fas fa-building"></i> Название компании</label>
                     <input type="text" id="registerCompany" placeholder="ООО «Ромашка»" required>
+                    <i class="fas fa-building input-icon"></i>
                 </div>
-                
+
                 <div class="form-group">
-                    <label for="registerType">Тип регистрации</label>
+                    <label for="registerType"><i class="fas fa-briefcase"></i> Тип регистрации</label>
                     <select id="registerType" onchange="toggleStaffCodeField()" required>
                         <option value="customer">Клиент (заказчик)</option>
                         <option value="staff">Сотрудник логистической компании</option>
                     </select>
                 </div>
-                
+
                 <div class="form-group" id="staffCodeGroup" style="display: none;">
-                    <label for="staffCode">Код сотрудника</label>
+                    <label for="staffCode"><i class="fas fa-id-badge"></i> Код сотрудника</label>
                     <input type="text" id="staffCode" placeholder="Введите код, выданный компанией">
+                    <i class="fas fa-id-badge input-icon"></i>
+                    <small class="hint">Код выдается вашим руководителем</small>
                 </div>
-                
+
                 <div class="form-group">
-                    <label for="registerPassword">Пароль</label>
+                    <label for="registerPassword"><i class="fas fa-lock"></i> Пароль</label>
                     <input type="password" id="registerPassword" placeholder="••••••••" required minlength="6">
+                    <i class="fas fa-lock input-icon"></i>
+                    <button type="button" class="password-toggle" onclick="togglePassword('registerPassword', this)">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <small class="hint">Минимум 8 символов</small>
                 </div>
-                
+
                 <div class="form-group">
-                    <label for="registerPasswordConfirm">Подтверждение пароля</label>
+                    <label for="registerPasswordConfirm"><i class="fas fa-lock"></i> Подтверждение пароля</label>
                     <input type="password" id="registerPasswordConfirm" placeholder="••••••••" required minlength="6">
+                    <i class="fas fa-lock input-icon"></i>
+                    <button type="button" class="password-toggle" onclick="togglePassword('registerPasswordConfirm', this)">
+                        <i class="fas fa-eye"></i>
+                    </button>
                 </div>
-                
-                <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
-                
+
+                <div class="form-footer-links">
+                    <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                        <input type="checkbox" id="agreeTerms" required style="width: auto; margin: 0;">
+                        <span style="font-size: 13px;">Согласен с <a href="#" onclick="alert('Условия использования будут доступны позже'); return false;">условиями использования</a></span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg" style="margin-top: 20px;">
+                    <i class="fas fa-user-plus"></i> Зарегистрироваться
+                </button>
+
                 <p class="auth-footer">
                     Уже есть аккаунт? <a href="#" onclick="switchTab('login'); return false;">Войти</a>
                 </p>
             </form>
         </div>
     </div>
-    
+
     <script src="../js/auth.js"></script>
+    <script>
+        function switchTab(tab) {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const tabs = document.querySelectorAll('.auth-tabs button');
+
+            if (tab === 'login') {
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+                tabs[0].classList.add('active');
+                tabs[1].classList.remove('active');
+            } else {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+                tabs[0].classList.remove('active');
+                tabs[1].classList.add('active');
+            }
+        }
+
+        function toggleStaffCodeField() {
+            const type = document.getElementById('registerType').value;
+            const staffCodeGroup = document.getElementById('staffCodeGroup');
+            const staffCode = document.getElementById('staffCode');
+
+            if (type === 'staff') {
+                staffCodeGroup.style.display = 'block';
+                staffCode.required = true;
+            } else {
+                staffCodeGroup.style.display = 'none';
+                staffCode.required = false;
+            }
+        }
+
+        function togglePassword(inputId, button) {
+            const input = document.getElementById(inputId);
+            const icon = button.querySelector('i');
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    </script>
 </body>
 </html>

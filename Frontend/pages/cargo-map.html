@@ -6,7 +6,14 @@
     <meta name="theme-color" content="#638ECB">
     <title>Карта грузов - LogisticsPro</title>
     <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
     <style>
+        .map-placeholder {
+            z-index: 0;
+        }
         .map-page .main-content {
             padding: 0;
         }
@@ -169,14 +176,12 @@
     </style>
 </head>
 <body class="map-page">
-    <!-- Кнопка меню для мобильных -->
     <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Меню">
         <span></span>
         <span></span>
         <span></span>
     </button>
 
-    <!-- Боковое меню -->
     <aside class="sidebar">
         <div class="sidebar-header">
             <h2>LogisticsPro</h2>
@@ -204,7 +209,6 @@
         </div>
     </aside>
     
-    <!-- Основной контент - Карта -->
     <main class="main-content">
         <div class="map-container" style="height: 100vh; margin: 0; border-radius: 0;">
             <div class="map-header" style="position: absolute; top: 20px; right: 20px; z-index: 100; background: transparent; margin: 0;">
@@ -224,7 +228,6 @@
                 </div>
             </div>
 
-            <!-- Панель со списком грузов -->
             <div class="cargo-list-panel">
                 <h4>Ваши грузы (<span id="cargoCount">0</span>)</h4>
                 <div id="cargoListContainer">
@@ -249,15 +252,7 @@
                 </div>
             </div>
             
-            <!-- ЗАГЛУШКА ДЛЯ КАРТЫ - подключите здесь ваш API -->
-            <div id="cargoMap" class="map-placeholder" style="height: 100vh; border-radius: 0;">
-                <i class="icon-map"></i>
-                <p>Здесь будет интерактивная карта со всеми грузами</p>
-                <small>Подключите API карты (Leaflet/Google Maps/Яндекс.Карты)</small>
-                <p style="margin-top: 15px; font-size: 12px;">
-                    <strong>Рекомендация:</strong> Leaflet.js + OpenStreetMap (бесплатно)
-                </p>
-            </div>
+            <div id="cargoMap" class="map-placeholder" style="height: 100vh; border-radius: 0;"></div>
         </div>
     </main>
     
@@ -274,12 +269,16 @@
     </div>
     
     <script src="../js/auth.js"></script>
+    <script src="../js/map-user.js"></script>
+
     <script>
-        // Глобальная переменная для хранения карты
         let cargoMapInstance = null;
         let cargoMarkers = [];
 
-        // Загрузка списка грузов
+        function initMap() {
+            loadCargoList()
+            initUserMap();
+        }
         async function loadCargoList() {
             const user = JSON.parse(localStorage.getItem('user') || 'null');
             
@@ -288,7 +287,7 @@
                 document.getElementById('cargoCount').textContent = '0';
                 return;
             }
-
+            
             try {
                 // TODO: Замените на реальный API вызов к вашему ASP.NET бекенду
                 // const response = await fetch(`/api/cargo/user/${user.id}`);
@@ -306,7 +305,6 @@
             }
         }
 
-        // Отрисовка списка грузов
         function renderCargoList(cargoes) {
             const container = document.getElementById('cargoListContainer');
             const countSpan = document.getElementById('cargoCount');
