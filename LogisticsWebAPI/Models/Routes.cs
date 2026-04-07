@@ -7,8 +7,7 @@ public class Route
     public string EndLocation { get; set; } = null!;
     public string? StopPoint { get; set; }
     public DateTime DeliveryDate { get; set; }
-    public int OrderID { get; set; }
-    public Order? Order { get; set; }
+    public List<Order> Orders { get; set; } = new List<Order>();
     public TimeSpan? EstimatedTime { get; set; }
     public TimeSpan? ActualTime { get; set; }
 }

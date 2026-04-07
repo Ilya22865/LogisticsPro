@@ -9,27 +9,722 @@
     <title>Водители - LogisticsPro</title>
     <link rel="stylesheet" href="../css/styles.css">
     <style>
-        /* Карточная версия таблицы для мобильных */
+        /* ========================================
+           Drivers Page - Enhanced Styles
+           ======================================== */
+
+        /* --- Action Bar --- */
+        .action-bar {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            justify-content: space-between;
+            padding: 20px 25px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(240,243,250,0.8) 100%);
+            border-radius: var(--border-radius-lg);
+            border: 1px solid rgba(99, 142, 203, 0.15);
+            backdrop-filter: blur(10px);
+            transition: var(--transition-smooth);
+        }
+
+        .action-bar:hover {
+            box-shadow: var(--shadow-soft);
+        }
+
+        .filters-wrapper {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            flex: 1;
+        }
+
+        .filters-wrapper .form-group {
+            margin-bottom: 0;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .filters-wrapper .form-group select,
+        .filters-wrapper .form-group input {
+            padding: 10px 15px;
+            transition: var(--transition-smooth);
+            border: 2px solid var(--color-bg-secondary);
+            background: var(--color-white);
+        }
+
+        .filters-wrapper .form-group select:focus,
+        .filters-wrapper .form-group input:focus {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 4px rgba(99, 142, 203, 0.12);
+            transform: translateY(-1px);
+        }
+
+        /* Search input with icon */
+        .search-input-wrapper {
+            position: relative;
+        }
+
+        .search-input-wrapper input {
+            padding-left: 40px !important;
+            padding-right: 35px !important;
+        }
+
+        .search-input-wrapper .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--color-primary);
+            font-size: 16px;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .search-input-wrapper .clear-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%) scale(0.8);
+            background: var(--color-bg-secondary);
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: var(--color-dark);
+            opacity: 0;
+            transition: var(--transition-smooth);
+            pointer-events: none;
+        }
+
+        .search-input-wrapper .clear-btn.visible {
+            opacity: 1;
+            transform: translateY(-50%) scale(1);
+            pointer-events: auto;
+        }
+
+        .search-input-wrapper .clear-btn:hover {
+            background: var(--color-primary);
+            color: var(--color-white);
+        }
+
+        /* Enhanced Add button */
+        .btn-add-driver {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
+            color: var(--color-white);
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition-smooth);
+            box-shadow: 0 4px 12px rgba(99, 142, 203, 0.3);
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .btn-add-driver::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .btn-add-driver:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 142, 203, 0.4);
+        }
+
+        .btn-add-driver:hover::before {
+            left: 100%;
+        }
+
+        .btn-add-driver:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(99, 142, 203, 0.3);
+        }
+
+        .btn-add-driver .icon-plus {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        /* --- Table Enhancements --- */
+        .table-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--color-bg-light);
+            position: relative;
+        }
+
+        .table-header::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--color-primary), var(--color-accent-warm));
+            border-radius: 1px;
+            transition: width 0.4s ease;
+        }
+
+        .table-container:hover .table-header::after {
+            width: 120px;
+        }
+
+        .table-header h2 {
+            font-size: 20px;
+            color: var(--color-dark);
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .table-header .table-icon {
+            font-size: 24px;
+            color: var(--color-primary);
+            opacity: 0.8;
+        }
+
+        .table-header .record-count {
+            margin-left: auto;
+            font-size: 13px;
+            color: var(--color-primary);
+            background: var(--color-bg-light);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        /* Table row hover */
+        .drivers-table-card tbody tr {
+            transition: var(--transition-smooth);
+            cursor: pointer;
+        }
+
+        .drivers-table-card tbody tr:hover {
+            background: linear-gradient(90deg, rgba(99, 142, 203, 0.08) 0%, rgba(177, 201, 239, 0.05) 100%);
+            box-shadow: inset 3px 0 0 var(--color-primary);
+        }
+
+        /* Status badges with pulsing dots */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: capitalize;
+            transition: var(--transition-smooth);
+        }
+
+        .status-badge::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.3); }
+        }
+
+        .status-badge.on-line {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            color: #2e7d32;
+        }
+
+        .status-badge.off-line {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            color: #1565c0;
+        }
+
+        .status-badge.on-vacation {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            color: #e65100;
+        }
+
+        .status-badge.on-sick {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
+            color: #c62828;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--color-primary);
+        }
+
+        .empty-state .empty-icon {
+            font-size: 64px;
+            opacity: 0.3;
+            margin-bottom: 15px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: var(--color-dark);
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            opacity: 0.7;
+            margin-bottom: 20px;
+        }
+
+        /* --- Stat Cards Enhancements --- */
+        .drivers-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .drivers-stats-grid .card {
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .drivers-stats-grid .card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .drivers-stats-grid .card:hover::after {
+            transform: scaleX(1);
+        }
+
+        .drivers-stats-grid .card:hover {
+            transform: translateY(-8px) scale(1.02);
+        }
+
+        .drivers-stats-grid .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 24px;
+            transition: var(--transition-smooth);
+        }
+
+        .drivers-stats-grid .card:nth-child(1) .card-icon {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
+            color: var(--color-white);
+        }
+
+        .drivers-stats-grid .card:nth-child(2) .card-icon {
+            background: linear-gradient(135deg, var(--color-accent-green) 0%, #7BC9A0 100%);
+            color: var(--color-white);
+        }
+
+        .drivers-stats-grid .card:nth-child(3) .card-icon {
+            background: linear-gradient(135deg, var(--color-info) 0%, #5DADE2 100%);
+            color: var(--color-white);
+        }
+
+        .drivers-stats-grid .card:nth-child(4) .card-icon {
+            background: linear-gradient(135deg, var(--color-accent-warm) 0%, #F4A261 100%);
+            color: var(--color-white);
+        }
+
+        .drivers-stats-grid .card:hover .card-icon {
+            transform: rotate(10deg) scale(1.15);
+        }
+
+        .drivers-stats-grid .value {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--color-dark) 0%, var(--color-primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+            margin-bottom: 5px;
+        }
+
+        /* --- Modal Enhancements --- */
+        #driverModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        #driverModal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        #driverModal .modal-content {
+            background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(240,243,250,0.95) 100%);
+            border-radius: var(--border-radius-xl);
+            padding: 35px;
+            max-width: 550px;
+            width: 92%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(99, 142, 203, 0.1);
+            transform: translateY(30px) scale(0.95);
+            animation: modalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            position: relative;
+        }
+
+        @keyframes modalSlideIn {
+            to {
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        #driverModal.closing .modal-content {
+            animation: modalSlideOut 0.3s ease forwards;
+        }
+
+        @keyframes modalSlideOut {
+            to {
+                transform: translateY(30px) scale(0.95);
+                opacity: 0;
+            }
+        }
+
+        #driverModal .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: var(--color-bg-light);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: var(--color-dark);
+            transition: var(--transition-smooth);
+            z-index: 10;
+        }
+
+        #driverModal .modal-close:hover {
+            background: var(--color-danger);
+            color: var(--color-white);
+            transform: rotate(90deg);
+        }
+
+        #driverModal .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--color-bg-light);
+        }
+
+        #driverModal .modal-header-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-white);
+            font-size: 20px;
+        }
+
+        #driverModal h2 {
+            margin-bottom: 0;
+            font-size: 22px;
+            color: var(--color-dark);
+        }
+
+        /* Form sections */
+        .form-section-divider {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0 15px;
+            color: var(--color-primary);
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-section-divider::before,
+        .form-section-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--color-bg-secondary);
+        }
+
+        /* Enhanced inputs */
+        #driverForm .form-group input,
+        #driverForm .form-group select,
+        #driverForm .form-group textarea {
+            padding: 12px 16px;
+            border: 2px solid var(--color-bg-secondary);
+            border-radius: var(--border-radius);
+            font-size: 15px;
+            transition: var(--transition-smooth);
+            background: var(--color-white);
+        }
+
+        #driverForm .form-group input:focus,
+        #driverForm .form-group select:focus,
+        #driverForm .form-group textarea:focus {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 4px rgba(99, 142, 203, 0.15);
+            transform: translateY(-1px);
+        }
+
+        #driverForm .form-group input:valid:not(:placeholder-shown) {
+            border-color: var(--color-accent-green);
+        }
+
+        #driverForm .form-group input:invalid:not(:placeholder-shown) {
+            border-color: var(--color-danger);
+        }
+
+        /* Validation feedback */
+        .validation-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            opacity: 0;
+            transition: var(--transition-smooth);
+        }
+
+        .validation-icon.success {
+            color: var(--color-accent-green);
+            opacity: 1;
+        }
+
+        .validation-icon.error {
+            color: var(--color-danger);
+            opacity: 1;
+        }
+
+        /* Modal buttons */
+        #driverForm .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        #driverForm .form-actions .btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            transition: var(--transition-smooth);
+        }
+
+        /* Success/error toast */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: var(--border-radius);
+            color: var(--color-white);
+            font-weight: 600;
+            z-index: 3000;
+            animation: toastSlideIn 0.4s ease forwards;
+            box-shadow: var(--shadow-strong);
+        }
+
+        .toast.success {
+            background: linear-gradient(135deg, var(--color-accent-green) 0%, #7BC9A0 100%);
+        }
+
+        .toast.error {
+            background: linear-gradient(135deg, var(--color-danger) 0%, #C0392B 100%);
+        }
+
+        @keyframes toastSlideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes toastSlideOut {
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        /* Loading skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, var(--color-bg-light) 25%, var(--color-bg-secondary) 50%, var(--color-bg-light) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: var(--border-radius);
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .skeleton-row {
+            height: 50px;
+            margin-bottom: 10px;
+        }
+
+        .skeleton-text {
+            height: 16px;
+            width: 70%;
+            margin-bottom: 8px;
+        }
+
+        /* ========================================
+           Mobile Responsiveness - MASSIVE IMPROVEMENTS
+           ======================================== */
+
+        /* Tablet: 769px - 1024px */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .drivers-stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Mobile: <= 768px */
         @media (max-width: 768px) {
-            .drivers-table-card tbody tr {
-                display: block;
-                margin-bottom: 15px;
-                border: 1px solid var(--color-bg-secondary);
-                border-radius: var(--border-radius);
+            /* Action bar stacks */
+            .action-bar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
                 padding: 15px;
-                background: var(--color-white);
-                box-shadow: var(--shadow-soft);
+            }
+
+            .filters-wrapper {
+                flex-direction: column;
+                gap: 12px;
+                width: 100%;
+            }
+
+            .filters-wrapper .form-group {
+                min-width: 100% !important;
+                width: 100%;
+            }
+
+            /* 48px+ touch targets */
+            .filters-wrapper .form-group select,
+            .filters-wrapper .form-group input {
+                min-height: 48px;
+                padding: 12px 15px;
+                font-size: 16px;
+            }
+
+            .btn-add-driver {
+                width: 100%;
+                min-height: 48px;
+                justify-content: center;
+                padding: 14px 20px;
+                font-size: 16px;
+            }
+
+            /* Table transforms to cards */
+            .table-container {
+                padding: 15px;
+                overflow-x: visible;
             }
 
             .drivers-table-card thead {
                 display: none;
             }
 
+            .drivers-table-card tbody {
+                display: block;
+            }
+
+            .drivers-table-card tbody tr {
+                display: block;
+                margin-bottom: 15px;
+                border: 1px solid var(--color-bg-secondary);
+                border-radius: var(--border-radius-lg);
+                padding: 15px;
+                background: var(--color-white);
+                box-shadow: var(--shadow-soft);
+                transition: var(--transition-smooth);
+            }
+
+            .drivers-table-card tbody tr:hover {
+                box-shadow: var(--shadow-hover);
+                transform: translateY(-2px);
+                background: var(--color-white);
+            }
+
             .drivers-table-card td {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                padding: 8px 0;
+                padding: 10px 0;
                 border: none;
                 border-bottom: 1px solid var(--color-bg-light);
                 font-size: 14px;
@@ -45,88 +740,25 @@
                 color: var(--color-dark);
                 margin-right: 15px;
                 flex-shrink: 0;
-                min-width: 120px;
+                min-width: 100px;
+                font-size: 13px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
             }
 
             .drivers-table-card .status-badge {
                 margin-left: auto;
             }
 
-            .table-container {
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-                padding: 15px;
+            /* Stat cards: 2-column on tablets */
+            .drivers-stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
             }
 
-            .table-container h2 {
-                font-size: 18px;
-            }
-
-            .cards-grid {
-                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-                gap: 12px;
-            }
-
-            .card {
-                padding: 15px 12px;
-            }
-
-            .card .card-icon {
-                width: 38px;
-                height: 38px;
-                font-size: 18px;
-            }
-
-            .card h3 {
-                font-size: 13px;
-            }
-
-            .card .value {
-                font-size: 22px;
-            }
-
-            .card .description {
-                font-size: 11px;
-            }
-
-            .page-header h1 {
-                font-size: 22px;
-            }
-
-            .page-header p {
-                font-size: 13px;
-            }
-        }
-
-        /* Фильтры */
-        .filters-wrapper {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            align-items: flex-end;
-        }
-
-        @media (max-width: 768px) {
-            .filters-wrapper {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 10px;
-            }
-
-            .filters-wrapper .form-group {
-                min-width: 100% !important;
-                margin-bottom: 0;
-            }
-
-            .filters-wrapper .btn {
-                width: 100%;
-                max-width: none;
-                margin-top: 5px;
-            }
-
-            /* Модальное окно */
-            #driverModal > div {
-                padding: 20px;
+            /* Modal adjustments */
+            #driverModal .modal-content {
+                padding: 25px;
                 max-width: 95%;
                 width: 95%;
             }
@@ -135,27 +767,124 @@
                 grid-template-columns: 1fr !important;
             }
 
-            #driverModal .btn {
+            #driverModal .form-actions {
+                flex-direction: column;
+            }
+
+            #driverModal .form-actions .btn {
                 min-height: 48px;
+            }
+
+            /* Table header */
+            .table-header h2 {
+                font-size: 18px;
+            }
+
+            .page-header h1 {
+                font-size: 22px;
+            }
+
+            .page-header p {
+                font-size: 13px;
             }
         }
 
+        /* Phone: <= 480px */
         @media (max-width: 480px) {
-            .cards-grid {
-                grid-template-columns: 1fr;
+            .action-bar {
+                padding: 12px;
+                gap: 12px;
+            }
+
+            .filters-wrapper {
                 gap: 10px;
             }
 
-            .card {
-                padding: 12px 10px;
+            /* Stat cards: 1-column */
+            .drivers-stats-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+                margin-top: 20px;
             }
 
-            .card .value {
+            .drivers-stats-grid .card {
+                padding: 18px;
+            }
+
+            .drivers-stats-grid .value {
+                font-size: 28px;
+            }
+
+            .drivers-stats-grid .card-icon {
+                width: 44px;
+                height: 44px;
                 font-size: 20px;
             }
 
-            .card h3 {
+            /* Table cards */
+            .drivers-table-card tbody tr {
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+
+            .drivers-table-card td {
+                padding: 8px 0;
+                font-size: 13px;
+            }
+
+            .drivers-table-card td::before {
+                min-width: 90px;
                 font-size: 12px;
+            }
+
+            /* Modal: full-screen overlay */
+            #driverModal {
+                align-items: flex-start;
+                padding: 0;
+            }
+
+            #driverModal .modal-content {
+                width: 100%;
+                max-width: 100%;
+                height: 100%;
+                max-height: 100vh;
+                border-radius: 0;
+                padding: 20px;
+                padding-top: 60px;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            #driverModal .modal-close {
+                top: 15px;
+                right: 15px;
+                width: 44px;
+                height: 44px;
+                font-size: 24px;
+            }
+
+            #driverModal h2 {
+                font-size: 20px;
+            }
+
+            #driverForm .form-group input,
+            #driverForm .form-group select,
+            #driverForm .form-group textarea {
+                min-height: 48px;
+                padding: 14px 16px;
+                font-size: 16px;
+            }
+
+            #driverForm .form-group label {
+                font-size: 14px;
+            }
+
+            .table-container {
+                padding: 12px;
+            }
+
+            .table-header h2 {
+                font-size: 16px;
             }
 
             .page-header h1 {
@@ -166,74 +895,125 @@
                 font-size: 12px;
             }
 
-            .table-container {
-                padding: 12px;
+            .empty-state {
+                padding: 40px 15px;
             }
 
-            .table-container h2 {
-                font-size: 16px;
+            .empty-state .empty-icon {
+                font-size: 48px;
             }
 
-            .drivers-table-card td {
-                font-size: 13px;
-            }
-
-            .drivers-table-card td::before {
-                min-width: 100px;
-                font-size: 12px;
-            }
-
-            #driverModal > div {
-                padding: 15px;
-                width: 98%;
-            }
-
-            #driverModal h2 {
+            .empty-state h3 {
                 font-size: 18px;
             }
         }
 
-        @media (min-width: 769px) and (max-width: 1024px) {
-            .cards-grid {
-                grid-template-columns: repeat(2, 1fr);
+        /* Small phones: 320px - 380px */
+        @media (max-width: 380px) {
+            .main-content {
+                padding: 10px;
             }
 
-            .table-container table {
-                min-width: 700px;
+            .page-header h1 {
+                font-size: 18px;
+            }
+
+            .drivers-table-card td::before {
+                min-width: 80px;
+                font-size: 11px;
+            }
+
+            .drivers-table-card td {
+                font-size: 12px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+
+            .drivers-table-card td::before {
+                margin-right: 0;
+                margin-bottom: 2px;
+            }
+
+            #driverModal .modal-content {
+                padding: 15px;
+                padding-top: 55px;
             }
         }
 
-        @media (min-width: 1441px) {
-            .cards-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-
-            .table-container th,
-            .table-container td {
-                padding: 16px;
-            }
-
-            .table-container table {
-                font-size: 15px;
-            }
-        }
-
-        /* Пейзажная ориентация */
+        /* Landscape orientation on mobile */
         @media (max-height: 500px) and (orientation: landscape) and (max-width: 768px) {
+            .action-bar {
+                padding: 10px 15px;
+            }
+
             .filters-wrapper {
                 display: none;
             }
 
-            .cards-grid {
+            .drivers-stats-grid {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
             }
 
-            .card {
+            .drivers-stats-grid .card {
+                padding: 12px;
+            }
+
+            .drivers-stats-grid .value {
+                font-size: 20px;
+            }
+
+            #driverModal .modal-content {
+                max-height: 95vh;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .table-container {
                 padding: 10px;
             }
+        }
 
-            .card .value {
-                font-size: 18px;
+        /* Touch device optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            .btn-add-driver {
+                min-height: 48px;
+            }
+
+            .filters-wrapper .form-group select,
+            .filters-wrapper .form-group input {
+                min-height: 48px;
+            }
+
+            .drivers-table-card tbody tr {
+                -webkit-tap-highlight-color: rgba(99, 142, 203, 0.1);
+            }
+
+            #driverModal .modal-close {
+                min-width: 44px;
+                min-height: 44px;
+            }
+        }
+
+        /* High DPI screens */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .drivers-table-card tbody tr {
+                border-width: 0.5px;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            .action-bar,
+            .menu-toggle,
+            .drivers-stats-grid,
+            #driverModal {
+                display: none !important;
+            }
+
+            .drivers-table-card tbody tr {
+                break-inside: avoid;
             }
         }
     </style>
@@ -252,7 +1032,7 @@
             <h2>LogisticsPro</h2>
             <span class="role-badge">Администратор</span>
         </div>
-        
+
         <ul class="sidebar-menu">
             <li><a href="admin.html">Дашборд</a></li>
             <li><a href="routes.html">Построение маршрутов</a></li>
@@ -261,7 +1041,7 @@
             <li><a href="clients.html">Клиенты</a></li>
             <li><a href="admin-settings.html">Настройки</a></li>
         </ul>
-        
+
         <div class="sidebar-user">
             <div class="user-info">
                 <div class="avatar" id="userAvatar"></div>
@@ -275,44 +1055,50 @@
             </button>
         </div>
     </aside>
-    
+
     <!-- Основной контент -->
     <main class="main-content">
         <div class="page-header">
             <h1>Водители</h1>
             <p>Управление водителями и транспортными средствами</p>
         </div>
-        
+
         <!-- Панель действий -->
-        <div class="table-container fade-in" style="margin-bottom: 30px;">
-            <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center; justify-content: space-between;">
-                <div class="filters-wrapper">
-                    <div class="form-group" style="margin-bottom: 0; min-width: 200px;">
-                        <label for="driverStatusFilter">Статус</label>
-                        <select id="driverStatusFilter" onchange="filterDrivers()">
-                            <option value="all">Все статусы</option>
-                            <option value="on-line">На линии</option>
-                            <option value="off-line">Свободен</option>
-                            <option value="on-vacation">В отпуске</option>
-                            <option value="on-sick">На больничном</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group" style="margin-bottom: 0; min-width: 250px;">
-                        <label for="searchDriver">Поиск</label>
-                        <input type="text" id="searchDriver" placeholder="ФИО, телефон, авто..." oninput="filterDrivers()">
-                    </div>
+        <div class="action-bar fade-in">
+            <div class="filters-wrapper">
+                <div class="form-group">
+                    <label for="driverStatusFilter">Статус</label>
+                    <select id="driverStatusFilter" onchange="filterDrivers()">
+                        <option value="all">Все статусы</option>
+                        <option value="on-line">На линии</option>
+                        <option value="off-line">Свободен</option>
+                        <option value="on-vacation">В отпуске</option>
+                        <option value="on-sick">На больничном</option>
+                    </select>
                 </div>
 
-                <button class="btn btn-primary" style="max-width: 180px;" onclick="openAddDriverModal()">
-                    <i class="icon-plus"></i> Добавить водителя
-                </button>
+                <div class="form-group">
+                    <label for="searchDriver">Поиск</label>
+                    <div class="search-input-wrapper">
+                        <span class="search-icon">&#128269;</span>
+                        <input type="text" id="searchDriver" placeholder="ФИО, телефон, авто..." oninput="filterDrivers(); toggleClearButton()">
+                        <button class="clear-btn" id="clearSearchBtn" onclick="clearSearch()" aria-label="Очистить поиск">&times;</button>
+                    </div>
+                </div>
             </div>
+
+            <button class="btn-add-driver" onclick="openAddDriverModal()">
+                <span class="icon-plus">+</span> Добавить водителя
+            </button>
         </div>
-        
+
         <!-- Таблица водителей -->
-        <div class="table-container fade-in">
-            <h2>Все водители</h2>
+        <div class="table-container fade-in" style="margin-top: 25px;">
+            <div class="table-header">
+                <span class="table-icon">&#128663;</span>
+                <h2>Все водители</h2>
+                <span class="record-count" id="driverCount">0 записей</span>
+            </div>
             <table id="driversTable" class="drivers-table-card">
                 <thead>
                     <tr>
@@ -325,18 +1111,16 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Загружается из БД -->
-                    <tr>
-                        <td colspan="6" style="text-align: center; color: var(--color-primary);">
-                            Загрузка данных...
-                        </td>
-                    </tr>
+                    <!-- Loading skeleton -->
+                    <tr class="skeleton-row skeleton"></tr>
+                    <tr class="skeleton-row skeleton"></tr>
+                    <tr class="skeleton-row skeleton"></tr>
                 </tbody>
             </table>
         </div>
-        
+
         <!-- Статистика по водителям -->
-        <div class="cards-grid fade-in" style="margin-top: 30px;">
+        <div class="drivers-stats-grid fade-in">
             <div class="card">
                 <div class="card-header">
                     <div class="card-icon"><i class="icon-truck"></i></div>
@@ -345,7 +1129,7 @@
                 <div class="value" id="totalDrivers">—</div>
                 <div class="description">в штате</div>
             </div>
-            
+
             <div class="card">
                 <div class="card-header">
                     <div class="card-icon"><i class="icon-route"></i></div>
@@ -354,7 +1138,7 @@
                 <div class="value" id="driversOnLine">—</div>
                 <div class="description">выполняют рейсы</div>
             </div>
-            
+
             <div class="card">
                 <div class="card-header">
                     <div class="card-icon"><i class="icon-location"></i></div>
@@ -363,7 +1147,7 @@
                 <div class="value" id="driversAvailable">—</div>
                 <div class="description">готовы к работе</div>
             </div>
-            
+
             <div class="card">
                 <div class="card-header">
                     <div class="card-icon"><i class="icon-settings"></i></div>
@@ -374,44 +1158,53 @@
             </div>
         </div>
     </main>
-    
+
     <!-- Модальное окно добавления/редактирования водителя -->
-    <div id="driverModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center;">
-        <div style="background: var(--color-white); border-radius: var(--border-radius); padding: 30px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto;">
-            <h2 id="modalTitle" style="margin-bottom: 20px;">Добавить водителя</h2>
-            
+    <div id="driverModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeDriverModal()" aria-label="Закрыть">&times;</button>
+
+            <div class="modal-header">
+                <div class="modal-header-icon">&#128100;</div>
+                <h2 id="modalTitle">Добавить водителя</h2>
+            </div>
+
             <form id="driverForm" onsubmit="saveDriver(event)">
                 <input type="hidden" id="driverId">
-                
+
                 <div class="form-group">
-                    <label for="driverName">ФИО</label>
-                    <input type="text" id="driverName" required placeholder="Иванов Иван Иванович">
+                    <label for="driverName">ФИО <span style="color: var(--color-accent-warm);">*</span></label>
+                    <input type="text" id="driverName" required placeholder="Иванов Иван Иванович" autocomplete="name">
                 </div>
-                
+
                 <div class="form-group">
-                    <label for="driverPhone">Телефон</label>
-                    <input type="tel" id="driverPhone" required placeholder="+375 (__) ___-__-__">
+                    <label for="driverPhone">Телефон <span style="color: var(--color-accent-warm);">*</span></label>
+                    <input type="tel" id="driverPhone" required placeholder="+375 (__) ___-__-__" autocomplete="tel">
                 </div>
-                
+
                 <div class="form-group">
                     <label for="driverEmail">Email</label>
-                    <input type="email" id="driverEmail" placeholder="driver@example.com">
+                    <input type="email" id="driverEmail" placeholder="driver@example.com" autocomplete="email">
                 </div>
-                
+
+                <div class="form-section-divider">Транспортное средство</div>
+
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="vehicleModel">Автомобиль</label>
+                        <label for="vehicleModel">Автомобиль <span style="color: var(--color-accent-warm);">*</span></label>
                         <input type="text" id="vehicleModel" required placeholder="Scania R450">
                     </div>
-                    
+
                     <div class="form-group">
-                        <label for="vehiclePlate">Госномер</label>
+                        <label for="vehiclePlate">Госномер <span style="color: var(--color-accent-warm);">*</span></label>
                         <input type="text" id="vehiclePlate" required placeholder="А001АА 777">
                     </div>
                 </div>
-                
+
+                <div class="form-section-divider">Информация</div>
+
                 <div class="form-group">
-                    <label for="driverStatus">Статус</label>
+                    <label for="driverStatus">Статус <span style="color: var(--color-accent-warm);">*</span></label>
                     <select id="driverStatus" required>
                         <option value="on-line">На линии</option>
                         <option value="off-line">Свободен</option>
@@ -419,64 +1212,88 @@
                         <option value="on-sick">На больничном</option>
                     </select>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="driverNotes">Комментарий</label>
                     <input type="text" id="driverNotes" placeholder="Дополнительная информация">
                 </div>
-                
-                <div style="display: flex; gap: 10px; margin-top: 20px;">
-                    <button type="submit" class="btn btn-primary" style="flex: 1;">Сохранить</button>
-                    <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="closeDriverModal()">Отмена</button>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <span>&#10004;</span> Сохранить
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="closeDriverModal()">
+                        <span>&#10008;</span> Отмена
+                    </button>
                 </div>
             </form>
         </div>
     </div>
-    
+
     <script src="../js/auth.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             loadDrivers();
             loadDriverStats();
         });
-        
+
         // Загрузка водителей
         async function loadDrivers() {
             try {
                 // TODO: const response = await fetch('/api/drivers');
                 // const drivers = await response.json();
-                
+
                 const tbody = document.querySelector('#driversTable tbody');
-                // Пример заполнения:
-                // tbody.innerHTML = drivers.map(driver => `
-                //     <tr>
-                //         <td>${driver.name}</td>
-                //         <td>${driver.phone}</td>
-                //         <td>${driver.vehicle}</td>
-                //         <td>${driver.licensePlate}</td>
-                //         <td><span class="status-badge ${driver.status}">${driver.statusText}</span></td>
-                //         <td>${driver.currentRoute || '—'}</td>
-                //     </tr>
-                // `).join('');
+
+                // Show loading skeleton
+                tbody.innerHTML = `
+                    <tr class="skeleton-row skeleton"></tr>
+                    <tr class="skeleton-row skeleton"></tr>
+                    <tr class="skeleton-row skeleton"></tr>
+                `;
+
+                // Simulate loading delay (remove in production)
+                await new Promise(resolve => setTimeout(resolve, 500));
 
                 // Заглушка
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="6" style="text-align: center; color: var(--color-primary);">
-                            Нет данных о водителях
+                        <td colspan="6">
+                            <div class="empty-state">
+                                <div class="empty-icon">&#128663;</div>
+                                <h3>Нет данных о водителях</h3>
+                                <p>Добавьте первого водителя, чтобы начать работу</p>
+                                <button class="btn-add-driver" onclick="openAddDriverModal()" style="display: inline-flex; margin-top: 10px;">
+                                    <span class="icon-plus">+</span> Добавить водителя
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 `;
+
+                updateDriverCount(0);
             } catch (error) {
                 console.error('Ошибка загрузки водителей:', error);
+                const tbody = document.querySelector('#driversTable tbody');
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: var(--color-danger); padding: 40px;">
+                            <div class="empty-state">
+                                <div class="empty-icon">&#9888;</div>
+                                <h3>Ошибка загрузки</h3>
+                                <p>Не удалось загрузить данные о водителях</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
             }
         }
-        
+
         // Загрузка статистики
         async function loadDriverStats() {
             try {
                 // TODO: const response = await fetch('/api/drivers/stats');
-                
+
                 document.getElementById('totalDrivers').textContent = '—';
                 document.getElementById('driversOnLine').textContent = '—';
                 document.getElementById('driversAvailable').textContent = '—';
@@ -485,41 +1302,104 @@
                 console.error('Ошибка:', error);
             }
         }
-        
+
         // Фильтрация
         function filterDrivers() {
             // TODO: Реализовать фильтрацию на клиенте или запрос к API
         }
-        
+
+        // Clear search button
+        function clearSearch() {
+            document.getElementById('searchDriver').value = '';
+            document.getElementById('clearSearchBtn').classList.remove('visible');
+            filterDrivers();
+        }
+
+        // Toggle clear button visibility
+        function toggleClearButton() {
+            const searchInput = document.getElementById('searchDriver');
+            const clearBtn = document.getElementById('clearSearchBtn');
+            if (searchInput.value.length > 0) {
+                clearBtn.classList.add('visible');
+            } else {
+                clearBtn.classList.remove('visible');
+            }
+        }
+
+        // Update driver count
+        function updateDriverCount(count) {
+            const countEl = document.getElementById('driverCount');
+            if (countEl) {
+                const word = getDriverWord(count);
+                countEl.textContent = count + ' ' + word;
+            }
+        }
+
+        function getDriverWord(count) {
+            const lastTwo = count % 100;
+            const lastOne = count % 10;
+            if (lastTwo >= 11 && lastTwo <= 19) return 'записей';
+            if (lastOne === 1) return 'запись';
+            if (lastOne >= 2 && lastOne <= 4) return 'записи';
+            return 'записей';
+        }
+
+        // Показать toast уведомление
+        function showToast(message, type = 'success') {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'toastSlideOut 0.3s ease forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
         // Открытие модального окна
         function openAddDriverModal() {
             document.getElementById('modalTitle').textContent = 'Добавить водителя';
             document.getElementById('driverForm').reset();
             document.getElementById('driverId').value = '';
-            document.getElementById('driverModal').style.display = 'flex';
+            document.getElementById('driverModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
         }
-        
+
         // Закрытие модального окна
         function closeDriverModal() {
-            document.getElementById('driverModal').style.display = 'none';
+            const modal = document.getElementById('driverModal');
+            modal.classList.add('closing');
+            setTimeout(() => {
+                modal.classList.remove('active', 'closing');
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+                // Reset display after animation
+                setTimeout(() => {
+                    modal.style.display = '';
+                }, 50);
+            }, 300);
         }
-        
+
         // Редактирование водителя
         function editDriver(driverId) {
             // TODO: Загрузить данные водителя и открыть модалку
             alert('Редактирование водителя #' + driverId);
         }
-        
+
         // Просмотр водителя
         function viewDriver(driverId) {
             // TODO: Показать детальную информацию
             alert('Просмотр водителя #' + driverId);
         }
-        
+
         // Сохранение водителя
         function saveDriver(event) {
             event.preventDefault();
-            
+
             const driverData = {
                 id: document.getElementById('driverId').value,
                 name: document.getElementById('driverName').value,
@@ -530,25 +1410,35 @@
                 status: document.getElementById('driverStatus').value,
                 notes: document.getElementById('driverNotes').value
             };
-            
+
             console.log('Сохранение водителя:', driverData);
-            
+
             // TODO: Отправка на сервер
             // fetch('/api/drivers', {
             //     method: driverData.id ? 'PUT' : 'POST',
             //     headers: { 'Content-Type': 'application/json' },
             //     body: JSON.stringify(driverData)
             // })
-            
-            alert('Водитель сохранён (демо-режим)');
+
+            showToast(driverData.id ? 'Водитель успешно обновлён' : 'Водитель успешно добавлен', 'success');
             closeDriverModal();
             loadDrivers();
         }
-        
+
         // Закрытие модалки по клику вне
         document.getElementById('driverModal').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeDriverModal();
+            }
+        });
+
+        // Закрытие модалки по Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('driverModal');
+                if (modal.classList.contains('active')) {
+                    closeDriverModal();
+                }
             }
         });
 

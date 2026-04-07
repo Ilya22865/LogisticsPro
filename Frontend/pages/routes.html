@@ -6,10 +6,9 @@
     <meta name="theme-color" content="#638ECB">
     <title>Построение маршрутов - LogisticsPro</title>
     <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
     <style>
         .routes-page .main-content {
             padding: 0;
@@ -36,46 +35,142 @@
             left: 20px;
             width: 400px;
             max-height: calc(100vh - 40px);
-            background: var(--color-white);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(99, 142, 203, 0.15);
+            border-radius: var(--border-radius-xl);
+            box-shadow: 0 8px 32px rgba(57, 88, 134, 0.18), 0 2px 8px rgba(57, 88, 134, 0.08);
             z-index: 1000;
             overflow-y: auto;
-            padding: 25px;
+            padding: 28px;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
         }
 
-        .route-builder-panel h3 {
+        .route-builder-panel .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
             margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid rgba(99, 142, 203, 0.1);
+        }
+
+        .route-builder-panel .panel-header h3 {
+            margin: 0;
             color: var(--color-dark);
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .route-builder-panel .panel-header .header-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
             font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .route-builder-panel .hint-box {
+            background: linear-gradient(135deg, rgba(99, 142, 203, 0.08), rgba(177, 201, 239, 0.12));
+            border-left: 3px solid var(--color-primary);
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+            padding: 14px 16px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: var(--color-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .route-builder-panel .hint-box .hint-icon {
+            font-size: 20px;
+            opacity: 0.8;
         }
 
         .route-points-list {
             margin-bottom: 20px;
+            min-height: 60px;
+        }
+
+        .route-points-list.empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, rgba(240, 243, 250, 0.6), rgba(213, 222, 239, 0.4));
+            border-radius: var(--border-radius-lg);
+            border: 2px dashed rgba(99, 142, 203, 0.3);
+        }
+
+        .route-points-list.empty-state .empty-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        .route-points-list.empty-state .empty-text {
+            font-size: 14px;
+            color: var(--color-primary);
+            text-align: center;
         }
 
         .route-point {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 10px;
-            background: var(--color-bg-light);
-            border-radius: var(--border-radius);
-            margin-bottom: 10px;
+            gap: 12px;
+            padding: 14px;
+            background: linear-gradient(135deg, rgba(240, 243, 250, 0.8), rgba(255, 255, 255, 0.9));
+            border-radius: var(--border-radius-lg);
+            margin-bottom: 12px;
+            border: 1px solid rgba(99, 142, 203, 0.12);
+            box-shadow: 0 2px 8px rgba(57, 88, 134, 0.06);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: slideInRight 0.3s ease;
+        }
+
+        .route-point:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(57, 88, 134, 0.12);
+            border-color: rgba(99, 142, 203, 0.25);
         }
 
         .route-point-marker {
-            width: 30px;
-            height: 30px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            background: var(--color-primary);
+            background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            font-size: 14px;
+            font-weight: 700;
+            font-size: 15px;
             flex-shrink: 0;
+            box-shadow: 0 3px 10px rgba(99, 142, 203, 0.3);
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .route-point-marker::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
+            border-radius: 50%;
         }
 
         .route-point-info {
@@ -89,80 +184,387 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            font-weight: 500;
         }
 
         .route-point-remove {
-            background: none;
-            border: none;
-            color: #dc3545;
+            background: rgba(231, 76, 60, 0.08);
+            border: 1px solid rgba(231, 76, 60, 0.2);
+            color: var(--color-danger);
             cursor: pointer;
-            font-size: 18px;
-            padding: 5px;
+            font-size: 20px;
+            padding: 6px;
             flex-shrink: 0;
-            min-width: 32px;
-            min-height: 32px;
+            min-width: 36px;
+            min-height: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
+            border-radius: 8px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 600;
+        }
+
+        .route-point-remove:hover {
+            background: var(--color-danger);
+            color: white;
+            border-color: var(--color-danger);
+            transform: scale(1.08);
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+        }
+
+        .route-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .route-actions .btn {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .route-actions .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .route-actions .btn:active::after {
+            width: 300px;
+            height: 300px;
         }
 
         .route-info-box {
-            background: var(--color-bg-light);
-            padding: 15px;
-            border-radius: var(--border-radius);
+            background: linear-gradient(135deg, rgba(240, 243, 250, 0.9), rgba(213, 222, 239, 0.7));
+            padding: 18px;
+            border-radius: var(--border-radius-lg);
             margin-top: 20px;
+            border: 1px solid rgba(99, 142, 203, 0.15);
+            box-shadow: inset 0 2px 6px rgba(57, 88, 134, 0.05);
         }
 
         .route-info-item {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
+            align-items: center;
+            margin-bottom: 12px;
             font-size: 14px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(99, 142, 203, 0.1);
         }
 
         .route-info-item:last-child {
             margin-bottom: 0;
+            border-bottom: none;
         }
 
         .route-info-label {
             color: var(--color-primary);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .route-info-value {
+            font-weight: 700;
+            color: var(--color-dark);
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .route-info-value.animate {
+            animation: pulse 0.5s ease;
+        }
+
+        .section-divider {
+            margin: 24px 0;
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(99, 142, 203, 0.2), transparent);
+        }
+
+        .section-title {
+            margin-bottom: 16px;
+            color: var(--color-dark);
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 18px;
+            background: linear-gradient(180deg, var(--color-primary), var(--color-accent));
+            border-radius: 2px;
+        }
+
+        .route-builder-panel .form-group {
+            margin-bottom: 16px;
+        }
+
+        .route-builder-panel .form-group label {
+            margin-bottom: 6px;
+            font-size: 13px;
             font-weight: 600;
             color: var(--color-dark);
         }
 
-        /* Мобильная адаптация */
+        .route-builder-panel .form-group input,
+        .route-builder-panel .form-group select {
+            padding: 12px 14px;
+            border: 2px solid rgba(213, 222, 239, 0.6);
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .route-builder-panel .form-group input:focus,
+        .route-builder-panel .form-group select:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 4px rgba(99, 142, 203, 0.15);
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-1px);
+        }
+
+        .route-builder-panel .form-group input:hover,
+        .route-builder-panel .form-group select:hover {
+            border-color: var(--color-accent);
+        }
+
+        .save-route-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(99, 142, 203, 0.3);
+            margin-top: 8px;
+        }
+
+        .save-route-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+            transition: left 0.5s;
+        }
+
+        .save-route-btn:hover::before {
+            left: 100%;
+        }
+
+        .save-route-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 142, 203, 0.4);
+        }
+
+        .save-route-btn:active {
+            transform: translateY(0);
+        }
+
+        .save-route-btn.loading {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .save-route-btn.success {
+            background: linear-gradient(135deg, var(--color-accent-green), #7BC9A0);
+            animation: pulse 0.5s ease;
+        }
+
+        /* Map click feedback */
+        .map-click-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 12px 18px;
+            border-radius: var(--border-radius-lg);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            z-index: 999;
+            font-size: 13px;
+            color: var(--color-dark);
+            display: none;
+            align-items: center;
+            gap: 8px;
+            animation: fadeInDown 0.3s ease;
+        }
+
+        .map-click-indicator.visible {
+            display: flex;
+        }
+
+        .map-click-indicator .click-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--color-primary);
+            border-radius: 50%;
+            animation: pulseGlow 1.5s infinite;
+        }
+
+        /* Success animation overlay */
+        .success-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 1001;
+            border-radius: var(--border-radius-xl);
+        }
+
+        .success-overlay.visible {
+            display: flex;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .success-overlay .success-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--color-accent-green), #7BC9A0);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+            margin-bottom: 16px;
+            animation: scaleIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 8px 25px rgba(83, 160, 127, 0.4);
+        }
+
+        .success-overlay .success-text {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--color-dark);
+        }
+
+        /* Loading state */
+        .loading-spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+        }
+
+        /* ========================================
+           Mobile Responsiveness
+           ======================================== */
+
+        /* Tablets (769-1024px) */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .route-builder-panel {
+                width: 350px;
+                padding: 24px;
+                top: 16px;
+                left: 16px;
+            }
+
+            .route-builder-panel .panel-header h3 {
+                font-size: 18px;
+            }
+        }
+
+        /* Phones (<768px) - Slide-up drawer */
         @media (max-width: 768px) {
             .route-builder-panel {
-                width: calc(100% - 24px);
-                left: 12px;
-                right: 12px;
+                position: fixed;
+                left: 0;
+                right: 0;
                 top: auto;
-                bottom: 12px;
+                bottom: 0;
+                width: 100%;
                 max-height: 55vh;
-                padding: 20px 15px;
+                border-radius: var(--border-radius-xl) var(--border-radius-xl) 0 0;
+                padding: 20px 16px 24px;
+                transform: translateY(0);
+                transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), max-height 0.3s ease;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
             }
 
-            .route-builder-panel h3 {
-                font-size: 16px;
-                margin-bottom: 15px;
+            .route-builder-panel.collapsed {
+                transform: translateY(calc(100% - 60px));
             }
 
-            .route-points-list {
-                margin-bottom: 15px;
+            .route-builder-panel .drag-handle {
+                display: block;
+                width: 40px;
+                height: 5px;
+                background: rgba(57, 88, 134, 0.3);
+                border-radius: 3px;
+                margin: 0 auto 16px;
+                cursor: grab;
+            }
+
+            .route-builder-panel .drag-handle:active {
+                cursor: grabbing;
+            }
+
+            .route-builder-panel .panel-toggle-btn {
+                display: flex;
+            }
+
+            .route-builder-panel .panel-header {
+                margin-bottom: 16px;
+                padding-bottom: 12px;
+            }
+
+            .route-builder-panel .panel-header h3 {
+                font-size: 17px;
+            }
+
+            .route-builder-panel .hint-box {
+                padding: 12px 14px;
+                font-size: 12px;
+                margin-bottom: 16px;
             }
 
             .route-point {
-                padding: 10px;
-                gap: 8px;
+                padding: 12px;
+                gap: 10px;
             }
 
             .route-point-marker {
-                width: 28px;
-                height: 28px;
-                font-size: 13px;
+                width: 32px;
+                height: 32px;
+                font-size: 14px;
             }
 
             .route-point-address {
@@ -170,44 +572,54 @@
             }
 
             .route-point-remove {
-                font-size: 16px;
-                min-width: 28px;
-                min-height: 28px;
+                min-width: 44px;
+                min-height: 44px;
+                font-size: 22px;
+            }
+
+            .route-actions .btn {
+                min-height: 48px;
+                font-size: 14px;
             }
 
             .route-info-box {
-                padding: 12px;
-                margin-top: 15px;
+                padding: 14px;
+                margin-top: 16px;
             }
 
             .route-info-item {
                 font-size: 13px;
-                margin-bottom: 8px;
+                margin-bottom: 10px;
             }
 
-            .route-builder-panel .btn {
-                padding: 12px;
+            .route-info-value {
                 font-size: 14px;
-                min-height: 44px;
             }
 
             .route-builder-panel .form-group input,
             .route-builder-panel .form-group select {
                 font-size: 16px;
-                padding: 12px 14px;
+                padding: 14px;
+                min-height: 48px;
             }
 
             .route-builder-panel .form-group label {
                 font-size: 13px;
             }
 
-            .route-builder-panel .alert {
-                padding: 10px 12px;
-                font-size: 12px;
+            .save-route-btn {
+                min-height: 48px;
+                font-size: 15px;
+                padding: 14px;
             }
 
-            .routes-page .map-placeholder {
-                height: 100vh;
+            .section-divider {
+                margin: 18px 0;
+            }
+
+            .section-title {
+                font-size: 15px;
+                margin-bottom: 14px;
             }
 
             .menu-toggle {
@@ -217,30 +629,31 @@
             .sidebar {
                 z-index: 1050 !important;
             }
+
+            .routes-page .map-placeholder {
+                height: 100vh;
+            }
         }
 
+        /* Small phones (<480px) */
         @media (max-width: 480px) {
             .route-builder-panel {
-                width: calc(100% - 16px);
-                left: 8px;
-                right: 8px;
-                bottom: 8px;
                 max-height: 60vh;
-                padding: 15px 12px;
+                padding: 18px 14px 22px;
             }
 
-            .route-builder-panel h3 {
-                font-size: 15px;
+            .route-builder-panel .panel-header h3 {
+                font-size: 16px;
             }
 
             .route-point {
-                padding: 8px;
+                padding: 10px;
             }
 
             .route-point-marker {
-                width: 26px;
-                height: 26px;
-                font-size: 12px;
+                width: 30px;
+                height: 30px;
+                font-size: 13px;
             }
 
             .route-point-address {
@@ -251,40 +664,88 @@
                 font-size: 12px;
             }
 
-            .route-builder-panel hr {
-                margin: 15px 0;
-            }
-
-            .route-builder-panel h4 {
-                font-size: 14px;
-                margin-bottom: 12px;
+            .route-info-value {
+                font-size: 13px;
             }
         }
 
-        @media (min-width: 769px) and (max-width: 1024px) {
-            .route-builder-panel {
-                width: 350px;
-                padding: 20px;
-            }
-        }
-
+        /* Large screens (>1441px) */
         @media (min-width: 1441px) {
             .route-builder-panel {
                 width: 450px;
-                padding: 30px;
+                padding: 32px;
             }
 
-            .route-builder-panel h3 {
-                font-size: 20px;
+            .route-builder-panel .panel-header h3 {
+                font-size: 22px;
+            }
+
+            .route-point {
+                padding: 16px;
+            }
+
+            .route-point-marker {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
             }
         }
 
-        /* Пейзажная ориентация */
+        /* Landscape orientation on mobile */
         @media (max-height: 500px) and (orientation: landscape) and (max-width: 768px) {
             .route-builder-panel {
-                max-height: 80vh;
-                bottom: 8px;
+                max-height: 75vh;
+                bottom: 0;
+                padding: 14px 16px 18px;
             }
+
+            .route-builder-panel .panel-header {
+                margin-bottom: 10px;
+                padding-bottom: 8px;
+            }
+
+            .route-builder-panel .hint-box {
+                margin-bottom: 12px;
+                padding: 10px 12px;
+            }
+
+            .route-points-list {
+                max-height: 30vh;
+                overflow-y: auto;
+            }
+        }
+
+        /* Panel toggle button (mobile only) */
+        .panel-toggle-btn {
+            display: none;
+            position: absolute;
+            top: -45px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(99, 142, 203, 0.2);
+            border-radius: 10px 10px 0 0;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+        }
+
+        .panel-toggle-btn .toggle-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+
+        .route-builder-panel.collapsed .panel-toggle-btn .toggle-icon {
+            transform: rotate(180deg);
         }
     </style>
 </head>
@@ -302,7 +763,7 @@
             <h2>LogisticsPro</h2>
             <span class="role-badge">Администратор</span>
         </div>
-        
+
         <ul class="sidebar-menu">
             <li><a href="admin.html">Дашборд</a></li>
             <li><a href="routes.html" class="active">Построение маршрутов</a></li>
@@ -311,7 +772,7 @@
             <li><a href="clients.html">Клиенты</a></li>
             <li><a href="admin-settings.html">Настройки</a></li>
         </ul>
-        
+
         <div class="sidebar-user">
             <div class="user-info">
                 <div class="avatar" id="userAvatar">А</div>
@@ -325,91 +786,151 @@
             </button>
         </div>
     </aside>
-    
+
     <!-- Основной контент - Карта -->
     <main class="main-content">
         <div class="map-container">
             <!-- Панель построения маршрута -->
-            <div class="route-builder-panel">
-                <h3>Построение маршрута</h3>
-                
-                <div class="alert alert-info" style="font-size: 13px; padding: 12px;">
-                    Кликните по карте, чтобы добавить точки маршрута
+            <div class="route-builder-panel" id="routeBuilderPanel">
+                <!-- Drag handle for mobile -->
+                <div class="drag-handle" id="dragHandle"></div>
+
+                <!-- Toggle button for mobile -->
+                <button class="panel-toggle-btn" id="panelToggleBtn" onclick="togglePanel()" aria-label="Свернуть/Развернуть">
+                    <span class="toggle-icon">&#9650;</span>
+                </button>
+
+                <!-- Success overlay -->
+                <div class="success-overlay" id="successOverlay">
+                    <div class="success-icon">&#10003;</div>
+                    <div class="success-text">Маршрут сохранён!</div>
                 </div>
-                
-                <div class="route-points-list" id="routePointsList">
-                    <div class="route-point">
-                        <div class="route-point-marker">A</div>
-                        <div class="route-point-info">
-                            <div class="route-point-address">Точка отправления</div>
-                        </div>
-                    </div>
-                    <div class="route-point">
-                        <div class="route-point-marker">B</div>
-                        <div class="route-point-info">
-                            <div class="route-point-address">Точка назначения</div>
-                        </div>
-                    </div>
+
+                <div class="panel-header">
+                    <div class="header-icon">&#128205;</div>
+                    <h3>Построение маршрута</h3>
                 </div>
-                
-                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                    <button class="btn btn-primary" style="flex: 1;" onclick="addRoutePoint()">Добавить точку</button>
+
+                <div class="hint-box">
+                    <span class="hint-icon">&#128073;</span>
+                    <span>Кликните по карте, чтобы добавить точки маршрута</span>
+                </div>
+
+                <div class="route-points-list empty-state" id="routePointsList">
+                    <div class="empty-icon">&#128506;</div>
+                    <div class="empty-text">Точки маршрута не добавлены.<br>Кликните по карте или нажмите «Добавить точку»</div>
+                </div>
+
+                <div class="route-actions">
+                    <button class="btn btn-primary" onclick="addRoutePoint()">Добавить точку</button>
                     <button class="btn btn-secondary" onclick="clearRoutePoints()">Очистить</button>
                 </div>
-                
+
                 <div class="route-info-box">
                     <div class="route-info-item">
-                        <span class="route-info-label">Расстояние:</span>
+                        <span class="route-info-label">&#128207; Расстояние:</span>
                         <span class="route-info-value" id="routeDistance">— км</span>
                     </div>
                     <div class="route-info-item">
-                        <span class="route-info-label">Время в пути:</span>
+                        <span class="route-info-label">&#9201; Время в пути:</span>
                         <span class="route-info-value" id="routeTime">— ч</span>
                     </div>
                     <div class="route-info-item">
-                        <span class="route-info-label">Точек:</span>
-                        <span class="route-info-value" id="routePointsCount">2</span>
+                        <span class="route-info-label">&#128205; Точек:</span>
+                        <span class="route-info-value" id="routePointsCount">0</span>
                     </div>
                 </div>
-                
-                <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--color-bg-secondary);">
-                
-                <h4 style="margin-bottom: 15px;">Привязка к заказу</h4>
-                
+
+                <hr class="section-divider">
+
+                <h4 class="section-title">Привязка к заказу</h4>
+
                 <div class="form-group">
-                    <label for="orderSelect">Заказ</label>
+                    <label for="orderSelect">&#128203; Заказ</label>
                     <select id="orderSelect">
                         <option value="">Выберите заказ</option>
                         <!-- Загружается из БД -->
                     </select>
                 </div>
-                
+
                 <div class="form-group">
-                    <label for="driverSelect">Водитель</label>
+                    <label for="driverSelect">&#128100; Водитель</label>
                     <select id="driverSelect">
                         <option value="">Выберите водителя</option>
                         <!-- Загружается из БД -->
                     </select>
                 </div>
-                
+
                 <div class="form-group">
-                    <label for="routeDate">Дата отправления</label>
+                    <label for="routeDate">&#128197; Дата отправления</label>
                     <input type="date" id="routeDate">
                 </div>
-                
-                <button class="btn btn-primary" style="width: 100%;" onclick="saveRoute()">
+
+                <button class="save-route-btn" id="saveRouteBtn" onclick="saveRoute()">
                     Сохранить маршрут
                 </button>
             </div>
-            
+
             <div id="adminMap" class="map-placeholder" onclick="addPointFromMap()"></div>
         </div>
     </main>
-    
+
     <script src="../js/auth.js"></script>
     <script src="../js/map-admin.js"></script>
     <script>
         let routePoints = [];
+        let routeMarkers = [];
+
+        // Panel toggle for mobile
+        function togglePanel() {
+            const panel = document.getElementById('routeBuilderPanel');
+            panel.classList.toggle('collapsed');
+        }
+
+        // Drag handle functionality for mobile
+        (function initDragHandle() {
+            const handle = document.getElementById('dragHandle');
+            const panel = document.getElementById('routeBuilderPanel');
+            let startY = 0;
+            let startTransform = 0;
+            let isDragging = false;
+
+            function onTouchStart(e) {
+                startY = e.touches[0].clientY;
+                const transform = panel.style.transform;
+                const match = transform.match(/translateY\((.+)px\)/);
+                startTransform = match ? parseFloat(match[1]) : 0;
+                isDragging = true;
+                panel.style.transition = 'none';
+            }
+
+            function onTouchMove(e) {
+                if (!isDragging) return;
+                const deltaY = e.touches[0].clientY - startY;
+                const newTransform = startTransform + deltaY;
+                const panelHeight = panel.offsetHeight;
+                const clampedTransform = Math.max(0, Math.min(newTransform, panelHeight - 60));
+                panel.style.transform = `translateY(${clampedTransform}px)`;
+            }
+
+            function onTouchEnd() {
+                if (!isDragging) return;
+                isDragging = false;
+                panel.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+                const transform = panel.style.transform;
+                const match = transform.match(/translateY\((.+)px\)/);
+                const currentTransform = match ? parseFloat(match[1]) : 0;
+                if (currentTransform > panel.offsetHeight / 3) {
+                    panel.classList.add('collapsed');
+                } else {
+                    panel.classList.remove('collapsed');
+                }
+            }
+
+            handle.addEventListener('touchstart', onTouchStart, { passive: true });
+            handle.addEventListener('touchmove', onTouchMove, { passive: true });
+            handle.addEventListener('touchend', onTouchEnd);
+        })();
 
         function initRoutePage() {
             loadOrdersForSelect();
@@ -422,23 +943,39 @@
             } else {
                 console.error('Карта не инициализирована');
             }
+
+            // Set default date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('routeDate').value = today;
         }
 
         document.addEventListener('DOMContentLoaded', initRoutePage);
-        
+
         function addRoutePoint() {
-            alert('Кликните по карте, чтобы добавить точку');
+            if (window.innerWidth <= 768) {
+                const panel = document.getElementById('routeBuilderPanel');
+                panel.classList.remove('collapsed');
+            }
         }
-        
+
         function addPointFromMap(lat, lng) {
             const count = routePoints.length;
             const labels = ['A', 'B', 'C', 'D', 'E', 'F'];
             const label = labels[count] || (count + 1);
 
-
             if (adminMapInstance) {
-                const marker = L.marker([lat, lng], { draggable: 'true'}).addTo(adminMapInstance);
-                marker.bindPopup(`<b>Точка ${label}</b><br>${lat.toFixed(4)}, ${lng.toFixed(4)}`).openPopup();
+                const marker = L.marker([lat, lng], { draggable: 'true' }).addTo(adminMapInstance);
+
+                marker.on('dragend', function(e) {
+                    const newPos = e.target.getLatLng();
+                    const pointIndex = routePoints.findIndex(p => p.marker === marker);
+                    if (pointIndex !== -1) {
+                        routePoints[pointIndex].lat = newPos.lat;
+                        routePoints[pointIndex].lng = newPos.lng;
+                        buildRoute();
+                        updateRouteInfo();
+                    }
+                });
 
                 routePoints.push({
                     id: Date.now(),
@@ -449,21 +986,35 @@
                     marker: marker
                 });
 
+                routeMarkers.push(marker);
+
                 console.log('routePoints after push:', routePoints);
                 console.log('New point label:', routePoints[routePoints.length - 1].label);
 
                 renderRoutePoints();
+                buildRoute();
                 updateRouteInfo();
             }
         }
-        
+
         function renderRoutePoints() {
             const container = document.getElementById('routePointsList');
             const labels = ['A', 'B', 'C', 'D', 'E', 'F'];
-            
+
             console.log('renderRoutePoints called, routePoints:', routePoints);
             console.log('container exists:', !!container);
 
+            if (routePoints.length === 0) {
+                container.className = 'route-points-list empty-state';
+                container.innerHTML = `
+                    <div class="empty-icon">&#128506;</div>
+                    <div class="empty-text">Точки маршрута не добавлены.<br>Кликните по карте или нажмите «Добавить точку»</div>
+                `;
+                document.getElementById('routePointsCount').textContent = '0';
+                return;
+            }
+
+            container.className = 'route-points-list';
             container.innerHTML = routePoints.map((point, index) => {
                 const pointLabel = point.label || labels[index] || (index + 1);
                 console.log(`Point ${index}: label=${pointLabel}, point.label=${point.label}`);
@@ -473,58 +1024,84 @@
                     <div class="route-point-info">
                         <div class="route-point-address">${point.address || 'Точка на карте'}</div>
                     </div>
-                    <button class="route-point-remove" onclick="removeRoutePoint(${point.id})">×</button>
+                    <button class="route-point-remove" onclick="removeRoutePoint(${point.id})" aria-label="Удалить точку">&times;</button>
                 </div>
             `}).join('');
 
             document.getElementById('routePointsCount').textContent = routePoints.length;
             console.log('renderRoutePoints completed, HTML:', container.innerHTML);
         }
-        
+
         function removeRoutePoint(pointId) {
-            const point = routePoints.find(p => p.id === pointId);
-            if (point && point.marker) {
-                adminMapInstance.removeLayer(point.marker);
+            const pointIndex = routePoints.findIndex(p => p.id === pointId);
+            if (pointIndex !== -1) {
+                const point = routePoints[pointIndex];
+                if (point.marker && adminMapInstance) {
+                    adminMapInstance.removeLayer(point.marker);
+                }
+                routeMarkers = routeMarkers.filter(m => m !== point.marker);
+                routePoints.splice(pointIndex, 1);
+                renderRoutePoints();
+                updateRouteInfo();
+                if (routePoints.length >= 2) {
+                    buildRoute();
+                } else if (routingControl && adminMapInstance) {
+                    adminMapInstance.removeControl(routingControl);
+                    routingControl = null;
+                }
             }
-            routePoints = routePoints.filter(p => p.id !== pointId);
-            renderRoutePoints();
-            updateRouteInfo();
         }
 
         function clearRoutePoints() {
-            routePoints.forEach(point => {
-                if (point.marker) {
-                    adminMapInstance.removeLayer(point.marker);
+            routeMarkers.forEach(marker => {
+                if (marker && adminMapInstance) {
+                    adminMapInstance.removeLayer(marker);
                 }
             });
+            routeMarkers = [];
             routePoints = [];
+            if (routingControl && adminMapInstance) {
+                adminMapInstance.removeControl(routingControl);
+                routingControl = null;
+            }
             renderRoutePoints();
-            updateRouteInfo();
             document.getElementById('routeDistance').textContent = '— км';
             document.getElementById('routeTime').textContent = '— ч';
         }
-        
+
         function updateRouteInfo() {
+            const distanceEl = document.getElementById('routeDistance');
+            const timeEl = document.getElementById('routeTime');
+
             if (routePoints.length < 2) {
+                distanceEl.textContent = '— км';
+                timeEl.textContent = '— ч';
                 return;
             }
-            
+
             let totalDistance = 0;
             for (let i = 1; i < routePoints.length; i++) {
                 const prev = routePoints[i - 1];
                 const curr = routePoints[i];
                 totalDistance += calculateDistance(prev.lat, prev.lng, curr.lat, curr.lng);
             }
-            
+
             const distanceKm = totalDistance.toFixed(1);
-            const timeHours = (totalDistance / 80).toFixed(1); 
-            
-            document.getElementById('routeDistance').textContent = distanceKm + ' км';
-            document.getElementById('routeTime').textContent = timeHours + ' ч';
+            const timeHours = (totalDistance / 80).toFixed(1);
+
+            // Animate values
+            animateValue(distanceEl, distanceKm + ' км');
+            animateValue(timeEl, timeHours + ' ч');
         }
-        
+
+        function animateValue(element, newValue) {
+            element.classList.add('animate');
+            element.textContent = newValue;
+            setTimeout(() => element.classList.remove('animate'), 500);
+        }
+
         function calculateDistance(lat1, lng1, lat2, lng2) {
-            const R = 6371; 
+            const R = 6371;
             const dLat = (lat2 - lat1) * Math.PI / 180;
             const dLng = (lng2 - lng1) * Math.PI / 180;
             const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
@@ -533,7 +1110,7 @@
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
             return R * c;
         }
-        
+
         // Загрузка заказов
         async function loadOrdersForSelect() {
             try {
@@ -544,7 +1121,7 @@
                 console.error('Ошибка:', error);
             }
         }
-        
+
         // Загрузка водителей
         async function loadDriversForSelect() {
             try {
@@ -555,13 +1132,17 @@
                 console.error('Ошибка:', error);
             }
         }
-        
+
         // Сохранение маршрута
         function saveRoute() {
             if (routePoints.length < 2) {
                 alert('Добавьте минимум 2 точки маршрута');
                 return;
             }
+
+            const btn = document.getElementById('saveRouteBtn');
+            btn.classList.add('loading');
+            btn.innerHTML = '<span class="loading-spinner"></span> Сохранение...';
 
             const routeData = {
                 points: routePoints.map(p => ({
@@ -577,19 +1158,31 @@
             };
 
             console.log('Сохранение маршрута:', routeData);
-            
+
             // TODO: Отправка на сервер
             // await fetch('/api/routes', {
             //     method: 'POST',
             //     headers: { 'Content-Type': 'application/json' },
             //     body: JSON.stringify(routeData)
             // });
-            
-            alert('Маршрут сохранён!\nТочек: ' + routePoints.length + 
-                  '\nРасстояние: ' + routeData.distance +
-                  '\nВремя: ' + routeData.time);
-            
-            clearRoutePoints();
+
+            // Simulate save delay and show success
+            setTimeout(() => {
+                btn.classList.remove('loading');
+                btn.classList.add('success');
+                btn.innerHTML = '&#10003; Сохранено!';
+
+                // Show success overlay
+                const overlay = document.getElementById('successOverlay');
+                overlay.classList.add('visible');
+
+                setTimeout(() => {
+                    overlay.classList.remove('visible');
+                    btn.classList.remove('success');
+                    btn.innerHTML = 'Сохранить маршрут';
+                    clearRoutePoints();
+                }, 2000);
+            }, 800);
         }
 
         // Переключение бокового меню на мобильных

@@ -65,7 +65,8 @@ if (loginForm) {
                 localStorage.setItem('user', JSON.stringify(userData));
                 localStorage.setItem('token', userData.token);
 
-                if (userData.role === 'admin' || userData.role === 'staff') {
+                const role = (userData.role || '').toLowerCase();
+                if (role === 'admin' || role === 'staff') {
                     window.location.href = 'admin.html';
                 } else {
                     window.location.href = 'dashboard.html';
@@ -119,10 +120,13 @@ if (registerForm) {
 
             if (response.ok) {
                 const userData = await response.json();
+                // Server returns 'adminToken' for admin registration, 'token' for regular
+                const token = userData.adminToken || userData.token;
                 localStorage.setItem('user', JSON.stringify(userData));
-                localStorage.setItem('token', userData.token);
+                localStorage.setItem('token', token);
 
-                if (userData.role === 'admin' || userData.role === 'staff') {
+                const role = (userData.role || '').toLowerCase();
+                if (role === 'admin' || role === 'staff') {
                     window.location.href = 'admin.html';
                 } else {
                     window.location.href = 'dashboard.html';
@@ -148,7 +152,8 @@ function checkAuth(): User | null {
     const user = JSON.parse(localStorage.getItem('user') || 'null') as User | null;
 
     if (user && window.location.pathname.includes('index.html')) {
-        if (user.role === 'admin' || user.role === 'staff') {
+        const role = (user.role || '').toLowerCase();
+        if (role === 'admin' || role === 'staff') {
             window.location.href = 'admin.html';
         } else {
             window.location.href = 'dashboard.html';

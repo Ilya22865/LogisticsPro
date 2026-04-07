@@ -40,6 +40,7 @@ function buildRoute() {
     routingControl = (L as any).Routing.control({
         waypoints: waypoints,
         routeWhileDragging: true,
+        show: false,
         geocoder: (L.Control as any).Geocoder ? (L.Control as any).Geocoder.nominatim() : null,
         language: 'ru'
     }).addTo(adminMapInstance!);

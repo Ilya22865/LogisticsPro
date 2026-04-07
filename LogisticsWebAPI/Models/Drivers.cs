@@ -13,6 +13,7 @@ public class Driver
     public int Age { get; set; }
     public DriverStatus Status { get; set; }
     public string PhoneNumber { get; set; } = null!;
-    public int? TruckID { get; set; }
+    public int? TruckId { get; set; }
     public Truck? Truck { get; set; }
+    public List<Order> Orders { get; set; } = new List<Order>();
 }

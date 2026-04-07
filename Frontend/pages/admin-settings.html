@@ -9,122 +9,713 @@
     <title>Настройки - LogisticsPro</title>
     <link rel="stylesheet" href="../css/styles.css">
     <style>
-        /* Сетка настроек */
+        /* ===== Settings Grid ===== */
         .settings-grid {
             grid-template-columns: 1fr 1fr;
         }
 
-        /* Секции настроек */
+        /* ===== Section Cards ===== */
         .settings-section {
-            padding: 20px;
+            padding: 28px;
             background: var(--color-bg-light);
+            border-radius: var(--border-radius-lg);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(99, 142, 203, 0.08);
+            transition: var(--transition-smooth);
+        }
+
+        .settings-section:hover {
+            box-shadow: var(--shadow-soft);
+            border-color: rgba(99, 142, 203, 0.15);
+        }
+
+        /* Gradient top border for sections */
+        .settings-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+        }
+
+        .settings-section.section-company::before {
+            background: linear-gradient(90deg, var(--color-accent-green), #7BC9A0);
+        }
+
+        .settings-section.section-password::before {
+            background: linear-gradient(90deg, var(--color-accent-warm), #F4A261);
+        }
+
+        .settings-section.section-staff::before {
+            background: linear-gradient(90deg, var(--color-accent-purple), #A78BDA);
+        }
+
+        .settings-section.section-notifications::before {
+            background: linear-gradient(90deg, #3498DB, #5DADE2);
+        }
+
+        .settings-section.section-logging::before {
+            background: linear-gradient(90deg, #7F8C8D, #95A5A6);
+        }
+
+        .settings-section.section-backup::before {
+            background: linear-gradient(90deg, #1ABC9C, #48C9B0);
+        }
+
+        .settings-section h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 17px;
+            color: var(--color-dark);
+        }
+
+        .settings-section h3 .section-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .settings-section.section-password h3 .section-icon {
+            background: rgba(224, 123, 83, 0.12);
+            color: var(--color-accent-warm);
+        }
+
+        .settings-section.section-staff h3 .section-icon {
+            background: rgba(139, 111, 184, 0.12);
+            color: var(--color-accent-purple);
+        }
+
+        .settings-section.section-notifications h3 .section-icon {
+            background: rgba(52, 152, 219, 0.12);
+            color: #3498DB;
+        }
+
+        .settings-section.section-logging h3 .section-icon {
+            background: rgba(127, 140, 141, 0.12);
+            color: #7F8C8D;
+        }
+
+        .settings-section.section-backup h3 .section-icon {
+            background: rgba(26, 188, 156, 0.12);
+            color: #1ABC9C;
+        }
+
+        .settings-section p {
+            color: var(--color-primary);
+            font-size: 14px;
+            margin-bottom: 18px;
+            line-height: 1.5;
+        }
+
+        /* ===== Enhanced Form Inputs ===== */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            margin-bottom: 6px;
+        }
+
+        .form-group input,
+        .form-group select {
+            transition: var(--transition-smooth);
             border-radius: var(--border-radius);
         }
 
-        /* Таблица кодов */
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 4px rgba(99, 142, 203, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .form-group input.is-valid,
+        .form-group select.is-valid {
+            border-color: var(--color-accent-green);
+            box-shadow: 0 0 0 4px rgba(83, 160, 127, 0.12);
+        }
+
+        .form-group input.is-invalid,
+        .form-group select.is-invalid {
+            border-color: var(--color-danger);
+            box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.12);
+        }
+
+        /* ===== Save Confirmation Animation ===== */
+        @keyframes saveSuccess {
+            0% { transform: scale(1); }
+            20% { transform: scale(1.02); }
+            40% { transform: scale(1); }
+            60% { transform: scale(1.01); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes checkmark {
+            0% { stroke-dashoffset: 50; }
+            100% { stroke-dashoffset: 0; }
+        }
+
+        @keyframes btnPulse {
+            0% { box-shadow: 0 0 0 0 rgba(99, 142, 203, 0.4); }
+            70% { box-shadow: 0 0 0 12px rgba(99, 142, 203, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(99, 142, 203, 0); }
+        }
+
+        .btn-saving {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .btn-saved {
+            animation: btnPulse 1s ease;
+            background: var(--color-accent-green) !important;
+        }
+
+        .btn-error {
+            animation: btnPulse 1s ease;
+            background: var(--color-danger) !important;
+        }
+
+        .settings-section.save-success {
+            animation: saveSuccess 0.6s ease;
+        }
+
+        /* ===== Staff Codes Table ===== */
         .staff-codes-wrapper {
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(99, 142, 203, 0.1);
         }
 
-        /* Опции уведомлений */
+        #staffCodesTable {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #staffCodesTable thead {
+            background: linear-gradient(135deg, var(--color-accent-purple), var(--color-primary));
+        }
+
+        #staffCodesTable thead th {
+            color: var(--color-white);
+            padding: 14px 16px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-weight: 700;
+            border: none;
+            white-space: nowrap;
+        }
+
+        #staffCodesTable thead th:first-child {
+            border-radius: var(--border-radius) 0 0 0;
+        }
+
+        #staffCodesTable thead th:last-child {
+            border-radius: 0 var(--border-radius) 0 0;
+        }
+
+        #staffCodesTable tbody tr {
+            transition: var(--transition-smooth);
+        }
+
+        #staffCodesTable tbody tr:hover {
+            background: rgba(99, 142, 203, 0.06);
+        }
+
+        #staffCodesTable tbody td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--color-bg-secondary);
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        #staffCodesTable tbody td code {
+            background: rgba(139, 111, 184, 0.1);
+            color: var(--color-accent-purple);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .code-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .code-status.active {
+            background: rgba(83, 160, 127, 0.12);
+            color: var(--color-accent-green);
+        }
+
+        .code-status.used {
+            background: rgba(127, 140, 141, 0.12);
+            color: #7F8C8D;
+        }
+
+        .code-status.expired {
+            background: rgba(224, 123, 83, 0.12);
+            color: var(--color-accent-warm);
+        }
+
+        .code-status::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .btn-revoke {
+            padding: 6px 14px;
+            border: none;
+            border-radius: 6px;
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--color-danger);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            white-space: nowrap;
+        }
+
+        .btn-revoke:hover {
+            background: rgba(231, 76, 60, 0.2);
+            transform: translateY(-1px);
+        }
+
+        /* ===== Notification Options ===== */
         .notification-options {
             display: grid;
-            gap: 15px;
+            gap: 12px;
         }
 
-        .notification-options label {
+        .notification-option {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
+            padding: 14px 16px;
+            background: var(--color-white);
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(99, 142, 203, 0.08);
             cursor: pointer;
+            transition: var(--transition-smooth);
         }
 
-        /* Кнопки действий */
+        .notification-option:hover {
+            border-color: rgba(99, 142, 203, 0.2);
+            box-shadow: 0 2px 8px rgba(99, 142, 203, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .notification-option .notif-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .notification-option .notif-icon.orders {
+            background: rgba(99, 142, 203, 0.12);
+            color: var(--color-primary);
+        }
+
+        .notification-option .notif-icon.route {
+            background: rgba(83, 160, 127, 0.12);
+            color: var(--color-accent-green);
+        }
+
+        .notification-option .notif-icon.driver {
+            background: rgba(224, 123, 83, 0.12);
+            color: var(--color-accent-warm);
+        }
+
+        .notification-option .notif-icon.report {
+            background: rgba(139, 111, 184, 0.12);
+            color: var(--color-accent-purple);
+        }
+
+        .notification-option .notif-text {
+            flex: 1;
+            font-size: 14px;
+            color: var(--color-dark);
+        }
+
+        /* Custom checkbox styling */
+        .notification-option input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--color-bg-secondary);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .notification-option input[type="checkbox"]:checked {
+            background: var(--color-primary);
+            border-color: var(--color-primary);
+        }
+
+        .notification-option input[type="checkbox"]:checked::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 7px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        .notification-option input[type="checkbox"]:focus {
+            box-shadow: 0 0 0 3px rgba(99, 142, 203, 0.2);
+        }
+
+        /* ===== Action Buttons ===== */
         .action-buttons {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             flex-wrap: wrap;
         }
 
-        /* Опасная зона */
+        .action-buttons .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition-smooth);
+        }
+
+        .action-buttons .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.4s, height 0.4s;
+        }
+
+        .action-buttons .btn:active::after {
+            width: 200px;
+            height: 200px;
+        }
+
+        /* ===== Danger Zone ===== */
+        .danger-zone-wrapper {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .danger-zone-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--color-danger), var(--color-accent-warm));
+        }
+
+        .danger-zone-wrapper .danger-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .danger-zone-wrapper .danger-header h2 {
+            color: var(--color-danger);
+            margin-bottom: 0;
+        }
+
+        .danger-zone-wrapper .danger-header .danger-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(231, 76, 60, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
         .danger-zone {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             flex-wrap: wrap;
         }
 
-        /* Мобильная адаптация */
-        @media (max-width: 768px) {
-            .settings-grid {
-                grid-template-columns: 1fr !important;
-                gap: 20px;
+        .danger-zone .btn {
+            transition: var(--transition-smooth);
+        }
+
+        .danger-zone .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* ===== Table Container Styling ===== */
+        .table-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .table-container h2 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .table-container h2::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: linear-gradient(180deg, var(--color-primary), var(--color-accent));
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        /* ===== Password Form Section ===== */
+        .password-divider {
+            margin: 28px 0;
+            border: none;
+            border-top: 1px solid var(--color-bg-secondary);
+            position: relative;
+        }
+
+        .password-divider::after {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--color-accent-warm), transparent);
+        }
+
+        .password-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .password-header h3 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .password-header .lock-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: rgba(224, 123, 83, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: var(--color-accent-warm);
+        }
+
+        /* ===== Landscape Orientation ===== */
+        @media (max-height: 500px) and (orientation: landscape) and (max-width: 768px) {
+            .settings-section {
+                padding: 14px;
+            }
+
+            .settings-section h3 {
+                font-size: 15px;
+                margin-bottom: 6px;
+            }
+
+            .settings-section p {
+                font-size: 13px;
+                margin-bottom: 10px;
+            }
+
+            .form-group {
+                margin-bottom: 10px;
+            }
+
+            .form-group input,
+            .form-group select {
+                padding: 10px 12px;
+                min-height: 40px;
+            }
+
+            .notification-option {
+                padding: 10px 12px;
+            }
+
+            .notification-option .notif-icon {
+                width: 32px;
+                height: 32px;
+                font-size: 14px;
             }
 
             .table-container {
-                padding: 15px;
+                padding: 12px;
+            }
+
+            .action-buttons {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            .action-buttons .btn {
+                flex: 1;
+                min-width: 120px;
+                padding: 10px 14px;
+                font-size: 13px;
+                min-height: 40px;
+            }
+        }
+
+        /* ===== Mobile Responsiveness ===== */
+        @media (max-width: 1024px) {
+            .settings-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            /* Single column settings */
+            .settings-grid {
+                grid-template-columns: 1fr !important;
+                gap: 16px;
+            }
+
+            .table-container {
+                padding: 18px;
             }
 
             .table-container h2 {
                 font-size: 18px;
+                margin-bottom: 16px;
             }
 
-            .table-container h3 {
-                font-size: 15px;
+            .table-container h2::before {
+                height: 20px;
             }
 
+            .settings-section {
+                padding: 20px;
+            }
+
+            .settings-section h3 {
+                font-size: 16px;
+            }
+
+            .settings-section p {
+                font-size: 13px;
+                margin-bottom: 14px;
+            }
+
+            /* Stack form headers */
+            .settings-section > div:first-child {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 12px;
+            }
+
+            .settings-section > div:first-child .btn {
+                width: 100%;
+                max-width: none;
+            }
+
+            /* Form inputs */
             .form-group {
-                margin-bottom: 15px;
+                margin-bottom: 14px;
             }
 
             .form-group input,
             .form-group select {
                 font-size: 16px;
                 padding: 14px 15px;
+                min-height: 48px;
             }
 
+            .form-group label {
+                font-size: 14px;
+                margin-bottom: 6px;
+            }
+
+            /* Buttons with 48px touch targets */
             .btn {
                 min-height: 48px;
                 padding: 14px 20px;
+                font-size: 15px;
             }
 
-            .settings-section {
-                padding: 15px;
-            }
-
-            .settings-section > div:first-child {
-                flex-direction: column;
-                align-items: flex-start !important;
-                gap: 10px;
-            }
-
-            .settings-section .btn {
-                width: 100%;
-                max-width: none;
+            /* Staff codes table */
+            .staff-codes-wrapper {
+                margin: 0 -4px;
+                border-radius: var(--border-radius);
             }
 
             #staffCodesTable {
-                font-size: 12px;
+                font-size: 13px;
+                min-width: 500px;
             }
 
-            #staffCodesTable th,
-            #staffCodesTable td {
-                padding: 8px 4px;
+            #staffCodesTable thead th {
+                padding: 12px 14px;
+                font-size: 11px;
             }
 
-            .staff-codes-wrapper {
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
+            #staffCodesTable tbody td {
+                padding: 10px 14px;
             }
 
+            /* Notification options */
             .notification-options {
-                gap: 12px;
+                gap: 10px;
             }
 
-            .notification-options label {
-                padding: 8px 0;
+            .notification-option {
+                padding: 14px;
+            }
+
+            .notification-option .notif-text {
                 font-size: 14px;
             }
 
+            .notification-option input[type="checkbox"] {
+                width: 24px;
+                height: 24px;
+            }
+
+            /* Action buttons stack vertically */
             .action-buttons {
                 flex-direction: column;
                 gap: 10px;
@@ -133,8 +724,10 @@
             .action-buttons .btn {
                 width: 100%;
                 max-width: none !important;
+                justify-content: center;
             }
 
+            /* Danger zone */
             .danger-zone {
                 flex-direction: column;
                 gap: 10px;
@@ -143,8 +736,16 @@
             .danger-zone .btn {
                 width: 100%;
                 max-width: none !important;
+                justify-content: center;
+                padding: 16px;
+                font-size: 15px;
             }
 
+            .danger-zone-wrapper {
+                border-radius: var(--border-radius);
+            }
+
+            /* Page header */
             .page-header h1 {
                 font-size: 22px;
             }
@@ -156,29 +757,91 @@
 
         @media (max-width: 480px) {
             .table-container {
-                padding: 12px;
+                padding: 14px;
             }
 
             .table-container h2 {
-                font-size: 16px;
+                font-size: 17px;
             }
 
-            .table-container h3 {
+            .settings-section {
+                padding: 16px;
+            }
+
+            .settings-section h3 {
+                font-size: 15px;
+            }
+
+            .settings-section h3 .section-icon {
+                width: 28px;
+                height: 28px;
                 font-size: 14px;
+            }
+
+            .settings-section p {
+                font-size: 13px;
+                margin-bottom: 12px;
+            }
+
+            /* Reduced padding for very small screens */
+            .form-group {
+                margin-bottom: 12px;
             }
 
             .form-group input,
             .form-group select {
                 font-size: 15px;
                 padding: 12px 14px;
+                min-height: 46px;
+            }
+
+            .form-group label {
+                font-size: 13px;
             }
 
             .btn {
                 min-height: 48px;
-                padding: 14px;
+                padding: 13px 16px;
                 font-size: 14px;
             }
 
+            /* Staff table */
+            #staffCodesTable {
+                font-size: 12px;
+                min-width: 440px;
+            }
+
+            #staffCodesTable thead th {
+                padding: 10px 12px;
+                font-size: 10px;
+            }
+
+            #staffCodesTable tbody td {
+                padding: 8px 12px;
+            }
+
+            /* Notifications */
+            .notification-option {
+                padding: 12px;
+                gap: 10px;
+            }
+
+            .notification-option .notif-icon {
+                width: 36px;
+                height: 36px;
+                font-size: 16px;
+            }
+
+            .notification-option .notif-text {
+                font-size: 13px;
+            }
+
+            .notification-option input[type="checkbox"] {
+                width: 22px;
+                height: 22px;
+            }
+
+            /* Page header */
             .page-header h1 {
                 font-size: 20px;
             }
@@ -187,31 +850,57 @@
                 font-size: 12px;
             }
 
-            .settings-section {
+            /* Danger zone header */
+            .danger-zone-wrapper .danger-header {
+                flex-wrap: wrap;
+            }
+
+            .danger-zone-wrapper .danger-header h2 {
+                font-size: 18px;
+            }
+
+            .password-header .lock-icon {
+                width: 26px;
+                height: 26px;
+                font-size: 13px;
+            }
+
+            .password-header h3 {
+                font-size: 15px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .table-container {
                 padding: 12px;
+            }
+
+            .settings-section {
+                padding: 14px;
             }
 
             .settings-section h3 {
                 font-size: 14px;
             }
 
-            .settings-section p {
-                font-size: 13px;
+            .notification-option {
+                padding: 10px;
+                gap: 8px;
             }
 
-            #staffCodesTable {
-                font-size: 11px;
+            .notification-option .notif-icon {
+                width: 32px;
+                height: 32px;
+                font-size: 14px;
             }
 
-            #staffCodesTable th,
-            #staffCodesTable td {
-                padding: 6px 3px;
+            .notification-option .notif-text {
+                font-size: 12px;
             }
-        }
 
-        @media (min-width: 769px) and (max-width: 1024px) {
-            .settings-grid {
-                grid-template-columns: 1fr !important;
+            .notification-option input[type="checkbox"] {
+                width: 20px;
+                height: 20px;
             }
         }
 
@@ -221,22 +910,59 @@
             }
 
             .table-container {
-                padding: 30px;
-            }
-        }
-
-        /* Пейзажная ориентация */
-        @media (max-height: 500px) and (orientation: landscape) and (max-width: 768px) {
-            .table-container {
-                padding: 10px;
-            }
-
-            .form-group {
-                margin-bottom: 10px;
+                padding: 32px;
             }
 
             .settings-section {
-                padding: 10px;
+                padding: 32px;
+            }
+        }
+
+        /* ===== Success/Error Animations ===== */
+        @keyframes slideDownSuccess {
+            0% { transform: translateY(-20px); opacity: 0; }
+            50% { transform: translateY(5px); }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        .alert.alert-success {
+            animation: slideDownSuccess 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .alert.alert-error {
+            animation: slideDownSuccess 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ===== Form Submit Button States ===== */
+        .btn .spinner {
+            display: none;
+        }
+
+        .btn.is-loading .spinner {
+            display: inline-block;
+        }
+
+        .btn.is-loading .btn-text {
+            opacity: 0.7;
+        }
+
+        /* ===== Responsive grid for section headers ===== */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 12px;
+            }
+
+            .section-header .btn {
+                width: 100%;
             }
         }
     </style>
@@ -255,7 +981,7 @@
             <h2>LogisticsPro</h2>
             <span class="role-badge">Администратор</span>
         </div>
-        
+
         <ul class="sidebar-menu">
             <li><a href="admin.html"><i class="icon-dashboard"></i> Дашборд</a></li>
             <li><a href="routes.html"><i class="icon-map"></i> Построение маршрутов</a></li>
@@ -264,7 +990,7 @@
             <li><a href="clients.html"><i class="icon-user"></i> Клиенты</a></li>
             <li><a href="admin-settings.html" class="active"><i class="icon-settings"></i> Настройки</a></li>
         </ul>
-        
+
         <div class="sidebar-user">
             <div class="user-info">
                 <div class="avatar" id="userAvatar"></div>
@@ -278,17 +1004,17 @@
             </button>
         </div>
     </aside>
-    
+
     <!-- Основной контент -->
     <main class="main-content">
         <div class="page-header">
             <h1>Настройки системы</h1>
             <p>Управление параметрами системы и профилем компании</p>
         </div>
-        
+
         <!-- Уведомления -->
         <div id="alertContainer"></div>
-        
+
         <div class="cards-grid settings-grid">
             <!-- Профиль администратора -->
             <div class="table-container fade-in">
@@ -298,7 +1024,7 @@
                         <label for="adminNameInput">ФИО</label>
                         <input type="text" id="adminNameInput" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="adminEmailInput">Email</label>
                         <input type="email" id="adminEmailInput" required>
@@ -308,33 +1034,37 @@
                         <label for="adminPhoneInput">Телефон</label>
                         <input type="tel" id="adminPhoneInput" placeholder="+375 (__) ___-__-__">
                     </div>
-                    
+
                     <button type="submit" class="btn btn-primary">Сохранить изменения</button>
                 </form>
-                
-                <hr style="margin: 25px 0; border: none; border-top: 1px solid var(--color-bg-secondary);">
-                
-                <h3 style="margin-bottom: 15px; font-size: 16px;">Смена пароля</h3>
+
+                <hr class="password-divider">
+
+                <div class="password-header">
+                    <div class="lock-icon">&#128274;</div>
+                    <h3>Смена пароля</h3>
+                </div>
                 <form id="adminPasswordForm" onsubmit="changeAdminPassword(event)">
                     <div class="form-group">
                         <label for="currentPassword">Текущий пароль</label>
                         <input type="password" id="currentPassword" required minlength="6">
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="newPassword">Новый пароль</label>
                         <input type="password" id="newPassword" required minlength="6">
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="confirmPassword">Подтверждение пароля</label>
                         <input type="password" id="confirmPassword" required minlength="6">
                     </div>
-                    
+
                     <button type="submit" class="btn btn-primary">Изменить пароль</button>
                 </form>
             </div>
-            
+
+            <!-- Настройки компании -->
             <div class="table-container fade-in" style="animation-delay: 0.1s;">
                 <h2>Настройки компании</h2>
                 <form id="companyForm" onsubmit="saveCompanySettings(event)">
@@ -372,25 +1102,28 @@
                 </form>
             </div>
         </div>
-        
+
         <!-- Настройки системы -->
         <div class="table-container fade-in" style="margin-top: 30px;">
             <h2>Настройки системы</h2>
-            
+
             <div style="display: grid; gap: 20px; margin-top: 20px;">
                 <!-- Коды сотрудников -->
-                <div class="settings-section">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h3 style="margin: 0;">Коды для регистрации сотрудников</h3>
-                        <button class="btn btn-primary" style="max-width: 150px;" onclick="generateStaffCode()">
+                <div class="settings-section section-staff">
+                    <div class="section-header">
+                        <h3 style="margin: 0;">
+                            <span class="section-icon">&#128101;</span>
+                            Коды для регистрации сотрудников
+                        </h3>
+                        <button class="btn btn-primary" style="max-width: 180px;" onclick="generateStaffCode()">
                             <i class="icon-plus"></i> Создать код
                         </button>
                     </div>
-                    <p style="color: var(--color-primary); font-size: 14px; margin-bottom: 15px;">
+                    <p>
                         Сотрудники вводят этот код при регистрации, чтобы получить права администратора
                     </p>
                     <div class="staff-codes-wrapper">
-                        <table id="staffCodesTable" style="width: 100%;">
+                        <table id="staffCodesTable">
                             <thead>
                                 <tr>
                                     <th>Код</th>
@@ -410,147 +1143,163 @@
                         </table>
                     </div>
                 </div>
-                
+
                 <!-- Уведомления -->
-                <div class="settings-section">
-                    <h3 style="margin: 0 0 15px 0;">Системные уведомления</h3>
-                    <p style="color: var(--color-primary); font-size: 14px; margin-bottom: 15px;">
+                <div class="settings-section section-notifications">
+                    <h3 style="margin: 0 0 10px 0;">
+                        <span class="section-icon">&#128276;</span>
+                        Системные уведомления
+                    </h3>
+                    <p>
                         Настройте уведомления для администраторов системы
                     </p>
-                    
+
                     <div class="notification-options">
-                        <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
-                            <input type="checkbox" id="notifyNewOrders" checked style="width: auto;">
-                            <span>Новые заказы — уведомлять ответственного</span>
+                        <label class="notification-option">
+                            <div class="notif-icon orders">&#128230;</div>
+                            <span class="notif-text">Новые заказы — уведомлять ответственного</span>
+                            <input type="checkbox" id="notifyNewOrders" checked>
                         </label>
-                        
-                        <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
-                            <input type="checkbox" id="notifyRouteComplete" checked style="width: auto;">
-                            <span>Завершение маршрута — уведомлять диспетчера</span>
+
+                        <label class="notification-option">
+                            <div class="notif-icon route">&#128205;</div>
+                            <span class="notif-text">Завершение маршрута — уведомлять диспетчера</span>
+                            <input type="checkbox" id="notifyRouteComplete" checked>
                         </label>
-                        
-                        <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
-                            <input type="checkbox" id="notifyDriverStatus" style="width: auto;">
-                            <span>Изменение статуса водителя — уведомлять</span>
+
+                        <label class="notification-option">
+                            <div class="notif-icon driver">&#128663;</div>
+                            <span class="notif-text">Изменение статуса водителя — уведомлять</span>
+                            <input type="checkbox" id="notifyDriverStatus">
                         </label>
-                        
-                        <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
-                            <input type="checkbox" id="dailyReport" checked style="width: auto;">
-                            <span>Ежедневный отчёт — на email руководителя</span>
+
+                        <label class="notification-option">
+                            <div class="notif-icon report">&#128203;</div>
+                            <span class="notif-text">Ежедневный отчёт — на email руководителя</span>
+                            <input type="checkbox" id="dailyReport" checked>
                         </label>
                     </div>
-                    
-                    <button class="btn btn-primary" style="max-width: 200px; margin-top: 20px;" onclick="saveNotificationSettings()">
+
+                    <button class="btn btn-primary" style="max-width: 220px; margin-top: 20px;" onclick="saveNotificationSettings()">
                         Сохранить настройки
                     </button>
                 </div>
-                
+
                 <!-- Логирование -->
-                <div class="settings-section">
-                    <h3 style="margin: 0 0 15px 0;">Логирование и аудит</h3>
-                    <p style="color: var(--color-primary); font-size: 14px; margin-bottom: 15px;">
+                <div class="settings-section section-logging">
+                    <h3 style="margin: 0 0 10px 0;">
+                        <span class="section-icon">&#128203;</span>
+                        Логирование и аудит
+                    </h3>
+                    <p>
                         Управление логами действий пользователей и администраторов
                     </p>
-                    
+
                     <div class="action-buttons">
-                        <button class="btn btn-secondary" style="max-width: 180px;" onclick="viewLogs()">
-                            Просмотр логов
+                        <button class="btn btn-secondary" style="max-width: 200px;" onclick="viewLogs()">
+                            &#128065; Просмотр логов
                         </button>
-                        <button class="btn btn-secondary" style="max-width: 180px;" onclick="exportLogs()">
-                            Экспорт логов
+                        <button class="btn btn-secondary" style="max-width: 200px;" onclick="exportLogs()">
+                            &#128229; Экспорт логов
                         </button>
-                        <button class="btn btn-secondary" style="max-width: 180px; background: #fff3cd; color: #856404;" onclick="clearLogs()">
-                            Очистить логи
+                        <button class="btn btn-secondary" style="max-width: 200px; background: #fff3cd; color: #856404;" onclick="clearLogs()">
+                            &#128465; Очистить логи
                         </button>
                     </div>
                 </div>
-                
+
                 <!-- Резервное копирование -->
-                <div class="settings-section">
-                    <h3 style="margin: 0 0 15px 0;">Резервное копирование</h3>
-                    <p style="color: var(--color-primary); font-size: 14px; margin-bottom: 15px;">
+                <div class="settings-section section-backup">
+                    <h3 style="margin: 0 0 10px 0;">
+                        <span class="section-icon">&#128190;</span>
+                        Резервное копирование
+                    </h3>
+                    <p>
                         Управление резервными копиями базы данных
                     </p>
-                    
+
                     <div class="action-buttons">
-                        <button class="btn btn-primary" style="max-width: 200px;" onclick="createBackup()">
-                            Создать резервную копию
+                        <button class="btn btn-primary" style="max-width: 240px;" onclick="createBackup()">
+                            &#128190; Создать резервную копию
                         </button>
-                        <button class="btn btn-secondary" style="max-width: 180px;" onclick="downloadBackup()">
-                            Скачать последнюю копию
+                        <button class="btn btn-secondary" style="max-width: 220px;" onclick="downloadBackup()">
+                            &#128229; Скачать последнюю копию
                         </button>
-                        <button class="btn btn-secondary" style="max-width: 180px;" onclick="configureAutoBackup()">
-                            Настроить авто-копирование
+                        <button class="btn btn-secondary" style="max-width: 240px;" onclick="configureAutoBackup()">
+                            &#9881; Настроить авто-копирование
                         </button>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <!-- Опасная зона -->
-        <div class="table-container fade-in" style="margin-top: 30px; border: 1px solid #f8d7da;">
-            <h2 style="color: #721c24;">Опасная зона</h2>
+        <div class="table-container fade-in danger-zone-wrapper" style="margin-top: 30px; border: 1px solid rgba(231, 76, 60, 0.2);">
+            <div class="danger-header">
+                <div class="danger-icon">&#9888;</div>
+                <h2 style="color: #721c24; border: none; padding: 0;">Опасная зона</h2>
+            </div>
             <p style="color: var(--color-primary); margin-bottom: 20px;">
                 Действия в этом разделе могут повлиять на работу системы
             </p>
-            
+
             <div class="danger-zone">
-                <button class="btn btn-secondary" style="max-width: 250px; background: #fff3cd; color: #856404;" onclick="maintenanceMode()">
-                    Режим обслуживания
+                <button class="btn btn-secondary" style="max-width: 280px; background: #fff3cd; color: #856404;" onclick="maintenanceMode()">
+                    &#128736; Режим обслуживания
                 </button>
-                <button class="btn btn-secondary" style="max-width: 250px; background: #f8d7da; color: #721c24;" onclick="resetSystem()">
-                    Сброс системы
+                <button class="btn btn-secondary" style="max-width: 280px; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;" onclick="resetSystem()">
+                    &#9888; Сброс системы
                 </button>
             </div>
         </div>
     </main>
-    
+
     <script src="../js/auth.js"></script>
     <script>
         // Сохранение профиля администратора
         function saveAdminProfile(event) {
             event.preventDefault();
-            
+
             const profileData = {
                 name: document.getElementById('adminNameInput').value,
                 email: document.getElementById('adminEmailInput').value,
                 phone: document.getElementById('adminPhoneInput').value
             };
-            
+
             console.log('Сохранение профиля:', profileData);
-            
+
             // TODO: Отправка на сервер
             showAlert('Профиль успешно обновлён!', 'success');
         }
-        
+
         // Смена пароля администратора
         function changeAdminPassword(event) {
             event.preventDefault();
-            
+
             const newPassword = document.getElementById('newPassword').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
-            
+
             if (newPassword !== confirmPassword) {
                 showAlert('Пароли не совпадают!', 'error');
                 return;
             }
-            
+
             if (newPassword.length < 6) {
                 showAlert('Пароль должен быть не менее 6 символов!', 'error');
                 return;
             }
-            
+
             console.log('Смена пароля...');
-            
+
             // TODO: Отправка на сервер
             showAlert('Пароль успешно изменён!', 'success');
             document.getElementById('adminPasswordForm').reset();
         }
-        
+
         // Сохранение настроек компании
         function saveCompanySettings(event) {
             event.preventDefault();
-            
+
             const companyData = {
                 name: document.getElementById('companyName').value,
                 inn: document.getElementById('companyInn').value,
@@ -559,26 +1308,26 @@
                 phone: document.getElementById('companyPhone').value,
                 email: document.getElementById('companyEmail').value
             };
-            
+
             console.log('Сохранение настроек компании:', companyData);
-            
+
             // TODO: Отправка на сервер
             showAlert('Настройки компании сохранены!', 'success');
         }
-        
+
         // Генерация кода сотрудника
         function generateStaffCode() {
             const code = 'STAFF' + Math.random().toString(36).substring(2, 7).toUpperCase();
             alert('Новый код сотрудника:\n\n' + code + '\n\nСохраните код и передайте сотруднику');
         }
-        
+
         // Отзыв кода
         function revokeCode(code) {
             if (confirm('Отозвать код ' + code + '?\n\nСотрудники больше не смогут использовать этот код для регистрации.')) {
                 showAlert('Код отозван', 'success');
             }
         }
-        
+
         // Сохранение настроек уведомлений
         function saveNotificationSettings() {
             const settings = {
@@ -587,52 +1336,52 @@
                 driverStatus: document.getElementById('notifyDriverStatus').checked,
                 dailyReport: document.getElementById('dailyReport').checked
             };
-            
+
             console.log('Настройки уведомлений:', settings);
-            
+
             // TODO: Отправка на сервер
             showAlert('Настройки уведомлений сохранены!', 'success');
         }
-        
+
         // Просмотр логов
         function viewLogs() {
             alert('Просмотр логов\n\nЗдесь будет страница с историей действий');
         }
-        
+
         // Экспорт логов
         function exportLogs() {
             alert('Экспорт логов\n\nФайл будет сформирован и скачан');
         }
-        
+
         // Очистка логов
         function clearLogs() {
             if (confirm('Вы уверены, что хотите очистить все логи?\n\nЭто действие нельзя отменить.')) {
                 showAlert('Логи очищены', 'success');
             }
         }
-        
+
         // Создание резервной копии
         function createBackup() {
             alert('Создание резервной копии...\n\nПроцесс может занять несколько минут');
         }
-        
+
         // Скачивание резервной копии
         function downloadBackup() {
             alert('Скачивание последней резервной копии\n\nФайл будет загружен');
         }
-        
+
         // Настройка авто-копирования
         function configureAutoBackup() {
             alert('Настройка автоматического резервного копирования\n\nЗдесь будет модальное окно с настройками расписания');
         }
-        
+
         // Режим обслуживания
         function maintenanceMode() {
             if (confirm('Включить режим обслуживания?\n\nСайт станет недоступен для пользователей до отключения режима.')) {
                 showAlert('Режим обслуживания включён', 'warning');
             }
         }
-        
+
         // Сброс системы
         function resetSystem() {
             if (confirm('ВЫ УВЕРЕНЫ, ЧТО ХОТИТЕ ВЫПОЛНИТЬ СБРОС СИСТЕМЫ?\n\nЭто действие может привести к потере данных.')) {
@@ -641,7 +1390,7 @@
                 }
             }
         }
-        
+
         // Показ уведомления
         function showAlert(message, type = 'info') {
             const container = document.getElementById('alertContainer');

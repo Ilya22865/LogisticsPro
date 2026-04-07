@@ -15,28 +15,32 @@ function initAdminMap() {
     }
 }
 function buildRoute() {
-    if (selectedPoints.length < 2) {
+    if (routePoints.length < 2) {
         console.warn('Недостаточно точек для построения маршрута');
         return;
     }
-    console.log('Построение маршрута...', selectedPoints);
+    console.log('Построение маршрута...', routePoints);
     if (adminMapInstance && routingControl) {
         adminMapInstance.removeControl(routingControl);
     }
-    const waypoints = selectedPoints.map(p => L.latLng(p.latitude, p.longitude));
+    const waypoints = routePoints.map(p => L.latLng(p.lat, p.lng));
+
     routingControl = L.Routing.control({
         waypoints: waypoints,
         routeWhileDragging: true,
-        geocoder: L.Control.Geocoder ? L.Control.Geocoder.nominatim() : null,
-        language: 'ru'
+        lineOptions: {
+            styles: [{color: '#4589bd', opacity: 0.75, weight: 10}]
+        },
+        createMarker: function() {
+            return null;
+        },
     }).addTo(adminMapInstance);
     routingControl.on('routesfound', function (e) {
         const routes = e.routes;
         const summary = routes[0].summary;
-        const distanceInput = document.getElementById('routeDistance');
-        const timeInput = document.getElementById('routeTime');
-        distanceInput.value = (summary.totalDistance / 1000).toFixed(1);
-        timeInput.value = (summary.totalTime / 3600).toFixed(1);
+        const distanceEl = document.getElementById('routeDistance');
+        const timeEl = document.getElementById('routeTime');
+        distanceEl.textContent = (summary.totalDistance / 1000).toFixed(1) + ' км';
+        timeEl.textContent = (summary.totalTime / 3600).toFixed(1) + ' ч';
     });
 }
-//# sourceMappingURL=map-admin.js.map

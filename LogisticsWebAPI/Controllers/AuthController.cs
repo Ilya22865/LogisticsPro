@@ -32,7 +32,7 @@ public class AuthController : ControllerBase
             return Unauthorized(new { message = "Неверный Email или пароль!" });
 
         var token = GenerateToken(user.Id, user.Email, user.FullName, user.Role);
-        return Ok(new { token, user.Id, user.Email, user.FullName, user.NameOfCompany, user.CompanyId, role = user.Role.ToString() });
+        return Ok(new { token, user.Id, user.Email, user.FullName, user.NameOfCompany, role = user.Role.ToString() });
     }
 
     [HttpPost("register")]

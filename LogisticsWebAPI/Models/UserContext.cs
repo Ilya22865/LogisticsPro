@@ -15,51 +15,37 @@ namespace LogisticsWebAPI.Models
         {
             Database.EnsureCreated();
         }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            // User -> User (CompanyId references another User, e.g. company admin)
-            modelBuilder.Entity<User>()
-                .HasOne(u => u.CompanyUser)
-                .WithMany()
-                .HasForeignKey(u => u.CompanyId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // Order -> User (n к 1)
             modelBuilder.Entity<Order>()
-                .HasOne(o => o.User)
-                .WithMany()
-                .HasForeignKey(o => o.UserID)
+                .HasOne(u => u.User)
+                .WithMany(o => o.Orders)
+                .HasForeignKey(u => u.UserID)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Order -> Cargo (1 к n) — CargoID in Order references Cargo
+            modelBuilder.Entity<Cargo>()
+                .HasOne(o => o.Order)
+                .WithMany(c => c.Cargos)
+                .HasForeignKey(o => o.OrderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<Order>()
-                .HasOne(o => o.Cargo)
-                .WithMany()
-                .HasForeignKey(o => o.CargoID)
+                .HasOne(d => d.Driver)
+                .WithMany(o => o.Orders)
+                .HasForeignKey(d => d.DriverID)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Order -> Driver (n к 1)
-            modelBuilder.Entity<Order>()
-                .HasOne(o => o.Driver)
-                .WithMany()
-                .HasForeignKey(o => o.DriverID)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // Driver -> Truck (1 к 1)
             modelBuilder.Entity<Driver>()
-                .HasOne(d => d.Truck)
-                .WithMany()
-                .HasForeignKey(d => d.TruckID)
+                .HasOne(t => t.Truck)
+                .WithOne(d => d.Driver)
+                .HasForeignKey<Driver>(t => t.TruckId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Route -> Order (n к 1)
-            modelBuilder.Entity<Route>()
-                .HasOne(r => r.Order)
-                .WithMany()
-                .HasForeignKey(r => r.OrderID)
+            modelBuilder.Entity<Order>()
+                .HasOne(r => r.Route)
+                .WithMany(o => o.Orders)
+                .HasForeignKey(r => r.RouteId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

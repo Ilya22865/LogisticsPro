@@ -15,8 +15,9 @@ public class Order
     public OrderStatus Status { get; set; }
     public int? UserID { get; set; }
     public User? User { get; set; }
-    public int? CargoID { get; set; }
-    public Cargo? Cargo { get; set; }
+    public List<Cargo> Cargos { get; set; } = new List<Cargo>();
     public int? DriverID { get; set; }
-    public Driver? Driver { get; set; }
+    public Driver? Driver { get; set; } 
+    public int? RouteId { get; set; }
+    public Route? Route { get; set; }
 }

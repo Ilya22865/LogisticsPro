@@ -10,6 +10,79 @@
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* ========================================
+           Welcome Banner
+           ======================================== */
+        .welcome-banner {
+            background: linear-gradient(135deg, #638ECB 0%, #395886 100%);
+            border-radius: var(--border-radius-xl);
+            padding: 28px 30px;
+            margin-bottom: 25px;
+            color: var(--color-white);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .welcome-banner::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: 10%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .welcome-banner h2 {
+            font-size: 24px;
+            margin-bottom: 6px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .welcome-banner h2 .wave-emoji {
+            display: inline-block;
+            animation: wave 2s ease-in-out infinite;
+            transform-origin: 70% 70%;
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(20deg); }
+            50% { transform: rotate(-10deg); }
+            75% { transform: rotate(15deg); }
+        }
+
+        .welcome-banner p {
+            font-size: 15px;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .welcome-banner .welcome-time {
+            font-size: 13px;
+            opacity: 0.7;
+            margin-top: 4px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ========================================
+           Quick Actions - Enhanced
+           ======================================== */
         .quick-actions {
             display: flex;
             gap: 15px;
@@ -20,49 +93,154 @@
         .quick-action-btn {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 14px 20px;
+            gap: 12px;
+            padding: 16px 22px;
             background: var(--color-white);
             border: 2px solid var(--color-bg-secondary);
-            border-radius: var(--border-radius);
+            border-radius: var(--border-radius-lg);
             cursor: pointer;
             transition: var(--transition-smooth);
             font-size: 14px;
             font-weight: 600;
             color: var(--color-dark);
             text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            min-height: 52px;
+        }
+
+        .quick-action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(99,142,203,0.05) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .quick-action-btn:hover::before {
+            opacity: 1;
         }
 
         .quick-action-btn i {
-            font-size: 18px;
+            font-size: 20px;
             color: var(--color-primary);
+            transition: var(--transition-smooth);
+            position: relative;
+            z-index: 1;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        .quick-action-btn span {
+            position: relative;
+            z-index: 1;
         }
 
         .quick-action-btn:hover {
             border-color: var(--color-primary);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-soft);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(99, 142, 203, 0.2);
+        }
+
+        .quick-action-btn:hover i {
+            transform: scale(1.15);
+        }
+
+        .quick-action-btn:active {
+            transform: translateY(-1px);
         }
 
         .quick-action-btn.warm i { color: var(--color-accent-warm); }
+        .quick-action-btn.warm:hover { border-color: var(--color-accent-warm); box-shadow: 0 8px 25px rgba(224,123,83,0.2); }
         .quick-action-btn.green i { color: var(--color-accent-green); }
+        .quick-action-btn.green:hover { border-color: var(--color-accent-green); box-shadow: 0 8px 25px rgba(83,160,127,0.2); }
         .quick-action-btn.purple i { color: var(--color-accent-purple); }
+        .quick-action-btn.purple:hover { border-color: var(--color-accent-purple); box-shadow: 0 8px 25px rgba(139,111,184,0.2); }
 
+        /* ========================================
+           Search Box - Enhanced
+           ======================================== */
         .search-box {
             display: flex;
-            gap: 10px;
+            gap: 15px;
             margin-bottom: 25px;
             background: var(--color-white);
-            padding: 20px;
+            padding: 24px;
             border-radius: var(--border-radius-lg);
             box-shadow: var(--shadow-soft);
             align-items: flex-end;
             flex-wrap: wrap;
+            border: 1px solid rgba(99, 142, 203, 0.1);
+            position: relative;
+            overflow: hidden;
         }
 
-        .search-box .form-group { flex: 1; margin-bottom: 0; min-width: 200px; }
-        .search-box .btn { width: auto; min-width: 140px; }
+        .search-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--color-primary), var(--color-accent-warm), var(--color-accent-green));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
 
+        .search-box:focus-within::before {
+            opacity: 1;
+            animation: shimmer-bar 2s ease-in-out infinite;
+        }
+
+        @keyframes shimmer-bar {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .search-box .form-group {
+            flex: 1;
+            margin-bottom: 0;
+            min-width: 220px;
+        }
+
+        .search-box .form-group label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .search-box .form-group label i {
+            color: var(--color-primary);
+            font-size: 14px;
+        }
+
+        .search-box input,
+        .search-box select {
+            transition: var(--transition-smooth);
+        }
+
+        .search-box input:focus,
+        .search-box select:focus {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 4px rgba(99, 142, 203, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .search-box .btn {
+            width: auto;
+            min-width: 140px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ========================================
+           Dashboard Info Bar
+           ======================================== */
         .dashboard-info {
             display: flex;
             justify-content: space-between;
@@ -73,18 +251,403 @@
         }
 
         .date-display {
-            background: var(--color-bg-light);
-            padding: 10px 15px;
-            border-radius: var(--border-radius);
-            font-size: 13px;
+            background: var(--color-white);
+            padding: 12px 18px;
+            border-radius: var(--border-radius-lg);
+            font-size: 14px;
             color: var(--color-dark);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border: 1px solid rgba(99, 142, 203, 0.1);
         }
 
-        .date-display i { color: var(--color-primary); }
+        .date-display i {
+            color: var(--color-primary);
+            font-size: 16px;
+        }
 
+        /* ========================================
+           Stat Cards - Enhanced with Gradients
+           ======================================== */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: var(--color-white);
+            border-radius: var(--border-radius-lg);
+            padding: 25px;
+            box-shadow: var(--shadow-soft);
+            transition: var(--transition-smooth);
+            border: 1px solid rgba(99, 142, 203, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(99,142,203,0.02) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .card.card-warm .card-icon {
+            background: linear-gradient(135deg, rgba(224,123,83,0.15) 0%, rgba(224,123,83,0.05) 100%);
+            color: var(--color-accent-warm);
+        }
+
+        .card.card-warm:hover .card-icon {
+            background: linear-gradient(135deg, var(--color-accent-warm) 0%, #F4A261 100%);
+            color: var(--color-white);
+            box-shadow: 0 8px 20px rgba(224,123,83,0.3);
+        }
+
+        .card.card-green .card-icon {
+            background: linear-gradient(135deg, rgba(83,160,127,0.15) 0%, rgba(83,160,127,0.05) 100%);
+            color: var(--color-accent-green);
+        }
+
+        .card.card-green:hover .card-icon {
+            background: linear-gradient(135deg, var(--color-accent-green) 0%, #7BC9A0 100%);
+            color: var(--color-white);
+            box-shadow: 0 8px 20px rgba(83,160,127,0.3);
+        }
+
+        .card.card-purple .card-icon {
+            background: linear-gradient(135deg, rgba(139,111,184,0.15) 0%, rgba(139,111,184,0.05) 100%);
+            color: var(--color-accent-purple);
+        }
+
+        .card.card-purple:hover .card-icon {
+            background: linear-gradient(135deg, var(--color-accent-purple) 0%, #A78BDA 100%);
+            color: var(--color-white);
+            box-shadow: 0 8px 20px rgba(139,111,184,0.3);
+        }
+
+        .card .value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--color-dark);
+            margin-bottom: 5px;
+            line-height: 1.2;
+            background: linear-gradient(135deg, var(--color-dark) 0%, var(--color-primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .card-stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 12px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .card-stat-trend i {
+            transition: transform 0.3s ease;
+        }
+
+        .card-stat-trend:hover i {
+            transform: translateY(-2px);
+        }
+
+        .card-stat-trend.up {
+            color: var(--color-accent-green);
+        }
+
+        .card-stat-trend.down {
+            color: var(--color-accent-warm);
+        }
+
+        /* ========================================
+           Map Container - Enhanced
+           ======================================== */
+        .map-container {
+            background: var(--color-white);
+            border-radius: var(--border-radius-lg);
+            padding: 25px;
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 30px;
+            border: 1px solid rgba(99, 142, 203, 0.1);
+        }
+
+        .map-placeholder {
+            width: 100%;
+            height: 500px;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(99,142,203,0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(224,123,83,0.06) 0%, transparent 50%),
+                linear-gradient(135deg, var(--color-bg-light) 0%, var(--color-bg-secondary) 100%);
+            border-radius: var(--border-radius-lg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-primary);
+            border: 2px dashed rgba(99, 142, 203, 0.3);
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-placeholder::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                radial-gradient(circle, rgba(99,142,203,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .map-placeholder:hover {
+            border-color: var(--color-primary);
+        }
+
+        .map-placeholder i {
+            font-size: 60px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .map-placeholder p {
+            font-size: 16px;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .map-placeholder small {
+            font-size: 13px;
+            opacity: 0.7;
+        }
+
+        /* ========================================
+           Table - Enhanced
+           ======================================== */
+        .table-container {
+            background: var(--color-white);
+            border-radius: var(--border-radius-lg);
+            padding: 25px;
+            box-shadow: var(--shadow-soft);
+            overflow-x: auto;
+            border: 1px solid rgba(99, 142, 203, 0.1);
+        }
+
+        .table-container h2 {
+            font-size: 20px;
+            color: var(--color-dark);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--color-bg-light);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        thead tr {
+            background: linear-gradient(135deg, var(--color-bg-light) 0%, var(--color-bg-secondary) 100%);
+        }
+
+        thead th:first-child {
+            border-radius: var(--border-radius) 0 0 0;
+        }
+
+        thead th:last-child {
+            border-radius: 0 var(--border-radius) 0 0;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--color-bg-secondary);
+        }
+
+        th {
+            font-weight: 700;
+            color: var(--color-dark);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        td {
+            font-size: 15px;
+            transition: background 0.2s ease;
+        }
+
+        tbody tr {
+            transition: all 0.25s ease;
+        }
+
+        tbody tr:hover {
+            background: linear-gradient(90deg, rgba(99, 142, 203, 0.06) 0%, rgba(99, 142, 203, 0.02) 100%);
+            transform: scale(1.005);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: capitalize;
+            transition: var(--transition-smooth);
+        }
+
+        .status-badge::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.85); }
+        }
+
+        .status-badge.pending {
+            background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+            color: #f57c00;
+        }
+
+        .status-badge.in-transit {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            color: #1976d2;
+        }
+
+        .status-badge.delivered {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            color: #388e3c;
+        }
+
+        .status-badge.cancelled {
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            color: #d32f2f;
+        }
+
+        /* Action buttons in table */
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 14px;
+            width: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition-smooth);
+        }
+
+        .btn-sm:hover {
+            transform: translateY(-1px);
+        }
+
+        /* ========================================
+           Empty State - Enhanced
+           ======================================== */
+        .empty-state {
+            padding: 50px 20px;
+            text-align: center;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            opacity: 0.25;
+            margin-bottom: 20px;
+            color: var(--color-primary);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .empty-state-text {
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--color-dark);
+            margin-bottom: 10px;
+        }
+
+        .empty-state-subtext {
+            font-size: 14px;
+            color: var(--color-primary);
+            margin-bottom: 20px;
+        }
+
+        /* ========================================
+           Loading Skeleton
+           ======================================== */
+        .skeleton {
+            background: linear-gradient(90deg, var(--color-bg-light) 25%, var(--color-bg-secondary) 50%, var(--color-bg-light) 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s ease-in-out infinite;
+            border-radius: var(--border-radius);
+        }
+
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .skeleton-text {
+            height: 16px;
+            margin-bottom: 8px;
+        }
+
+        .skeleton-value {
+            height: 36px;
+            width: 60%;
+            margin-bottom: 12px;
+        }
+
+        .skeleton-row {
+            height: 48px;
+            margin-bottom: 8px;
+        }
+
+        /* ========================================
+           Responsive - Tablet (769px - 1024px)
+           ======================================== */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .welcome-banner {
+                padding: 22px 24px;
+            }
+
+            .welcome-banner h2 {
+                font-size: 22px;
+            }
+        }
+
+        /* ========================================
+           Responsive - Mobile (<=768px)
+           ======================================== */
         @media (max-width: 768px) {
             .dashboard-info {
                 flex-direction: column;
@@ -105,45 +668,61 @@
                 font-size: 13px;
             }
 
+            /* Welcome banner on mobile */
+            .welcome-banner {
+                padding: 20px 18px;
+                margin-bottom: 20px;
+            }
+
+            .welcome-banner h2 {
+                font-size: 20px;
+            }
+
+            .welcome-banner p {
+                font-size: 14px;
+            }
+
+            /* Cards stack on tablet/phone */
             .cards-grid {
-                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-                gap: 12px;
+                grid-template-columns: 1fr;
+                gap: 15px;
             }
 
             .card {
-                padding: 15px 12px;
+                padding: 20px 18px;
             }
 
             .card .card-icon {
-                width: 38px;
-                height: 38px;
-                font-size: 18px;
-                margin-right: 10px;
+                width: 44px;
+                height: 44px;
+                font-size: 20px;
+                margin-right: 12px;
             }
 
             .card h3 {
-                font-size: 13px;
+                font-size: 15px;
             }
 
             .card .value {
-                font-size: 22px;
+                font-size: 28px;
             }
 
             .card .description {
-                font-size: 11px;
+                font-size: 13px;
             }
 
             .card-stat-trend {
-                font-size: 11px;
+                font-size: 12px;
             }
 
+            /* Map */
             .map-placeholder {
                 height: 280px;
             }
 
             .map-container {
-                padding: 15px;
-                margin-bottom: 15px;
+                padding: 18px;
+                margin-bottom: 20px;
             }
 
             .map-header h2 {
@@ -161,42 +740,54 @@
                 font-size: 13px;
             }
 
+            /* Search box full-width stacked */
             .search-box {
                 flex-direction: column;
-                padding: 15px;
-                gap: 12px;
+                padding: 18px;
+                gap: 15px;
             }
 
             .search-box .form-group {
                 min-width: 100% !important;
                 margin-bottom: 0;
+                width: 100%;
             }
 
             .search-box .btn {
                 width: 100%;
                 min-width: auto;
+                min-height: 48px;
             }
 
+            /* Quick actions - full width, touch-friendly */
             .quick-actions {
                 flex-direction: column;
-                gap: 10px;
+                gap: 12px;
                 margin-bottom: 20px;
             }
 
             .quick-action-btn {
                 width: 100%;
                 justify-content: center;
-                padding: 14px 18px;
-                min-height: 50px;
+                padding: 16px 20px;
+                min-height: 52px;
+                font-size: 15px;
+            }
+
+            .quick-action-btn i {
+                font-size: 22px;
             }
 
             .date-display {
-                padding: 8px 12px;
-                font-size: 12px;
+                padding: 10px 14px;
+                font-size: 13px;
+                width: 100%;
+                justify-content: center;
             }
 
+            /* Table */
             .table-container {
-                padding: 15px;
+                padding: 18px;
                 overflow-x: auto;
             }
 
@@ -211,50 +802,59 @@
 
             .table-container th,
             .table-container td {
-                padding: 10px 8px;
+                padding: 12px 10px;
             }
 
             .table-container .btn-sm {
-                padding: 8px 10px;
-                font-size: 12px;
+                padding: 10px 14px;
+                font-size: 13px;
                 width: 100%;
+                justify-content: center;
+                min-height: 44px;
             }
 
             .empty-state {
                 padding: 40px 15px;
             }
 
-            .empty-state i {
-                font-size: 60px;
+            .empty-state-icon {
+                font-size: 56px;
+            }
+
+            .empty-state-text {
+                font-size: 16px;
             }
         }
 
+        /* ========================================
+           Responsive - Small phones (<=480px)
+           ======================================== */
         @media (max-width: 480px) {
             .cards-grid {
                 grid-template-columns: 1fr;
-                gap: 10px;
+                gap: 12px;
             }
 
             .card {
-                padding: 12px 10px;
+                padding: 18px 15px;
             }
 
             .card .card-icon {
-                width: 36px;
-                height: 36px;
-                font-size: 16px;
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
             }
 
             .card h3 {
-                font-size: 12px;
+                font-size: 14px;
             }
 
             .card .value {
-                font-size: 20px;
+                font-size: 26px;
             }
 
             .card .description {
-                font-size: 11px;
+                font-size: 12px;
             }
 
             .map-placeholder {
@@ -269,13 +869,26 @@
                 font-size: 12px;
             }
 
-            .quick-action-btn {
-                padding: 12px 15px;
+            .welcome-banner {
+                padding: 18px 15px;
+            }
+
+            .welcome-banner h2 {
+                font-size: 18px;
+            }
+
+            .welcome-banner p {
                 font-size: 13px;
             }
 
+            .quick-action-btn {
+                padding: 14px 18px;
+                font-size: 14px;
+                min-height: 50px;
+            }
+
             .search-box {
-                padding: 12px;
+                padding: 15px;
             }
 
             .table-container table {
@@ -285,17 +898,131 @@
 
             .table-container th,
             .table-container td {
-                padding: 8px 6px;
+                padding: 10px 8px;
             }
         }
 
-        @media (min-width: 1441px) {
-            .cards-grid { grid-template-columns: repeat(3, 1fr); }
-            .map-placeholder { height: 550px; }
+        /* ========================================
+           Responsive - Very small phones (<=360px)
+           ======================================== */
+        @media (max-width: 360px) {
+            .card .value {
+                font-size: 24px;
+            }
+
+            .welcome-banner h2 {
+                font-size: 16px;
+            }
+
+            .quick-action-btn {
+                padding: 12px 14px;
+                font-size: 13px;
+                min-height: 48px;
+            }
         }
 
+        /* ========================================
+           Large screens (>=1441px)
+           ======================================== */
+        @media (min-width: 1441px) {
+            .cards-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .map-placeholder {
+                height: 550px;
+            }
+
+            .welcome-banner {
+                padding: 32px 35px;
+            }
+
+            .welcome-banner h2 {
+                font-size: 28px;
+            }
+        }
+
+        /* ========================================
+           Landscape mobile
+           ======================================== */
         @media (max-height: 500px) and (orientation: landscape) and (max-width: 768px) {
             .search-box, .quick-actions { display: none; }
+            .welcome-banner { display: none; }
+        }
+
+        /* ========================================
+           Touch devices
+           ======================================== */
+        @media (hover: none) and (pointer: coarse) {
+            .quick-action-btn {
+                min-height: 52px;
+            }
+
+            .btn-sm {
+                min-height: 44px;
+            }
+        }
+
+        /* ========================================
+           Mobile table card view (<=640px)
+           ======================================== */
+        @media (max-width: 640px) {
+            .table-container table,
+            .table-container thead,
+            .table-container tbody,
+            .table-container th,
+            .table-container td,
+            .table-container tr {
+                display: block;
+            }
+
+            .table-container thead {
+                position: absolute;
+                width: 1px;
+                height: 1px;
+                padding: 0;
+                margin: -1px;
+                overflow: hidden;
+                clip: rect(0, 0, 0, 0);
+                border: 0;
+            }
+
+            .table-container tbody tr {
+                background: var(--color-bg-light);
+                border-radius: var(--border-radius-lg);
+                padding: 16px;
+                margin-bottom: 12px;
+                border: 1px solid rgba(99, 142, 203, 0.1);
+                transform: none !important;
+            }
+
+            .table-container tbody tr:hover {
+                background: var(--color-bg-secondary);
+                transform: none !important;
+            }
+
+            .table-container td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 0;
+                border-bottom: 1px solid rgba(99, 142, 203, 0.1);
+                font-size: 14px;
+            }
+
+            .table-container td:last-child {
+                border-bottom: none;
+                padding-top: 14px;
+            }
+
+            .table-container td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: var(--color-dark);
+                font-size: 13px;
+                margin-right: 12px;
+                flex-shrink: 0;
+            }
         }
     </style>
 </head>
@@ -329,6 +1056,13 @@
 
     <main class="main-content">
         <div id="alertContainer"></div>
+
+        <!-- Welcome Banner -->
+        <div class="welcome-banner fade-in" id="welcomeBanner">
+            <h2 id="welcomeGreeting"><span class="wave-emoji">&#128075;</span> Добрый день!</h2>
+            <p id="welcomeMessage">Добро пожаловать в панель управления LogisticsPro</p>
+            <div class="welcome-time" id="welcomeTime"></div>
+        </div>
 
         <div class="dashboard-info">
             <div class="page-header" style="margin-bottom: 0;">
@@ -376,32 +1110,38 @@
         </div>
 
         <div class="cards-grid">
-            <div class="card card-warm fade-in">
+            <div class="card card-warm fade-in" id="cardActiveOrders">
                 <div class="card-header">
                     <div class="card-icon"><i class="fas fa-box"></i></div>
                     <h3>Активные заказы</h3>
                 </div>
-                <div class="value" id="activeOrders">—</div>
+                <div class="value" id="activeOrders">
+                    <div class="skeleton skeleton-value"></div>
+                </div>
                 <div class="description">в пути</div>
                 <div class="card-stat-trend up"><i class="fas fa-arrow-up"></i><span>12% за неделю</span></div>
             </div>
 
-            <div class="card card-green fade-in" style="animation-delay: 0.1s;">
+            <div class="card card-green fade-in" id="cardInDelivery" style="animation-delay: 0.1s;">
                 <div class="card-header">
                     <div class="card-icon"><i class="fas fa-truck-moving"></i></div>
                     <h3>В доставке</h3>
                 </div>
-                <div class="value" id="inDelivery">—</div>
+                <div class="value" id="inDelivery">
+                    <div class="skeleton skeleton-value"></div>
+                </div>
                 <div class="description">сегодня</div>
                 <div class="card-stat-trend up"><i class="fas fa-arrow-up"></i><span>3 новых</span></div>
             </div>
 
-            <div class="card card-purple fade-in" style="animation-delay: 0.2s;">
+            <div class="card card-purple fade-in" id="cardCompleted" style="animation-delay: 0.2s;">
                 <div class="card-header">
                     <div class="card-icon"><i class="fas fa-check-circle"></i></div>
                     <h3>Выполнено</h3>
                 </div>
-                <div class="value" id="completedOrders">—</div>
+                <div class="value" id="completedOrders">
+                    <div class="skeleton skeleton-value"></div>
+                </div>
                 <div class="description">за всё время</div>
                 <div class="card-stat-trend up"><i class="fas fa-check"></i><span>98% успешно</span></div>
             </div>
@@ -416,7 +1156,7 @@
                 </div>
             </div>
             <div id="userMap" class="map-placeholder">
-                <i class="fas fa-map" style="font-size: 60px; margin-bottom: 15px; opacity: 0.5;"></i>
+                <i class="fas fa-map-marked-alt"></i>
                 <p>Здесь будет карта с местоположением груза</p>
                 <small>Подключите API карты в файле js/map-user.js</small>
             </div>
@@ -435,7 +1175,9 @@
                     </tr>
                 </thead>
                 <tbody id="recentOrdersBody">
-                    <tr><td colspan="5" style="text-align: center; color: var(--color-primary);"><i class="fas fa-spinner fa-spin" style="margin-right: 8px;"></i>Загрузка данных...</td></tr>
+                    <tr class="skeleton-row"><td colspan="5"><div class="skeleton skeleton-row"></div></td></tr>
+                    <tr class="skeleton-row"><td colspan="5"><div class="skeleton skeleton-row"></div></td></tr>
+                    <tr class="skeleton-row"><td colspan="5"><div class="skeleton skeleton-row"></div></td></tr>
                 </tbody>
             </table>
         </div>
@@ -445,7 +1187,7 @@
         <button class="close-map" onclick="toggleFullscreen()"><i class="fas fa-times"></i></button>
         <div class="map-wrapper">
             <div id="fullscreenMapContainer" class="map-placeholder" style="width: 100%; height: 100%; border-radius: 0;">
-                <i class="fas fa-map" style="font-size: 60px; margin-bottom: 15px; opacity: 0.5;"></i>
+                <i class="fas fa-map"></i>
                 <p>Здесь будет полноэкранная карта</p>
                 <small>Подключите API карты в файле js/map-user.js</small>
             </div>
@@ -458,23 +1200,77 @@
         const API_BASE_URL = '/api';
 
         document.addEventListener('DOMContentLoaded', function() {
+            // Set time-based greeting
+            updateWelcomeGreeting();
+
             const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             document.getElementById('currentDate').textContent = new Date().toLocaleDateString('ru-RU', dateOptions);
+
             loadDashboardStats();
             loadRecentOrders();
         });
+
+        function updateWelcomeGreeting() {
+            const hour = new Date().getHours();
+            let greeting, message;
+
+            if (hour >= 5 && hour < 12) {
+                greeting = '&#127749; Доброе утро!';
+                message = 'Начните день с обзора ваших грузов';
+            } else if (hour >= 12 && hour < 17) {
+                greeting = '&#127774; Добрый день!';
+                message = 'Добро пожаловать в панель управления LogisticsPro';
+            } else if (hour >= 17 && hour < 22) {
+                greeting = '&#127775; Добрый вечер!';
+                message = 'Проверьте статус ваших доставок за день';
+            } else {
+                greeting = '&#127769; Доброй ночи!';
+                message = 'Ваши грузы под контролем даже ночью';
+            }
+
+            document.getElementById('welcomeGreeting').innerHTML = greeting;
+            document.getElementById('welcomeMessage').textContent = message;
+            document.getElementById('welcomeTime').textContent = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+        }
 
         async function loadDashboardStats() {
             try {
                 const response = await fetch(`${API_BASE_URL}/orders/stats`);
                 if (!response.ok) throw new Error();
                 const stats = await response.json();
-                document.getElementById('activeOrders').textContent = stats.active || '—';
-                document.getElementById('inDelivery').textContent = stats.today || '—';
-                document.getElementById('completedOrders').textContent = stats.completed || '—';
+
+                // Animate numbers
+                animateValue('activeOrders', stats.active || 0);
+                animateValue('inDelivery', stats.today || 0);
+                animateValue('completedOrders', stats.completed || 0);
             } catch (error) {
                 console.error('Ошибка загрузки статистики:', error);
+                // Show fallback values
+                document.getElementById('activeOrders').textContent = '—';
+                document.getElementById('inDelivery').textContent = '—';
+                document.getElementById('completedOrders').textContent = '—';
             }
+        }
+
+        function animateValue(elementId, endValue) {
+            const element = document.getElementById(elementId);
+            const duration = 800;
+            const startTime = performance.now();
+
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                // Ease out cubic
+                const eased = 1 - Math.pow(1 - progress, 3);
+                const currentValue = Math.round(eased * endValue);
+                element.textContent = currentValue;
+
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+
+            requestAnimationFrame(update);
         }
 
         async function loadRecentOrders() {
@@ -486,23 +1282,46 @@
                 const tbody = document.getElementById('recentOrdersBody');
 
                 if (orders.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--color-primary); padding: 40px;">
-                        <i class="fas fa-inbox" style="font-size: 48px; opacity: 0.3; margin-bottom: 15px; display: block;"></i>Заказов нет
-                        <br><a href="create-order.html" class="btn btn-primary" style="margin-top: 15px; display: inline-flex; align-items: center; gap: 8px;"><i class="fas fa-plus-circle"></i> Создать первый заказ</a>
-                    </td></tr>`;
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5">
+                                <div class="empty-state">
+                                    <i class="fas fa-inbox empty-state-icon"></i>
+                                    <div class="empty-state-text">Заказов пока нет</div>
+                                    <div class="empty-state-subtext">Создайте свой первый заказ, чтобы начать работу</div>
+                                    <a href="create-order.html" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 8px; width: auto; padding: 12px 24px;">
+                                        <i class="fas fa-plus-circle"></i> Создать первый заказ
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>`;
                 } else {
                     tbody.innerHTML = orders.map(order => `
                         <tr>
-                            <td><strong>#${order.id.toString().padStart(6, '0')}</strong></td>
-                            <td>${order.startLocation || '—'} → ${order.endLocation || '—'}</td>
-                            <td><span class="status-badge ${getStatusClass(order.status)}">${getStatusText(order.status)}</span></td>
-                            <td>${order.deliveryDate ? formatDate(order.deliveryDate) : '—'}</td>
-                            <td><button class="btn btn-sm btn-outline" onclick="viewOrder(${order.id})" style="padding: 6px 12px; font-size: 13px;"><i class="fas fa-eye"></i> Подробнее</button></td>
+                            <td data-label="№ заказа"><strong>#${order.id.toString().padStart(6, '0')}</strong></td>
+                            <td data-label="Маршрут">${order.startLocation || '—'} → ${order.endLocation || '—'}</td>
+                            <td data-label="Статус"><span class="status-badge ${getStatusClass(order.status)}">${getStatusText(order.status)}</span></td>
+                            <td data-label="Дата доставки">${order.deliveryDate ? formatDate(order.deliveryDate) : '—'}</td>
+                            <td data-label="Действия"><button class="btn btn-sm btn-outline" onclick="viewOrder(${order.id})"><i class="fas fa-eye"></i> Подробнее</button></td>
                         </tr>
                     `).join('');
                 }
             } catch (error) {
                 console.error('Ошибка:', error);
+                const tbody = document.getElementById('recentOrdersBody');
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5">
+                            <div class="empty-state">
+                                <i class="fas fa-exclamation-triangle empty-state-icon" style="color: var(--color-accent-warm);"></i>
+                                <div class="empty-state-text">Не удалось загрузить заказы</div>
+                                <div class="empty-state-subtext">Проверьте подключение к интернету и попробуйте снова</div>
+                                <button class="btn btn-primary" onclick="loadRecentOrders()" style="display: inline-flex; align-items: center; gap: 8px; width: auto; padding: 12px 24px;">
+                                    <i class="fas fa-redo"></i> Повторить
+                                </button>
+                            </div>
+                        </td>
+                    </tr>`;
             }
         }
 
