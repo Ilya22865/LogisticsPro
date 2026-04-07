@@ -148,6 +148,8 @@
 
         .social-btn {
             display: flex;
+            width: 100%;
+            max-width: 340px;
             align-items: center;
             justify-content: center;
             padding: 12px;
@@ -171,23 +173,56 @@
             color: #DB4437;
         }
 
-        .social-btn.facebook:hover {
-            border-color: #4267B2;
-            color: #4267B2;
-        }
-
-        .social-btn.apple:hover {
-            border-color: #000;
-            color: #000;
-        }
-
         @media (max-width: 768px) {
+            .auth-container {
+                padding: 20px 15px;
+                align-items: flex-start;
+                padding-top: 40px;
+            }
+
             .auth-box {
                 padding: 30px 25px;
+                max-width: 95%;
+            }
+
+            .auth-box::before {
+                opacity: 0.2;
+                filter: blur(8px);
             }
 
             .auth-tabs {
                 flex-direction: row;
+            }
+
+            .auth-tabs button {
+                padding: 12px 10px;
+                font-size: 14px;
+            }
+
+            .form-group {
+                margin-bottom: 18px;
+            }
+
+            .form-group input {
+                padding: 14px 15px 14px 40px;
+                font-size: 16px;
+            }
+
+            .form-group .input-icon {
+                top: 44px;
+                left: 14px;
+            }
+
+            .password-toggle {
+                top: 44px;
+                right: 14px;
+                padding: 8px;
+            }
+
+            .btn-lg {
+                padding: 16px;
+                font-size: 16px;
+                min-height: 52px;
             }
 
             .form-footer-links {
@@ -195,23 +230,102 @@
                 gap: 10px;
                 align-items: flex-start;
             }
+
+            .social-auth {
+                grid-template-columns: 1fr;
+            }
+
+            .social-btn {
+                width: 100%;
+                max-width: none;
+            }
+
+            .divider {
+                margin: 20px 0;
+            }
         }
 
         @media (max-width: 480px) {
+            .auth-container {
+                padding: 15px 10px;
+                padding-top: 30px;
+            }
+
             .auth-box {
                 padding: 25px 20px;
+                max-width: 100%;
             }
 
             .auth-box h1 {
                 font-size: 24px;
             }
 
+            .auth-box .subtitle {
+                font-size: 13px;
+            }
+
+            .auth-tabs button {
+                padding: 10px 8px;
+                font-size: 13px;
+            }
+
             .form-group {
                 margin-bottom: 15px;
             }
 
+            .form-group label {
+                font-size: 13px;
+            }
+
+            .form-group input {
+                padding: 12px 15px 12px 38px;
+                font-size: 15px;
+            }
+
+            .form-group .input-icon {
+                font-size: 15px;
+                top: 42px;
+            }
+
+            .password-toggle {
+                top: 42px;
+                font-size: 15px;
+            }
+
+            .form-group .hint {
+                font-size: 12px;
+            }
+
+            .btn-lg {
+                padding: 14px;
+                font-size: 15px;
+            }
+
             .social-auth {
                 grid-template-columns: 1fr;
+            }
+
+            .social-btn {
+                padding: 14px;
+                font-size: 18px;
+            }
+
+            .divider {
+                font-size: 12px;
+                margin: 15px 0;
+            }
+
+            .form-footer-links {
+                font-size: 12px;
+            }
+
+            .form-footer-links a {
+                font-size: 12px;
+            }
+
+            .auth-footer {
+                font-size: 13px;
+                margin-top: 15px;
             }
         }
 
@@ -290,12 +404,6 @@
                 <div class="social-auth">
                     <button type="button" class="social-btn google" onclick="alert('Google авторизация будет доступна позже')">
                         <i class="fab fa-google"></i>
-                    </button>
-                    <button type="button" class="social-btn facebook" onclick="alert('Facebook авторизация будет доступна позже')">
-                        <i class="fab fa-facebook"></i>
-                    </button>
-                    <button type="button" class="social-btn apple" onclick="alert('Apple авторизация будет доступна позже')">
-                        <i class="fab fa-apple"></i>
                     </button>
                 </div>
 

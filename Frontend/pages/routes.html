@@ -47,6 +47,7 @@
         .route-builder-panel h3 {
             margin-bottom: 20px;
             color: var(--color-dark);
+            font-size: 18px;
         }
 
         .route-points-list {
@@ -79,11 +80,15 @@
 
         .route-point-info {
             flex: 1;
+            min-width: 0;
         }
 
         .route-point-address {
             font-size: 14px;
             color: var(--color-dark);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .route-point-remove {
@@ -93,6 +98,12 @@
             cursor: pointer;
             font-size: 18px;
             padding: 5px;
+            flex-shrink: 0;
+            min-width: 32px;
+            min-height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .route-info-box {
@@ -122,18 +133,157 @@
             color: var(--color-dark);
         }
 
+        /* Мобильная адаптация */
         @media (max-width: 768px) {
             .route-builder-panel {
-                width: calc(100% - 40px);
-                left: 20px;
-                right: 20px;
+                width: calc(100% - 24px);
+                left: 12px;
+                right: 12px;
                 top: auto;
-                bottom: 20px;
-                max-height: 50vh;
+                bottom: 12px;
+                max-height: 55vh;
+                padding: 20px 15px;
+            }
+
+            .route-builder-panel h3 {
+                font-size: 16px;
+                margin-bottom: 15px;
+            }
+
+            .route-points-list {
+                margin-bottom: 15px;
+            }
+
+            .route-point {
+                padding: 10px;
+                gap: 8px;
+            }
+
+            .route-point-marker {
+                width: 28px;
+                height: 28px;
+                font-size: 13px;
+            }
+
+            .route-point-address {
+                font-size: 13px;
+            }
+
+            .route-point-remove {
+                font-size: 16px;
+                min-width: 28px;
+                min-height: 28px;
+            }
+
+            .route-info-box {
+                padding: 12px;
+                margin-top: 15px;
+            }
+
+            .route-info-item {
+                font-size: 13px;
+                margin-bottom: 8px;
+            }
+
+            .route-builder-panel .btn {
+                padding: 12px;
+                font-size: 14px;
+                min-height: 44px;
+            }
+
+            .route-builder-panel .form-group input,
+            .route-builder-panel .form-group select {
+                font-size: 16px;
+                padding: 12px 14px;
+            }
+
+            .route-builder-panel .form-group label {
+                font-size: 13px;
+            }
+
+            .route-builder-panel .alert {
+                padding: 10px 12px;
+                font-size: 12px;
             }
 
             .routes-page .map-placeholder {
                 height: 100vh;
+            }
+
+            .menu-toggle {
+                z-index: 1100 !important;
+            }
+
+            .sidebar {
+                z-index: 1050 !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .route-builder-panel {
+                width: calc(100% - 16px);
+                left: 8px;
+                right: 8px;
+                bottom: 8px;
+                max-height: 60vh;
+                padding: 15px 12px;
+            }
+
+            .route-builder-panel h3 {
+                font-size: 15px;
+            }
+
+            .route-point {
+                padding: 8px;
+            }
+
+            .route-point-marker {
+                width: 26px;
+                height: 26px;
+                font-size: 12px;
+            }
+
+            .route-point-address {
+                font-size: 12px;
+            }
+
+            .route-info-item {
+                font-size: 12px;
+            }
+
+            .route-builder-panel hr {
+                margin: 15px 0;
+            }
+
+            .route-builder-panel h4 {
+                font-size: 14px;
+                margin-bottom: 12px;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .route-builder-panel {
+                width: 350px;
+                padding: 20px;
+            }
+        }
+
+        @media (min-width: 1441px) {
+            .route-builder-panel {
+                width: 450px;
+                padding: 30px;
+            }
+
+            .route-builder-panel h3 {
+                font-size: 20px;
+            }
+        }
+
+        /* Пейзажная ориентация */
+        @media (max-height: 500px) and (orientation: landscape) and (max-width: 768px) {
+            .route-builder-panel {
+                max-height: 80vh;
+                bottom: 8px;
             }
         }
     </style>

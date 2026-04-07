@@ -1,5 +1,10 @@
 namespace LogisticsWebAPI.Models;
 
+public enum UserRole
+{
+    User,
+    Admin
+}
 public class User
 {
     public int Id { get; set; }
@@ -7,12 +12,7 @@ public class User
     public string Email { get; set; } = null!;
     public string NameOfCompany { get; set; } = null!;
     public string PasswordHash { get; set; } = null!;
-    public string Role { get; set; } = "user";
+    public UserRole Role { get; set; }
     public int? CompanyId { get; set; }
-    public Company? Company { get; set; }
-}
-
-public class Admin : User
-{
-    public string Code { get; set; } = null!;
+    public User? CompanyUser { get; set; }
 }

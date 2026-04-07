@@ -24,28 +24,15 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto dto)
     {
-        var admin = _context.Admins.FirstOrDefault(a => a.Email == dto.Email);
-        if (admin != null)
-        {
-            if (!VerifyPassword(dto.Password, admin.PasswordHash))
-                return Unauthorized(new { message = "Неверный логин или пароль!" });
-
-            var adminToken = GenerateToken(admin.Id, admin.Email, admin.FullName);
-
-            return Ok(new { adminToken, admin.Id, admin.Email, admin.FullName, admin.NameOfCompany, role = "admin" });
-        }
-
         var user = _context.Users.FirstOrDefault(u => u.Email == dto.Email);
-        if (user != null)
-        {
-            if (!VerifyPassword(dto.Password, user.PasswordHash))
-                return Unauthorized(new { message = "Неверный email или пароль!" });
+        if (user == null)
+            return Unauthorized(new { message = "Неверный Email или пароль!" });
 
-            var token = GenerateToken(user.Id, user.Email, user.FullName);
-            return Ok(new { token, user.Id, user.Email, user.FullName, role = "user" });
-        }
+        if (!VerifyPassword(dto.Password, user.PasswordHash))
+            return Unauthorized(new { message = "Неверный Email или пароль!" });
 
-        return Unauthorized(new { message = "Неверный Email или пароль!" });
+        var token = GenerateToken(user.Id, user.Email, user.FullName, user.Role);
+        return Ok(new { token, user.Id, user.Email, user.FullName, user.NameOfCompany, user.CompanyId, role = user.Role.ToString() });
     }
 
     [HttpPost("register")]
@@ -62,43 +49,33 @@ public class AuthController : ControllerBase
         {
             return BadRequest(new { message = "Такого Email не существует."});
         }
-        if (_context.Users.Any(u => u.Email == dto.Email) ||
-        _context.Admins.Any(a => a.Email == dto.Email))
+        if (_context.Users.Any(u => u.Email == dto.Email))
             return BadRequest(new { message = "Email уже занят" });
 
         if (!string.IsNullOrEmpty(dto.AdminCode))
         {
             if (dto.AdminCode == ADMIN_CODE)
             {
-                var admin = new Admin
+                var admin = new User
                 {
                     FullName = dto.FullName,
                     Email = dto.Email,
                     NameOfCompany = dto.NameOfCompany,
                     PasswordHash = HashPassword(dto.Password),
-                    Code = dto.AdminCode
+                    Role = UserRole.Admin
                 };
 
-                _context.Admins.Add(admin);
+                _context.Users.Add(admin);
                 await _context.SaveChangesAsync();
 
-                var adminToken = GenerateToken(admin.Id, admin.Email, admin.FullName);
+                var adminToken = GenerateToken(admin.Id, admin.Email, admin.FullName, UserRole.Admin);
 
-                return Ok(new { adminToken, admin.Id, admin.Email, admin.FullName, admin.NameOfCompany, role = "admin" });
+                return Ok(new { adminToken, admin.Id, admin.Email, admin.FullName, admin.NameOfCompany, role = "Admin" });
             }
             else
             {
                 return BadRequest(new { message = "Неверный код доступа!" });
             }
-        }
-
-        var company = _context.Companies.FirstOrDefault(c => c.Name == dto.NameOfCompany);
-
-        if (company == null)
-        {
-            company = new Company { Name = dto.NameOfCompany };
-            _context.Companies.Add(company);
-            await _context.SaveChangesAsync();
         }
 
         var user = new User
@@ -107,15 +84,15 @@ public class AuthController : ControllerBase
             Email = dto.Email,
             NameOfCompany = dto.NameOfCompany,
             PasswordHash = HashPassword(dto.Password),
-            CompanyId = company.CompanyId
+            Role = UserRole.User
         };
 
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
 
-        var token = GenerateToken(user.Id, user.Email, user.FullName);
+        var token = GenerateToken(user.Id, user.Email, user.FullName, UserRole.User);
 
-        return Ok(new { token, user.Id, user.Email, user.FullName, user.CompanyId, role = "User" });
+        return Ok(new { token, user.Id, user.Email, user.FullName, user.NameOfCompany, role = "User" });
     }
     private static readonly HttpClient _httpClient = new();
     private async Task<bool> ValidEmailAsync(string Email, string ApiKey)
@@ -146,7 +123,7 @@ public class AuthController : ControllerBase
             return false;
         }
     }
-    private string GenerateToken(int Id, string Email, string FullName)
+    private string GenerateToken(int Id, string Email, string FullName, UserRole role)
     {
         var jwtSettings = _configuration.GetSection("JwtSettings");
 
@@ -158,7 +135,8 @@ public class AuthController : ControllerBase
         {
             new Claim(ClaimTypes.NameIdentifier, Id.ToString()),
             new Claim(ClaimTypes.Email, Email),
-            new Claim("FullName", FullName)
+            new Claim("FullName", FullName),
+            new Claim(ClaimTypes.Role, role.ToString())
         };
 
         var token = new JwtSecurityToken(

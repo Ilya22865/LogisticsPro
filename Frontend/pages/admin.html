@@ -14,75 +14,164 @@
         @media (max-width: 768px) {
             .map-container {
                 margin-bottom: 20px;
+                padding: 15px;
             }
 
             .map-placeholder {
-                height: 300px;
+                height: 280px;
+            }
+
+            .map-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .map-header h2 {
+                font-size: 16px;
             }
 
             .map-actions {
-                flex-direction: column;
-                gap: 8px;
+                width: 100%;
+                display: flex;
+                gap: 10px;
             }
 
             .map-actions button {
-                width: 100%;
+                flex: 1;
+                padding: 12px;
+                font-size: 13px;
+                min-height: 44px;
             }
 
             .table-container {
                 overflow-x: auto;
                 -webkit-overflow-scrolling: touch;
-            }
-
-            .table-container table {
-                min-width: 700px;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .cards-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .card .value {
-                font-size: 24px;
-            }
-
-            .page-header {
-                margin-bottom: 20px;
-                padding-top: 10px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .cards-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .card {
                 padding: 15px;
             }
 
-            .card .value {
-                font-size: 22px;
+            .table-container table {
+                min-width: 650px;
+                font-size: 13px;
             }
 
-            .map-placeholder {
-                height: 250px;
-            }
-
-            .table-container {
-                padding: 10px;
+            .table-container th,
+            .table-container td {
+                padding: 10px 8px;
             }
 
             .table-container h2 {
                 font-size: 16px;
             }
 
+            .form-row {
+                grid-template-columns: 1fr !important;
+                gap: 15px;
+            }
+
+            .form-group input,
+            .form-group select {
+                font-size: 16px;
+                padding: 14px 15px;
+            }
+
+            .cards-grid {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 12px;
+            }
+
+            .card {
+                padding: 15px 12px;
+            }
+
+            .card .card-icon {
+                width: 38px;
+                height: 38px;
+                font-size: 18px;
+            }
+
+            .card h3 {
+                font-size: 13px;
+            }
+
+            .card .value {
+                font-size: 22px;
+            }
+
+            .card .description {
+                font-size: 11px;
+            }
+
+            .page-header {
+                margin-bottom: 20px;
+                padding-right: 60px;
+            }
+
+            .page-header h1 {
+                font-size: 20px;
+            }
+
+            .page-header p {
+                font-size: 13px;
+            }
+
+            .alert {
+                padding: 12px 15px;
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .card {
+                padding: 12px 10px;
+            }
+
+            .card .value {
+                font-size: 20px;
+            }
+
+            .card h3 {
+                font-size: 12px;
+            }
+
+            .map-placeholder {
+                height: 220px;
+            }
+
+            .table-container {
+                padding: 12px;
+            }
+
+            .table-container h2 {
+                font-size: 15px;
+            }
+
+            .table-container table {
+                min-width: 600px;
+                font-size: 12px;
+            }
+
             .form-group {
                 margin-bottom: 15px;
+            }
+
+            .form-group label {
+                font-size: 13px;
+            }
+
+            .btn {
+                min-height: 48px;
+                padding: 14px;
+                font-size: 14px;
+            }
+
+            .page-header h1 {
+                font-size: 18px;
             }
         }
 
@@ -94,6 +183,10 @@
 
             .map-placeholder {
                 height: 350px;
+            }
+
+            .table-container table {
+                min-width: 700px;
             }
         }
 
@@ -110,16 +203,22 @@
             .main-content {
                 padding: 40px;
             }
+
+            .table-container th,
+            .table-container td {
+                padding: 16px;
+                font-size: 15px;
+            }
         }
 
         /* Пейзажная ориентация на мобильных */
         @media (max-height: 500px) and (orientation: landscape) and (max-width: 768px) {
-            .sidebar {
-                max-width: 180px;
+            .map-container {
+                display: none;
             }
 
             .cards-grid {
-                grid-template-columns: repeat(4, 1fr);
+                grid-template-columns: repeat(2, 1fr);
             }
 
             .card {
@@ -128,10 +227,6 @@
 
             .card .value {
                 font-size: 18px;
-            }
-
-            .map-container {
-                display: none;
             }
         }
     </style>

@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace LogisticsWebAPI.DTOs.Auth;
 
+
 public class LoginDto
 {
     [Required]
@@ -11,4 +12,5 @@ public class LoginDto
     [Required]
     [MinLength(8)]
     public string Password { get; set; } = null!;
+
 }

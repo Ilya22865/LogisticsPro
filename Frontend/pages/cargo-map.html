@@ -135,32 +135,27 @@
             opacity: 0.8;
         }
 
+        /* Мобильная адаптация */
         @media (max-width: 768px) {
-            .cargo-list-panel {
-                width: calc(100% - 40px);
-                right: 20px;
-                left: 20px;
-                top: auto;
-                bottom: 20px;
-                max-height: 40vh;
-            }
-
-            .cargo-legend {
-                bottom: 10px;
-                left: 10px;
-                min-width: 150px;
-                padding: 15px;
-            }
-
             .map-page .map-header {
-                left: 20px !important;
-                right: 20px !important;
-                top: 70px !important;
+                left: 12px !important;
+                right: 12px !important;
+                top: 65px !important;
             }
 
             .map-page .map-header > div {
                 flex-direction: column;
-                gap: 15px;
+                gap: 10px;
+                padding: 15px !important;
+            }
+
+            .map-page .map-header h2 {
+                font-size: 16px;
+                margin-bottom: 3px !important;
+            }
+
+            .map-page .map-header p {
+                font-size: 12px !important;
             }
 
             .map-actions {
@@ -171,6 +166,131 @@
 
             .map-actions button {
                 flex: 1;
+                padding: 12px;
+                font-size: 13px;
+                min-height: 44px;
+            }
+
+            .cargo-list-panel {
+                width: calc(100% - 24px);
+                right: 12px;
+                left: 12px;
+                top: auto;
+                bottom: 12px;
+                max-height: 40vh;
+            }
+
+            .cargo-list-panel h4 {
+                padding: 15px;
+                font-size: 15px;
+            }
+
+            .cargo-item {
+                padding: 12px 15px;
+            }
+
+            .cargo-item-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+
+            .cargo-item-order {
+                font-size: 14px;
+            }
+
+            .cargo-item-route {
+                font-size: 12px;
+            }
+
+            .cargo-item-driver {
+                font-size: 11px;
+            }
+
+            .cargo-legend {
+                bottom: 10px;
+                left: 10px;
+                right: 10px;
+                min-width: auto;
+                padding: 12px;
+            }
+
+            .cargo-legend h4 {
+                font-size: 14px;
+                margin-bottom: 10px;
+            }
+
+            .legend-item {
+                font-size: 12px;
+            }
+
+            .legend-color {
+                width: 14px;
+                height: 14px;
+            }
+
+            .menu-toggle {
+                z-index: 200 !important;
+            }
+
+            .sidebar {
+                z-index: 150 !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .map-page .map-header {
+                top: 60px !important;
+            }
+
+            .map-page .map-header > div {
+                padding: 12px !important;
+            }
+
+            .map-page .map-header h2 {
+                font-size: 14px;
+            }
+
+            .map-page .map-header p {
+                font-size: 11px !important;
+            }
+
+            .map-actions button {
+                padding: 10px;
+                font-size: 12px;
+            }
+
+            .cargo-list-panel h4 {
+                padding: 12px;
+                font-size: 14px;
+            }
+
+            .cargo-item {
+                padding: 10px 12px;
+            }
+
+            .cargo-legend {
+                padding: 10px;
+                bottom: 8px;
+                left: 8px;
+                right: 8px;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .cargo-list-panel {
+                width: 300px;
+            }
+        }
+
+        @media (min-width: 1441px) {
+            .cargo-list-panel {
+                width: 400px;
+            }
+
+            .cargo-legend {
+                bottom: 40px;
+                left: 40px;
             }
         }
     </style>

@@ -2209,3 +2209,637 @@ tbody tr:last-child td {
         max-height: 95vh;
     }
 }
+
+/* ========================================
+   Карточный вид таблиц для мобильных (до 768px)
+   ======================================== */
+@media (max-width: 768px) {
+    .table-cards-mobile tbody tr {
+        display: block;
+        margin-bottom: 15px;
+        border: 1px solid var(--color-bg-secondary);
+        border-radius: var(--border-radius);
+        padding: 15px;
+        background: var(--color-white);
+        box-shadow: var(--shadow-soft);
+    }
+
+    .table-cards-mobile thead {
+        display: none;
+    }
+
+    .table-cards-mobile td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border: none;
+        border-bottom: 1px solid var(--color-bg-light);
+        font-size: 14px;
+    }
+
+    .table-cards-mobile td:last-child {
+        border-bottom: none;
+    }
+
+    .table-cards-mobile td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        color: var(--color-dark);
+        margin-right: 15px;
+        flex-shrink: 0;
+        min-width: 120px;
+    }
+
+    .table-cards-mobile .status-badge {
+        margin-left: auto;
+    }
+
+    .table-cards-mobile td .btn {
+        width: 100%;
+        margin-top: 5px;
+    }
+}
+
+/* ========================================
+   Улучшения для бокового меню на мобильных
+   ======================================== */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 260px !important;
+        max-width: 85vw;
+    }
+
+    .sidebar-menu a {
+        padding: 14px 20px;
+        font-size: 15px;
+    }
+
+    .sidebar-menu a i {
+        font-size: 18px;
+        width: 24px;
+        text-align: center;
+    }
+
+    .sidebar-user {
+        padding: 15px 20px;
+    }
+
+    .sidebar-user .avatar {
+        width: 42px;
+        height: 42px;
+        font-size: 16px;
+        flex-shrink: 0;
+    }
+
+    .sidebar-user .user-details h4 {
+        font-size: 14px;
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .sidebar-user .user-details p {
+        font-size: 12px;
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .sidebar-user .logout-btn {
+        padding: 12px;
+        font-size: 14px;
+        min-height: 44px;
+    }
+}
+
+/* ========================================
+   Улучшения для кнопок меню на мобильных
+   ======================================== */
+@media (max-width: 768px) {
+    .menu-toggle {
+        width: 48px;
+        height: 48px;
+        padding: 12px;
+        top: 12px;
+        left: 12px;
+    }
+
+    .menu-toggle span {
+        width: 24px;
+        height: 2px;
+    }
+}
+
+/* ========================================
+   Улучшения для форм на мобильных
+   ======================================== */
+@media (max-width: 768px) {
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 16px;
+        padding: 14px 15px;
+        min-height: 48px;
+    }
+
+    .form-group label {
+        font-size: 14px;
+        margin-bottom: 6px;
+    }
+
+    .form-group .hint {
+        font-size: 13px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr !important;
+        gap: 15px;
+    }
+
+    .form-section {
+        padding: 20px 15px !important;
+    }
+
+    .form-section h3 {
+        font-size: 16px;
+    }
+}
+
+/* ========================================
+   Улучшения для карточек на мобильных
+   ======================================== */
+@media (max-width: 768px) {
+    .cards-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+    }
+
+    .card {
+        padding: 18px 15px;
+    }
+
+    .card .card-icon {
+        width: 42px;
+        height: 42px;
+        font-size: 20px;
+        margin-right: 12px;
+    }
+
+    .card h3 {
+        font-size: 14px;
+    }
+
+    .card .value {
+        font-size: 24px;
+    }
+
+    .card .description {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .cards-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .card {
+        padding: 15px;
+    }
+
+    .card .value {
+        font-size: 22px;
+    }
+}
+
+/* ========================================
+   Улучшения для карт на мобильных
+   ======================================== */
+@media (max-width: 768px) {
+    .map-placeholder {
+        height: 300px;
+    }
+
+    .map-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .map-header h2 {
+        font-size: 18px;
+    }
+
+    .map-actions {
+        width: 100%;
+        display: flex;
+        gap: 10px;
+    }
+
+    .map-actions button,
+    .map-actions .btn {
+        flex: 1;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .map-placeholder {
+        height: 250px;
+    }
+}
+
+/* ========================================
+   Улучшения для модальных окон на мобильных
+   ======================================== */
+@media (max-width: 768px) {
+    .modal-dialog {
+        padding: 10px;
+        align-items: flex-start;
+        padding-top: 60px;
+    }
+
+    .modal-content,
+    .modal-responsive {
+        width: 95% !important;
+        max-width: none !important;
+        padding: 20px !important;
+        margin: 10px 0;
+    }
+
+    .modal-content h2,
+    .modal-responsive h2 {
+        font-size: 18px;
+    }
+
+    .modal-content .form-row,
+    .modal-responsive .form-row {
+        grid-template-columns: 1fr !important;
+    }
+
+    .modal-content .form-actions,
+    .modal-responsive .form-actions,
+    .modal-content > div:last-child,
+    .modal-responsive > div:last-child {
+        flex-direction: column;
+    }
+
+    .modal-content .btn,
+    .modal-responsive .btn {
+        width: 100%;
+        min-height: 48px;
+    }
+}
+
+/* ========================================
+   Улучшения для контейнеров оповещений
+   ======================================== */
+@media (max-width: 768px) {
+    #alertContainer {
+        top: 70px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+
+    #alertContainer .alert {
+        font-size: 14px;
+        padding: 12px 15px;
+    }
+}
+
+/* ========================================
+   Утилиты для адаптивности
+   ======================================== */
+@media (max-width: 768px) {
+    .hide-mobile {
+        display: none !important;
+    }
+
+    .show-mobile {
+        display: block !important;
+    }
+
+    .stack-on-mobile {
+        flex-direction: column !important;
+    }
+
+    .full-width-mobile {
+        width: 100% !important;
+        max-width: none !important;
+    }
+
+    .center-mobile {
+        align-items: center !important;
+        text-align: center !important;
+    }
+}
+
+/* ========================================
+   Улучшения для основного контента
+   ======================================== */
+@media (max-width: 768px) {
+    .main-content {
+        padding: 15px;
+        padding-top: 70px;
+    }
+
+    .page-header {
+        margin-bottom: 20px;
+        padding-right: 60px;
+    }
+
+    .page-header h1 {
+        font-size: 22px;
+        line-height: 1.3;
+    }
+
+    .page-header p {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-header h1 {
+        font-size: 20px;
+    }
+
+    .page-header p {
+        font-size: 13px;
+    }
+
+    .table-container {
+        padding: 15px;
+    }
+
+    .table-container h2 {
+        font-size: 18px;
+    }
+}
+
+/* ========================================
+   Улучшения для кнопок на мобильных
+   ======================================== */
+@media (max-width: 768px) {
+    .btn {
+        padding: 14px 20px;
+        font-size: 15px;
+        min-height: 48px;
+    }
+
+    .btn-sm {
+        padding: 10px 16px;
+        font-size: 14px;
+        min-height: 40px;
+    }
+
+    .btn-lg {
+        padding: 16px 24px;
+        font-size: 16px;
+        min-height: 52px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .form-actions .btn {
+        width: 100%;
+    }
+}
+
+/* ========================================
+   Улучшения для панелей фильтров
+   ======================================== */
+@media (max-width: 768px) {
+    .filters-panel > div {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+
+    .filters-panel .form-group {
+        min-width: 100% !important;
+        max-width: 100% !important;
+        margin-bottom: 10px !important;
+    }
+
+    .filters-panel .btn {
+        width: 100% !important;
+        max-width: none !important;
+        margin-top: 5px !important;
+    }
+}
+
+/* ========================================
+   Улучшения для пагинации на мобильных
+   ======================================== */
+@media (max-width: 768px) {
+    .pagination-panel {
+        flex-direction: column;
+        gap: 15px !important;
+        align-items: center !important;
+    }
+
+    .pagination-panel > div {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .pagination-panel .btn {
+        min-width: 120px;
+    }
+}
+
+/* ========================================
+   Улучшения для панелей быстрого доступа
+   ======================================== */
+@media (max-width: 768px) {
+    .quick-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .quick-action-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 16px 20px;
+        min-height: 52px;
+    }
+
+    .search-box {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .search-box .form-group {
+        min-width: 100% !important;
+    }
+
+    .search-box .btn {
+        width: 100%;
+    }
+}
+
+/* ========================================
+   Улучшения для панелей маршрутов и грузов
+   ======================================== */
+@media (max-width: 768px) {
+    .route-builder-panel {
+        width: calc(100% - 24px);
+        left: 12px;
+        right: 12px;
+        top: auto;
+        bottom: 12px;
+        max-height: 50vh;
+        padding: 20px 15px;
+    }
+
+    .cargo-list-panel {
+        width: calc(100% - 24px);
+        left: 12px;
+        right: 12px;
+        top: auto;
+        bottom: 12px;
+        max-height: 45vh;
+    }
+}
+
+/* ========================================
+   Улучшения для списков грузов
+   ======================================== */
+@media (max-width: 768px) {
+    .cargo-item {
+        padding: 12px 15px;
+    }
+
+    .cargo-item-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+
+    .cargo-item-order {
+        font-size: 15px;
+    }
+
+    .cargo-item-route {
+        font-size: 13px;
+    }
+
+    .cargo-item-driver {
+        font-size: 12px;
+    }
+
+    .cargo-legend {
+        bottom: 10px;
+        left: 10px;
+        right: 10px;
+        min-width: auto;
+        padding: 15px;
+    }
+}
+
+/* ========================================
+   Улучшения для точек маршрута
+   ======================================== */
+@media (max-width: 768px) {
+    .route-point {
+        padding: 12px;
+        gap: 8px;
+    }
+
+    .route-point-marker {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+    }
+
+    .route-point-address {
+        font-size: 13px;
+    }
+
+    .route-info-box {
+        padding: 12px;
+    }
+
+    .route-info-item {
+        font-size: 13px;
+    }
+}
+
+/* ========================================
+   Улучшения для таблиц сотрудников
+   ======================================== */
+@media (max-width: 768px) {
+    #staffCodesTable {
+        font-size: 13px;
+    }
+
+    #staffCodesTable th,
+    #staffCodesTable td {
+        padding: 10px 8px;
+    }
+}
+
+/* ========================================
+   Плавная прокрутка
+   ======================================== */
+html {
+    scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+}
+
+/* ========================================
+   Улучшения для контейнеров форм
+   ======================================== */
+@media (max-width: 768px) {
+    .order-form-container {
+        padding: 20px 15px !important;
+    }
+
+    .form-section {
+        padding: 20px 15px !important;
+        margin-bottom: 20px;
+    }
+
+    .form-section h3 {
+        font-size: 16px;
+    }
+
+    .form-hint {
+        padding: 12px;
+        font-size: 13px;
+    }
+}
+
+/* ========================================
+   Улучшения для интеграций
+   ======================================== */
+@media (max-width: 768px) {
+    .integrations-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .integration-card {
+        padding: 20px 15px;
+    }
+
+    .danger-zone {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .danger-zone .btn {
+        width: 100%;
+        max-width: none !important;
+    }
+}
