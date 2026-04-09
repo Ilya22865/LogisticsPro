@@ -203,4 +203,40 @@ function toggleFullscreen() {
 document.addEventListener('DOMContentLoaded', function() {
     checkAuth();
     updateUserInfo();
+    handleGoogleCallbackToken();
 });
+
+// Handle Google OAuth redirect with token in URL
+function handleGoogleCallbackToken() {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+    
+    if (token) {
+        const userData = {
+            token: token,
+            id: params.get('user_id'),
+            email: params.get('email') || '',
+            fullName: params.get('name') || '',
+            role: params.get('role') || 'user',
+            nameOfCompany: ''
+        };
+        
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(userData));
+        
+        // Clean URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+        
+        const role = userData.role.toLowerCase();
+        if (role === 'admin' || role === 'staff') {
+            window.location.href = 'admin.html';
+        } else {
+            window.location.href = 'dashboard.html';
+        }
+    }
+}
+
+// Google button click handler
+function loginWithGoogle() {
+    window.location.href = `${API_BASE_URL}/auth/external-login?provider=Google`;
+}

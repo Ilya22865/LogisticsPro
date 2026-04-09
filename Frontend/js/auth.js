@@ -1,5 +1,93 @@
 "use strict";
 const API_BASE_URL = 'http://localhost:5000/api';
+
+
+        function togglePassword(inputId, button) {
+            const input = document.getElementById(inputId);
+            const icon = button.querySelector('i');
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        function checkPasswordStrength(password) {
+            const container = document.getElementById('passwordStrengthContainer');
+            const bar = document.getElementById('passwordStrengthBar');
+            const text = document.getElementById('passwordStrengthText');
+
+            if (!password) {
+                container.style.display = 'none';
+                text.style.display = 'none';
+                return;
+            }
+
+            container.style.display = 'block';
+            text.style.display = 'block';
+
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (password.length >= 12) strength++;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+            if (/\d/.test(password)) strength++;
+            if (/[^a-zA-Z0-9]/.test(password)) strength++;
+
+            bar.className = 'password-strength-bar';
+
+            if (strength <= 1) {
+                bar.classList.add('weak');
+                text.textContent = 'Слабый пароль';
+                text.style.color = 'var(--color-danger)';
+            } else if (strength <= 2) {
+                bar.classList.add('fair');
+                text.textContent = 'Средний пароль';
+                text.style.color = 'var(--color-warning)';
+            } else if (strength <= 3) {
+                bar.classList.add('good');
+                text.textContent = 'Хороший пароль';
+                text.style.color = 'var(--color-info)';
+            } else {
+                bar.classList.add('strong');
+                text.textContent = 'Надежный пароль';
+                text.style.color = 'var(--color-accent-green)';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+
+            [loginForm, registerForm].forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    const submitBtn = form.querySelector('.btn-lg');
+                    submitBtn.classList.add('loading');
+                    submitBtn.disabled = true;
+
+                    setTimeout(() => {
+                        submitBtn.classList.remove('loading');
+                        submitBtn.disabled = false;
+                    }, 3000);
+                });
+            });
+
+            const inputs = document.querySelectorAll('.form-group input, .form-group select');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.closest('.form-group').style.transform = 'scale(1.02)';
+                    this.closest('.form-group').style.transition = 'transform 0.2s ease';
+                });
+
+                input.addEventListener('blur', function() {
+                    this.closest('.form-group').style.transform = 'scale(1)';
+                });
+            });
+        });
 function switchTab(tab) {
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
@@ -176,5 +264,36 @@ function toggleFullscreen() {
 document.addEventListener('DOMContentLoaded', function () {
     checkAuth();
     updateUserInfo();
+    handleGoogleCallbackToken();
 });
+// Handle Google OAuth redirect with token in URL
+function handleGoogleCallbackToken() {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+    if (token) {
+        const userData = {
+            token: token,
+            id: params.get('user_id'),
+            email: params.get('email') || '',
+            fullName: params.get('name') || '',
+            role: params.get('role') || 'user',
+            nameOfCompany: ''
+        };
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(userData));
+        // Clean URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+        const role = userData.role.toLowerCase();
+        if (role === 'admin' || role === 'staff') {
+            window.location.href = 'admin.html';
+        }
+        else {
+            window.location.href = 'dashboard.html';
+        }
+    }
+}
+// Google button click handler
+function loginWithGoogle() {
+    window.location.href = `${API_BASE_URL}/auth/external-login?provider=Google`;
+}
 //# sourceMappingURL=auth.js.map

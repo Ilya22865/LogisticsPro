@@ -1184,7 +1184,7 @@
                 </div>
 
                 <div class="social-auth">
-                    <button type="button" class="social-btn google" onclick="alert('Google авторизация будет доступна позже')">
+                    <button type="button" class="social-btn google" onclick="loginWithGoogle()">
                         <i class="fab fa-google"></i>
                         <span>Google</span>
                     </button>
@@ -1275,131 +1275,7 @@
 
     <script src="../js/auth.js"></script>
     <script>
-        function switchTab(tab) {
-            const loginForm = document.getElementById('loginForm');
-            const registerForm = document.getElementById('registerForm');
-            const tabs = document.querySelectorAll('.auth-tabs button');
-            const authTabs = document.querySelector('.auth-tabs');
-
-            if (tab === 'login') {
-                loginForm.style.display = 'block';
-                registerForm.style.display = 'none';
-                tabs[0].classList.add('active');
-                tabs[1].classList.remove('active');
-                authTabs.classList.remove('register-active');
-            } else {
-                loginForm.style.display = 'none';
-                registerForm.style.display = 'block';
-                tabs[0].classList.remove('active');
-                tabs[1].classList.add('active');
-                authTabs.classList.add('register-active');
-            }
-        }
-
-        function toggleStaffCodeField() {
-            const type = document.getElementById('registerType').value;
-            const staffCodeGroup = document.getElementById('staffCodeGroup');
-            const staffCode = document.getElementById('staffCode');
-
-            if (type === 'staff') {
-                staffCodeGroup.style.display = 'block';
-                staffCode.required = true;
-            } else {
-                staffCodeGroup.style.display = 'none';
-                staffCode.required = false;
-            }
-        }
-
-        function togglePassword(inputId, button) {
-            const input = document.getElementById(inputId);
-            const icon = button.querySelector('i');
-
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            } else {
-                input.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-            }
-        }
-
-        // Password strength checker
-        function checkPasswordStrength(password) {
-            const container = document.getElementById('passwordStrengthContainer');
-            const bar = document.getElementById('passwordStrengthBar');
-            const text = document.getElementById('passwordStrengthText');
-
-            if (!password) {
-                container.style.display = 'none';
-                text.style.display = 'none';
-                return;
-            }
-
-            container.style.display = 'block';
-            text.style.display = 'block';
-
-            let strength = 0;
-            if (password.length >= 8) strength++;
-            if (password.length >= 12) strength++;
-            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
-            if (/\d/.test(password)) strength++;
-            if (/[^a-zA-Z0-9]/.test(password)) strength++;
-
-            bar.className = 'password-strength-bar';
-
-            if (strength <= 1) {
-                bar.classList.add('weak');
-                text.textContent = 'Слабый пароль';
-                text.style.color = 'var(--color-danger)';
-            } else if (strength <= 2) {
-                bar.classList.add('fair');
-                text.textContent = 'Средний пароль';
-                text.style.color = 'var(--color-warning)';
-            } else if (strength <= 3) {
-                bar.classList.add('good');
-                text.textContent = 'Хороший пароль';
-                text.style.color = 'var(--color-info)';
-            } else {
-                bar.classList.add('strong');
-                text.textContent = 'Надежный пароль';
-                text.style.color = 'var(--color-accent-green)';
-            }
-        }
-
-        // Add loading state on form submit
-        document.addEventListener('DOMContentLoaded', function() {
-            const loginForm = document.getElementById('loginForm');
-            const registerForm = document.getElementById('registerForm');
-
-            [loginForm, registerForm].forEach(form => {
-                form.addEventListener('submit', function(e) {
-                    const submitBtn = form.querySelector('.btn-lg');
-                    submitBtn.classList.add('loading');
-                    submitBtn.disabled = true;
-
-                    // Reset after 3 seconds if form doesn't actually submit
-                    setTimeout(() => {
-                        submitBtn.classList.remove('loading');
-                        submitBtn.disabled = false;
-                    }, 3000);
-                });
-            });
-
-            // Add input animation on focus
-            const inputs = document.querySelectorAll('.form-group input, .form-group select');
-            inputs.forEach(input => {
-                input.addEventListener('focus', function() {
-                    this.closest('.form-group').style.transform = 'scale(1.02)';
-                    this.closest('.form-group').style.transition = 'transform 0.2s ease';
-                });
-
-                input.addEventListener('blur', function() {
-                    this.closest('.form-group').style.transform = 'scale(1)';
-                });
-            });
-        });
+       
     </script>
 </body>
 </html>

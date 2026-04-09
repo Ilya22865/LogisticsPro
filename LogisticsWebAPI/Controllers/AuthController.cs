@@ -6,6 +6,8 @@ using System.Text;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text.Json;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Google;
 namespace LogisticsWebAPI.Controllers;
 
 [ApiController]
@@ -35,6 +37,7 @@ public class AuthController : ControllerBase
         return Ok(new { token, user.Id, user.Email, user.FullName, user.NameOfCompany, role = user.Role.ToString() });
     }
 
+  
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDto dto)
     {
@@ -156,5 +159,50 @@ public class AuthController : ControllerBase
     private bool VerifyPassword(string password, string hash)
     {
         return BCrypt.Net.BCrypt.Verify(password, hash);
+    }
+
+    [HttpGet("external-login")]
+    public IActionResult ExternalLogin([FromQuery] string provider)
+    {
+        var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Auth");
+        var properties = new AuthenticationProperties { RedirectUri = redirectUrl! };
+        properties.Items["LoginProvider"] = provider;
+        return Challenge(properties, provider);
+    }
+
+    [HttpGet("google-callback")]
+    public async Task<IActionResult> ExternalLoginCallback()
+    {
+        var result = await HttpContext.AuthenticateAsync("ExternalCookie");
+        if (result?.Principal == null)
+            return BadRequest(new { message = "Google authentication failed" });
+
+        var email = result.Principal.FindFirst(ClaimTypes.Email)?.Value
+                 ?? result.Principal.FindFirst("email")?.Value;
+        var name = result.Principal.FindFirst(ClaimTypes.Name)?.Value
+                ?? result.Principal.FindFirst("name")?.Value;
+
+        if (string.IsNullOrEmpty(email))
+            return BadRequest(new { message = "Google did not return an email" });
+
+        var user = _context.Users.FirstOrDefault(u => u.Email == email);
+
+        if (user == null)
+        {
+            user = new User
+            {
+                FullName = name ?? email,
+                Email = email,
+                NameOfCompany = "",
+                PasswordHash = HashPassword(Guid.NewGuid().ToString()),
+                Role = UserRole.User
+            };
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+        }
+
+        var token = GenerateToken(user.Id, user.Email, user.FullName, user.Role);
+
+        return Redirect($"http://localhost:5000/pages/index.html?token={Uri.EscapeDataString(token)}&user_id={user.Id}&email={Uri.EscapeDataString(email)}&name={Uri.EscapeDataString(user.FullName)}&role={Uri.EscapeDataString(user.Role.ToString())}");
     }
 }
