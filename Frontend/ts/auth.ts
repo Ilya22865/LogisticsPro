@@ -3,7 +3,7 @@ const API_BASE_URL = 'http://localhost:5000/api';
 interface User {
     fullName: string;
     email: string;
-    role: 'admin' | 'staff' | 'user';
+    role: 'admin' | 'user';
     nameOfCompany?: string;
     companyPhone?: string;
     token?: string;
@@ -79,7 +79,7 @@ if (loginForm) {
             console.error('Ошибка:', error);
             alert('Ошибка соединения с сервером');
         }
-    });
+    })
 }
 
 const registerForm = document.getElementById('registerForm');

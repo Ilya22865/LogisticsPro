@@ -6,6 +6,7 @@ using System.Text;
 using System.Security.Claims;
 using LogisticsWebAPI.Models;
 using LogisticsWebAPI.Controllers;
+using LogisticsWebAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,13 @@ builder.Configuration.AddUserSecrets<Program>();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<UserContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+
+builder.Services.AddDbContext<DriverContext>(options =>
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+
+// Register services
+builder.Services.AddScoped<IEmailService, EmailValidationService>();
+builder.Services.AddScoped<IGenerateTokenService, GenerateTokenService>();
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var KEY = jwtSettings["Key"];
@@ -36,7 +44,12 @@ builder.Services.AddAuthentication().AddCookie("ExternalCookie").AddGoogle(googl
     googleOptions.SignInScheme = "ExternalCookie";
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(
+            new System.Text.Json.Serialization.JsonStringEnumConverter());
+    });
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>

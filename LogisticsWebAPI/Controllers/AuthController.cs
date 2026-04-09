@@ -1,13 +1,9 @@
 using LogisticsWebAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using LogisticsWebAPI.DTOs.Auth;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
-using System.Text.Json;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Google;
+using LogisticsWebAPI.Services;
 namespace LogisticsWebAPI.Controllers;
 
 [ApiController]
@@ -16,11 +12,15 @@ public class AuthController : ControllerBase
 {
     private readonly UserContext _context;
     private readonly IConfiguration _configuration;
+    private readonly IEmailService _emailService;
+    private readonly IGenerateTokenService _generateTokenService;
 
-    public AuthController(UserContext context, IConfiguration configuration)
+    public AuthController(UserContext context, IConfiguration configuration, IEmailService emailService, IGenerateTokenService generateTokenService)
     {
         _context = context;
         _configuration = configuration;
+        _emailService = emailService;
+        _generateTokenService = generateTokenService;
     }
 
     [HttpPost("login")]
@@ -33,11 +33,11 @@ public class AuthController : ControllerBase
         if (!VerifyPassword(dto.Password, user.PasswordHash))
             return Unauthorized(new { message = "Неверный Email или пароль!" });
 
-        var token = GenerateToken(user.Id, user.Email, user.FullName, user.Role);
+        var token = _generateTokenService.GenerateUsersToken(user.Id, user.Email, user.FullName, user.Role);
         return Ok(new { token, user.Id, user.Email, user.FullName, user.NameOfCompany, role = user.Role.ToString() });
     }
 
-  
+
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDto dto)
     {
@@ -47,10 +47,10 @@ public class AuthController : ControllerBase
         string hunterKey = config["ApiKey"]!;
         bool isEmailValid;
 
-        isEmailValid = await ValidEmailAsync(dto.Email, hunterKey);
-        if(!isEmailValid)
+        isEmailValid = await _emailService.ValidationEmailAsync(dto.Email, hunterKey);
+        if (!isEmailValid)
         {
-            return BadRequest(new { message = "Такого Email не существует."});
+            return BadRequest(new { message = "Такого Email не существует." });
         }
         if (_context.Users.Any(u => u.Email == dto.Email))
             return BadRequest(new { message = "Email уже занят" });
@@ -71,7 +71,7 @@ public class AuthController : ControllerBase
                 _context.Users.Add(admin);
                 await _context.SaveChangesAsync();
 
-                var adminToken = GenerateToken(admin.Id, admin.Email, admin.FullName, UserRole.Admin);
+                var adminToken = _generateTokenService.GenerateUsersToken(admin.Id, admin.Email, admin.FullName, UserRole.Admin);
 
                 return Ok(new { adminToken, admin.Id, admin.Email, admin.FullName, admin.NameOfCompany, role = "Admin" });
             }
@@ -93,64 +93,11 @@ public class AuthController : ControllerBase
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
 
-        var token = GenerateToken(user.Id, user.Email, user.FullName, UserRole.User);
+        var token = _generateTokenService.GenerateUsersToken(user.Id, user.Email, user.FullName, UserRole.User);
 
         return Ok(new { token, user.Id, user.Email, user.FullName, user.NameOfCompany, role = "User" });
     }
-    private static readonly HttpClient _httpClient = new();
-    private async Task<bool> ValidEmailAsync(string Email, string ApiKey)
-    {
-        try
-        {
-            var url = $"https://api.hunter.io/v2/email-verifier?email={Uri.EscapeDataString(Email)}&api_key={ApiKey}";
-            using var response = await _httpClient.GetAsync(url);
 
-            if (!response.IsSuccessStatusCode)
-            {
-                return false;
-            }
-
-            using var jsonDoc = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
-
-            var root = jsonDoc.RootElement;
-
-            if (root.TryGetProperty("data", out var dataElement) && dataElement.TryGetProperty("status", out var statusElement))
-            {
-                return statusElement.GetString() == "valid";
-            }
-
-            return false;
-        }
-        catch
-        {
-            return false;
-        }
-    }
-    private string GenerateToken(int Id, string Email, string FullName, UserRole role)
-    {
-        var jwtSettings = _configuration.GetSection("JwtSettings");
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]!));
-
-        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var claims = new[]
-        {
-            new Claim(ClaimTypes.NameIdentifier, Id.ToString()),
-            new Claim(ClaimTypes.Email, Email),
-            new Claim("FullName", FullName),
-            new Claim(ClaimTypes.Role, role.ToString())
-        };
-
-        var token = new JwtSecurityToken(
-            issuer: jwtSettings["Issuer"],
-            audience: jwtSettings["Audience"],
-            claims: claims,
-            expires: DateTime.Now.AddHours(1),
-            signingCredentials: credentials
-        );
-        return new JwtSecurityTokenHandler().WriteToken(token);
-    }
     private string HashPassword(string password)
     {
         return BCrypt.Net.BCrypt.HashPassword(password);
@@ -201,8 +148,8 @@ public class AuthController : ControllerBase
             await _context.SaveChangesAsync();
         }
 
-        var token = GenerateToken(user.Id, user.Email, user.FullName, user.Role);
+        var token = _generateTokenService.GenerateUsersToken(user.Id, user.Email, user.FullName, user.Role);
 
-        return Redirect($"http://localhost:5000/pages/index.html?token={Uri.EscapeDataString(token)}&user_id={user.Id}&email={Uri.EscapeDataString(email)}&name={Uri.EscapeDataString(user.FullName)}&role={Uri.EscapeDataString(user.Role.ToString())}");
+        return Redirect($"http://localhost:5000/pages/index.html?token={Uri.EscapeDataString(token.ToString()!)}&user_id={user.Id}&email={Uri.EscapeDataString(email)}&name={Uri.EscapeDataString(user.FullName)}&role={Uri.EscapeDataString(user.Role.ToString())}");
     }
 }

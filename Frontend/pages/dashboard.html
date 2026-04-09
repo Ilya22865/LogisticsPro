@@ -7,12 +7,17 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>Дашборд - LogisticsPro</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ========================================
-           Welcome Banner
-           ======================================== */
+        #userMap {
+            width: 100%;
+            height: 500px;
+            border-radius: var(--border-radius-lg);
+        }
         .welcome-banner {
             background: linear-gradient(135deg, #638ECB 0%, #395886 100%);
             border-radius: var(--border-radius-xl);
@@ -1039,7 +1044,6 @@
         <ul class="sidebar-menu">
             <li><a href="dashboard.html" class="active"><i class="fas fa-chart-line"></i> Дашборд</a></li>
             <li><a href="orders.html"><i class="fas fa-box"></i> Мои заказы</a></li>
-            <li><a href="cargo-map.html"><i class="fas fa-map-marked-alt"></i> Карта грузов</a></li>
             <li><a href="settings.html"><i class="fas fa-cog"></i> Настройки</a></li>
         </ul>
         <div class="sidebar-user">
@@ -1082,9 +1086,7 @@
             <a href="orders.html" class="quick-action-btn">
                 <i class="fas fa-list"></i><span>Все заказы</span>
             </a>
-            <a href="cargo-map.html" class="quick-action-btn green">
-                <i class="fas fa-map-marker-alt"></i><span>Отследить груз</span>
-            </a>
+  
             <a href="settings.html" class="quick-action-btn purple">
                 <i class="fas fa-file-download"></i><span>Экспорт данных</span>
             </a>
@@ -1155,11 +1157,7 @@
                     <button class="btn-route" onclick="toggleFullscreen()"><i class="fas fa-expand"></i> На весь экран</button>
                 </div>
             </div>
-            <div id="userMap" class="map-placeholder">
-                <i class="fas fa-map-marked-alt"></i>
-                <p>Здесь будет карта с местоположением груза</p>
-                <small>Подключите API карты в файле js/map-user.js</small>
-            </div>
+            <div id="userMap"></div>
         </div>
 
         <div class="table-container fade-in" style="animation-delay: 0.4s;">
@@ -1193,12 +1191,10 @@
             </div>
         </div>
     </div>
-
     <script src="../js/auth.js"></script>
     <script src="../js/map-user.js"></script>
     <script>
-        const API_BASE_URL = '/api';
-
+        const API_BASE_URL = 'http://localhost:5000/api'
         document.addEventListener('DOMContentLoaded', function() {
             // Set time-based greeting
             updateWelcomeGreeting();

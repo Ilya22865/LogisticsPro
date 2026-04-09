@@ -1107,34 +1107,6 @@
                 <div class="description">за сегодня</div>
             </div>
         </div>
-
-        <!-- Уведомление -->
-        <div class="alert alert-info alert-dismissible fade-in" style="animation-delay: 0.4s;" id="alertBox">
-            <button class="btn-close" onclick="this.parentElement.style.display='none'" aria-label="Закрыть">&times;</button>
-            <i class="fas fa-lightbulb"></i>
-            <div>
-                <strong id="tipLabel">Совет:</strong>
-                <span id="tipText">Используйте карту для построения оптимальных маршрутов доставки</span>
-            </div>
-        </div>
-
-        <!-- Карта для построения маршрутов -->
-        <div class="map-container fade-in" style="animation-delay: 0.5s;">
-            <div class="map-header">
-                <h2><i class="fas fa-map-marked-alt" style="color: var(--color-primary); margin-right: 8px;"></i>Построение маршрута</h2>
-                <div class="map-actions">
-                    <button class="btn-refresh" onclick="clearRoute()" id="btnClear"><i class="fas fa-eraser"></i> Очистить</button>
-                    <button class="btn-route" onclick="startNewRoute()" id="btnNewRoute"><i class="fas fa-plus"></i> Новый маршрут</button>
-                </div>
-            </div>
-
-            <!-- ЗАГЛУШКА ДЛЯ КАРТЫ - подключите здесь ваш API -->
-            <div id="adminMap" class="map-placeholder">
-                <i class="fas fa-map" style="font-size: 60px; margin-bottom: 15px; opacity: 0.5;"></i>
-                <p id="mapPlaceholderText">Здесь будет интерактивная карта</p>
-                <small id="mapPlaceholderHint">Подключите API карты (Яндекс.Карты, Google Maps и т.д.)</small>
-            </div>
-        </div>
         
         <!-- Форма добавления маршрута -->
         <div class="table-container fade-in" style="animation-delay: 0.6s;">
