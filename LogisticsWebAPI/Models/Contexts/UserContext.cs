@@ -6,6 +6,9 @@ namespace LogisticsWebAPI.Models
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Order> Orders { get; set; }
+
+        public DbSet<Driver> Drivers { get; set; }
+        public DbSet<Truck> Trucks { get; set; }
         public DbSet<Cargo> Cargos { get; set; }
         public DbSet<Route> Routes { get; set; }
 
@@ -21,7 +24,6 @@ namespace LogisticsWebAPI.Models
                 .WithMany(o => o.Orders)
                 .HasForeignKey(u => u.UserID)
                 .OnDelete(DeleteBehavior.Restrict);
-
             modelBuilder.Entity<Cargo>()
                 .HasOne(o => o.Order)
                 .WithMany(c => c.Cargos)
@@ -29,12 +31,22 @@ namespace LogisticsWebAPI.Models
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Order>()
+                .HasOne(r => r.Route)
+                .WithMany(o => o.Orders)
+                .HasForeignKey(r => r.RouteId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Driver>()
+                .HasOne(t => t.Truck)
+                .WithOne(d => d.Driver)
+                .HasForeignKey<Driver>(t => t.TruckId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Order>()
                 .HasOne(d => d.Driver)
                 .WithMany(o => o.Orders)
                 .HasForeignKey(d => d.DriverID)
                 .OnDelete(DeleteBehavior.Restrict);
-
-    
         }
     }
 }

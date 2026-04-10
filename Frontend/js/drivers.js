@@ -8,66 +8,127 @@ document.addEventListener('DOMContentLoaded', function() {
 // Загрузка водителей
 async function loadDrivers() {
   try {
-    // TODO: const response = await fetch('/api/drivers');
-    // const drivers = await response.json();
+    const response = await fetch(`${API_BASE_URL_DRIVERS}/Driver/getDriversList`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    });
 
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const drivers = await response.json();
     const tbody = document.querySelector('#driversTable tbody');
+    
+    if (!drivers || drivers.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align: center; color: var(--color-primary); padding: 40px;">
+            <div class="empty-state">
+              <div class="empty-icon">📋</div>
+              <h3>Водители не найдены</h3>
+              <p>В системе пока нет зарегистрированных водителей</p>
+            </div>
+          </td>
+        </tr>
+      `;
+      updateDriverCount(0);
+      return;
+    }
 
-    // Show loading skeleton
-    tbody.innerHTML = `
-                    <tr class="skeleton-row skeleton"></tr>
-                    <tr class="skeleton-row skeleton"></tr>
-                    <tr class="skeleton-row skeleton"></tr>
-                `;
+    tbody.innerHTML = drivers.map(driver => {
+      const statusText = getStatusText(driver.driverStatus);
+      const statusClass = getStatusClass(driver.driverStatus);
+      const routeInfo = (driver.routeStart && driver.routeEnd) 
+        ? `${driver.routeStart} → ${driver.routeEnd}` 
+        : '—';
 
-    // Simulate loading delay (remove in production)
-    await new Promise(resolve => setTimeout(resolve, 500));
+      return `
+        <tr>
+          <td data-label="ФИО">${driver.driverFullName}</td>
+          <td data-label="Телефон">${driver.driverPhoneNumber}</td>
+          <td data-label="Автомобиль">${driver.truckModel || '—'}</td>
+          <td data-label="Госномер">${driver.truckRegisterNumber || '—'}</td>
+          <td data-label="Статус"><span class="status-badge ${statusClass}">${statusText}</span></td>
+          <td data-label="Текущий маршрут">${routeInfo}</td>
+        </tr>
+      `;
+    }).join('');
 
-    // Заглушка
-    tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6">
-                            <div class="empty-state">
-                                <div class="empty-icon">&#128663;</div>
-                                <h3>Нет данных о водителях</h3>
-                                <p>Добавьте первого водителя, чтобы начать работу</p>
-                                <button class="btn-add-driver" onclick="openAddDriverModal()" style="display: inline-flex; margin-top: 10px;">
-                                    <span class="icon-plus">+</span> Добавить водителя
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-
-    updateDriverCount(0);
+    updateDriverCount(drivers.length);
   } catch (error) {
     console.error('Ошибка загрузки водителей:', error);
     const tbody = document.querySelector('#driversTable tbody');
     tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6" style="text-align: center; color: var(--color-danger); padding: 40px;">
-                            <div class="empty-state">
-                                <div class="empty-icon">&#9888;</div>
-                                <h3>Ошибка загрузки</h3>
-                                <p>Не удалось загрузить данные о водителях</p>
-                            </div>
-                        </td>
-                    </tr>
-                `;
+      <tr>
+        <td colspan="6" style="text-align: center; color: var(--color-danger); padding: 40px;">
+          <div class="empty-state">
+            <div class="empty-icon">⚠</div>
+            <h3>Ошибка загрузки</h3>
+            <p>Не удалось загрузить данные о водителях</p>
+          </div>
+        </td>
+      </tr>
+    `;
+    updateDriverCount(0);
   }
 }
 
+function getStatusText(status) {
+  const statusMap = {
+    'Active': 'На линии',
+    'Inactive': 'Свободен',
+    'On_leave': 'В отпуске'
+  };
+  return statusMap[status] || status || 'Неизвестно';
+}
+
+// Helper function to get status CSS class
+function getStatusClass(status) {
+  const classMap = {
+    'Active': 'on-line',
+    'Inactive': 'off-line',
+    'On_leave': 'on-vacation'
+  };
+  return classMap[status] || 'off-line';
+}
 // Загрузка статистики
 async function loadDriverStats() {
   try {
-    // TODO: const response = await fetch('/api/drivers/stats');
+    const response = await fetch(`${API_BASE_URL_DRIVERS}/Driver/getDriversList`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    });
 
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const drivers = await response.json();
+    
+    if (!drivers || drivers.length === 0) {
+      document.getElementById('totalDrivers').textContent = '0';
+      document.getElementById('driversOnLine').textContent = '0';
+      document.getElementById('driversAvailable').textContent = '0';
+      document.getElementById('driversInactive').textContent = '0';
+      return;
+    }
+
+    const total = drivers.length;
+    const onLine = drivers.filter(d => d.driverStatus === 'Active').length;
+    const onLeave = drivers.filter(d => d.driverStatus === 'On_leave').length;
+    const inactive = drivers.filter(d => d.driverStatus === 'Inactive').length;
+
+    document.getElementById('totalDrivers').textContent = total;
+    document.getElementById('driversOnLine').textContent = onLine;
+    document.getElementById('driversAvailable').textContent = inactive;
+    document.getElementById('driversInactive').textContent = onLeave;
+  } catch (error) {
+    console.error('Ошибка загрузки статистики:', error);
     document.getElementById('totalDrivers').textContent = '—';
     document.getElementById('driversOnLine').textContent = '—';
     document.getElementById('driversAvailable').textContent = '—';
     document.getElementById('driversInactive').textContent = '—';
-  } catch (error) {
-    console.error('Ошибка:', error);
   }
 }
 

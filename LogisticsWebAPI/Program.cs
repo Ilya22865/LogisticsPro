@@ -16,12 +16,9 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<UserContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
-builder.Services.AddDbContext<DriverContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
-
-// Register services
 builder.Services.AddScoped<IEmailService, EmailValidationService>();
 builder.Services.AddScoped<IGenerateTokenService, GenerateTokenService>();
+builder.Services.AddScoped<IDriversService, DriversService>();
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var KEY = jwtSettings["Key"];

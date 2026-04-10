@@ -8,17 +8,23 @@ namespace LogisticsWebAPI.Controllers;
 [Route("api/[controller]")]
 public class DriverController : ControllerBase
 {
-    private readonly DriverContext _driverContext;
+    private readonly UserContext _userContext;
     private readonly IConfiguration _configuration;
     private readonly IEmailService _emailService;
+    private readonly IDriversService _driversService;
     private readonly IGenerateTokenService _generateTokenService;
 
-    public DriverController(DriverContext driverContext, IConfiguration configuration, IEmailService emailService, IGenerateTokenService generateTokenService)
+    public DriverController(UserContext userContext, 
+        IConfiguration configuration, 
+        IEmailService emailService, 
+        IGenerateTokenService generateTokenService,
+        IDriversService driversService)
     {
-        _driverContext = driverContext;
+        _userContext = userContext;
         _configuration = configuration;
         _emailService = emailService;
         _generateTokenService = generateTokenService;
+        _driversService = driversService;
     }
 
     [HttpPost("addDriver")]
@@ -34,7 +40,7 @@ public class DriverController : ControllerBase
             return BadRequest(new { message = "Такого Email не существует." });
         }
 
-        if (_driverContext.Drivers.Any(d => d.Email == dto.Email))
+        if (_userContext.Drivers.Any(d => d.Email == dto.Email))
             return BadRequest(new { message = "Email уже занят. Проверьте базу данных, возможно этот водитель уже зарегестрирован" });
 
         var driver = new Driver
@@ -50,14 +56,20 @@ public class DriverController : ControllerBase
             } : null
         };
 
-        _driverContext.Drivers.Add(driver);
-        await _driverContext.SaveChangesAsync();
+        _userContext.Drivers.Add(driver);
+        await _userContext.SaveChangesAsync();
 
         var token = _generateTokenService.GenerateDriversToken(driver.Id, driver.Email, driver.FullName);
 
         return Ok(new { token, driver.Id, driver.Email, driver.FullName, driver.PhoneNumber, driver.Status });
     }
 
+    [HttpGet("getDriversList")]
+    public async Task<IActionResult> GetAllDriversAsync()
+    {
+        var allDrivers = await _driversService.GetAllDriversAsync();
+        return Ok(allDrivers);
+    }
     // private async Task<bool> ValidPhoneNumber(string phoneNumber)
     // {
     //     try
