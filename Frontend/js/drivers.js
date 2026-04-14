@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', function() {
   loadDriverStats();
 });
 
+const table = document.getElementById('driversTable')
+
 // Загрузка водителей
 async function loadDrivers() {
   try {
@@ -20,6 +22,8 @@ async function loadDrivers() {
     const drivers = await response.json();
     const tbody = document.querySelector('#driversTable tbody');
     
+    tbody.innerHTML = '';
+
     if (!drivers || drivers.length === 0) {
       tbody.innerHTML = `
         <tr>
@@ -35,7 +39,7 @@ async function loadDrivers() {
       updateDriverCount(0);
       return;
     }
-
+    
     tbody.innerHTML = drivers.map(driver => {
       const statusText = getStatusText(driver.driverStatus);
       const statusClass = getStatusClass(driver.driverStatus);
@@ -132,21 +136,91 @@ async function loadDriverStats() {
   }
 }
 
-// Фильтрация
-function filterDrivers() {
-  // TODO: Реализовать фильтрацию на клиенте или запрос к API
-}
 
+async function filterDrivers() {
+  const status = document.getElementById('driverStatusFilterSelect').value
+   const search = document.getElementById('searchDriverInput').value
+
+  if((status == 'all' || status == '') && (search == '')) {
+    loadDrivers();
+    return
+  }
+  try {
+    const response = await fetch(`${API_BASE_URL_DRIVERS}/Driver/getDriversBySearch?SearchTerm=${encodeURIComponent(search)}&StatusFilter=${status !== 'all' ? status : ''}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    })
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const drivers = await response.json();
+    const tbody = document.querySelector('#driversTable tbody');
+    tbody.innerHTML = '';
+
+    if (!drivers || drivers.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align: center; color: var(--color-primary); padding: 40px;">
+            <div class="empty-state">
+              <div class="empty-icon">📋</div>
+              <h3>Водители не найдены</h3>
+              <p>В системе пока нет зарегистрированных водителей</p>
+            </div>
+          </td>
+        </tr>
+      `;
+      updateDriverCount(0);
+      return;
+    }
+    
+    tbody.innerHTML = drivers.map(driver => {
+      const statusText = getStatusText(driver.driverStatus);
+      const statusClass = getStatusClass(driver.driverStatus);
+      const routeInfo = (driver.routeStart && driver.routeEnd)
+        ? `${driver.routeStart} → ${driver.routeEnd}` 
+        : '—';
+        return `
+        <tr>
+          <td data-label="ФИО">${driver.driverFullName}</td>
+          <td data-label="Телефон">${driver.driverPhoneNumber}</td>
+          <td data-label="Автомобиль">${driver.truckModel || '—'}</td>
+          <td data-label="Госномер">${driver.truckRegisterNumber || '—'}</td>
+          <td data-label="Статус"><span class="status-badge ${statusClass}">${statusText}</span></td>
+          <td data-label="Текущий маршрут">${routeInfo}</td>
+        </tr>
+      `;
+    }).join('');
+
+    updateDriverCount(drivers.length);
+  } catch (error) {
+    console.error('Ошибка загрузки водителей:', error);
+    const tbody = document.querySelector('#driversTable tbody');
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" style="text-align: center; color: var(--color-danger); padding: 40px;">
+          <div class="empty-state">
+            <div class="empty-icon">⚠</div>
+            <h3>Ошибка загрузки</h3>
+            <p>Не удалось загрузить данные о водителях</p>
+          </div>
+        </td>
+      </tr>
+    `;
+    updateDriverCount(0);
+  }
+}
 // Clear search button
 function clearSearch() {
-  document.getElementById('searchDriver').value = '';
+  document.getElementById('searchDriverInput').value = '';
   document.getElementById('clearSearchBtn').classList.remove('visible');
   filterDrivers();
 }
 
 // Toggle clear button visibility
 function toggleClearButton() {
-  const searchInput = document.getElementById('searchDriver');
+  const searchInput = document.getElementById('searchDriverInput');
   const clearBtn = document.getElementById('clearSearchBtn');
   if (searchInput.value.length > 0) {
     clearBtn.classList.add('visible');
@@ -315,4 +389,5 @@ document.querySelectorAll('.sidebar-menu a').forEach(link => {
       toggleSidebar();
     }
   });
-});
+})
+

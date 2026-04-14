@@ -2,6 +2,9 @@ using LogisticsWebAPI.DTOs;
 using LogisticsWebAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using LogisticsWebAPI.Services;
+using LogisticsWebAPI.Queries;
+using Microsoft.EntityFrameworkCore;
+
 namespace LogisticsWebAPI.Controllers;
 
 [ApiController]
@@ -70,13 +73,27 @@ public class DriverController : ControllerBase
         var allDrivers = await _driversService.GetAllDriversAsync();
         return Ok(allDrivers);
     }
-    // private async Task<bool> ValidPhoneNumber(string phoneNumber)
-    // {
-    //     try
-    //     {
-    //         var url = $"http://num.voxlink.ru/get/?num={phoneNumber}";
-    //         using var response = await 
-    //     }
-    // }
+
+    [HttpGet("getDriversBySearch")]
+    public async Task<IActionResult> GetDriversBySearchAsync([FromQuery] GetDriversQuery query)
+    {
+        var dtoQuery = _userContext.Drivers
+            .Include(d => d.Truck)
+            .Select(d => new DriversWithDetailsDto
+            {
+                DriverId = d.Id,
+                DriverFullName = d.FullName,
+                DriverPhoneNumber = d.PhoneNumber,
+                TruckModel = d.Truck != null ? d.Truck.ModelName : null,
+                TruckRegisterNumber = d.Truck != null ? d.Truck.RegisterNumber : null,
+                DriverStatus = d.Status
+            });
+        
+        var filteredDtoQuery = query.Execute(dtoQuery);
+        var result = await filteredDtoQuery.ToListAsync();
+        
+        return Ok(result);
+    }
+    
 
 }

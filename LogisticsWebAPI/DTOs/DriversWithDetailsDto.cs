@@ -4,6 +4,7 @@ namespace LogisticsWebAPI.DTOs;
 
 public class DriversWithDetailsDto
 {
+    public int DriverId { get; set; } 
     public string DriverFullName { get; set; } = null!;
     public string DriverPhoneNumber { get; set; } = null!;
     public string TruckRegisterNumber { get; set; } = null!;
@@ -11,4 +12,5 @@ public class DriversWithDetailsDto
     public DriverStatus DriverStatus { get; set; }
     public string? RouteStart { get; set; }
     public string? RouteEnd { get; set; }
+
 }

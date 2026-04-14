@@ -6,6 +6,6 @@ namespace LogisticsWebAPI.Services;
 public interface IDriversService
 {
     Task<IEnumerable<DriversWithDetailsDto>> GetAllDriversAsync();
-    Task<IEnumerable<Driver>> GetDriversByStatus(DriverStatus driverStatus);
+    Task<IEnumerable<DriversWithDetailsDto>> GetDriversByStatus(DriverStatus driverStatus);
 
 }

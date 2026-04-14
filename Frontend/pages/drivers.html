@@ -1068,11 +1068,11 @@
             <div class="filters-wrapper">
                 <div class="form-group">
                     <label for="driverStatusFilter">Статус</label>
-                    <select id="driverStatusFilter" onchange="filterDrivers()">
+                    <select id="driverStatusFilterSelect" onchange="filterDrivers()">
                         <option value="all">Все статусы</option>
-                        <option value="active">На линии</option>
-                        <option value="inactive">Свободен</option>
-                        <option value="on_leave">В отпуске</option>
+                        <option value="Active">На линии</option>
+                        <option value="Inactive">Свободен</option>
+                        <option value="On_leave">В отпуске</option>
                     </select>
                 </div>
 
@@ -1080,7 +1080,7 @@
                     <label for="searchDriver">Поиск</label>
                     <div class="search-input-wrapper">
                         <span class="search-icon">&#128269;</span>
-                        <input type="text" id="searchDriver" placeholder="ФИО, телефон, авто..." oninput="filterDrivers(); toggleClearButton()">
+                        <input type="text" id="searchDriverInput" placeholder="ФИО" oninput="filterDrivers(); toggleClearButton()">
                         <button class="clear-btn" id="clearSearchBtn" onclick="clearSearch()" aria-label="Очистить поиск">&times;</button>
                     </div>
                 </div>
@@ -1095,7 +1095,7 @@
         <div class="table-container fade-in" style="margin-top: 25px;">
             <div class="table-header">
                 <span class="table-icon">&#128663;</span>
-                <h2>Все водители</h2>
+                <h2 id="nameOfTable">Все водители</h2>
                 <span class="record-count" id="driverCount">0 записей</span>
             </div>
             <table id="driversTable" class="drivers-table-card">
