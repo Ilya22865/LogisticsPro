@@ -59,7 +59,7 @@ public class GenerateTokenService : IGenerateTokenService
             issuer: jwtSettings["Issuer"],
             audience: jwtSettings["Audience"],
             claims: claims,
-            expires: DateTime.Now.AddHours(1),
+            expires: DateTime.Now.AddDays(7),
             signingCredentials: credentials
         );
         return new JwtSecurityTokenHandler().WriteToken(token);

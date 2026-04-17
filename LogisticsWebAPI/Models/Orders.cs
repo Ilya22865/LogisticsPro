@@ -13,6 +13,8 @@ public class Order
     public int Id { get; set; }
     public DateTime DeliveryDate { get; set; }
     public OrderStatus Status { get; set; }
+    public string? AddtitionalInfo { get; set; }
+    public double Price { get; set; }
     public int? UserID { get; set; }
     public User? User { get; set; }
     public List<Cargo> Cargos { get; set; } = new List<Cargo>();

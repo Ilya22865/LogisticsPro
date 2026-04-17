@@ -62,7 +62,7 @@ public class DriverController : ControllerBase
         _userContext.Drivers.Add(driver);
         await _userContext.SaveChangesAsync();
 
-        var token = _generateTokenService.GenerateDriversToken(driver.Id, driver.Email, driver.FullName);
+        var token = await _generateTokenService.GenerateDriversToken(driver.Id, driver.Email, driver.FullName);
 
         return Ok(new { token, driver.Id, driver.Email, driver.FullName, driver.PhoneNumber, driver.Status });
     }

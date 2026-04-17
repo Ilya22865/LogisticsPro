@@ -33,7 +33,7 @@ public class AuthController : ControllerBase
         if (!VerifyPassword(dto.Password, user.PasswordHash))
             return Unauthorized(new { message = "Неверный Email или пароль!" });
 
-        var token = _generateTokenService.GenerateUsersToken(user.Id, user.Email, user.FullName, user.Role);
+        var token = await _generateTokenService.GenerateUsersToken(user.Id, user.Email, user.FullName, user.Role);
         return Ok(new { token, user.Id, user.Email, user.FullName, user.NameOfCompany, role = user.Role.ToString() });
     }
 
@@ -71,7 +71,7 @@ public class AuthController : ControllerBase
                 _context.Users.Add(admin);
                 await _context.SaveChangesAsync();
 
-                var adminToken = _generateTokenService.GenerateUsersToken(admin.Id, admin.Email, admin.FullName, UserRole.Admin);
+                var adminToken = await _generateTokenService.GenerateUsersToken(admin.Id, admin.Email, admin.FullName, UserRole.Admin);
 
                 return Ok(new { adminToken, admin.Id, admin.Email, admin.FullName, admin.NameOfCompany, role = "Admin" });
             }
@@ -93,7 +93,7 @@ public class AuthController : ControllerBase
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
 
-        var token = _generateTokenService.GenerateUsersToken(user.Id, user.Email, user.FullName, UserRole.User);
+        var token = await _generateTokenService.GenerateUsersToken(user.Id, user.Email, user.FullName, UserRole.User);
 
         return Ok(new { token, user.Id, user.Email, user.FullName, user.NameOfCompany, role = "User" });
     }
@@ -148,7 +148,7 @@ public class AuthController : ControllerBase
             await _context.SaveChangesAsync();
         }
 
-        var token = _generateTokenService.GenerateUsersToken(user.Id, user.Email, user.FullName, user.Role);
+        var token = await _generateTokenService.GenerateUsersToken(user.Id, user.Email, user.FullName, user.Role);
 
         return Redirect($"http://localhost:5000/pages/index.html?token={Uri.EscapeDataString(token.ToString()!)}&user_id={user.Id}&email={Uri.EscapeDataString(email)}&name={Uri.EscapeDataString(user.FullName)}&role={Uri.EscapeDataString(user.Role.ToString())}");
     }

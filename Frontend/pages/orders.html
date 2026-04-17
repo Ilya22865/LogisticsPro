@@ -948,6 +948,348 @@
             50% { opacity: 0.5; }
             100% { opacity: 1; }
         }
+
+        /* ========================================
+           Order Creation Modal
+           ======================================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--color-white);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-strong);
+            width: 100%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.9) translateY(-20px);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            padding: 24px 24px 20px;
+            border-bottom: 2px solid var(--color-bg-light);
+            position: relative;
+        }
+
+        .modal-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--color-primary), var(--color-accent-warm), var(--color-accent-green));
+            border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 22px;
+            color: var(--color-dark);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .modal-header h2 i {
+            color: var(--color-primary);
+            font-size: 24px;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--color-bg-light);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: var(--color-primary);
+            transition: var(--transition-smooth);
+        }
+
+        .modal-close:hover {
+            background: var(--color-primary);
+            color: var(--color-white);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-body .form-group {
+            margin-bottom: 20px;
+        }
+
+        .modal-body .form-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--color-dark);
+            font-size: 14px;
+        }
+
+        .modal-body .form-group label i {
+            color: var(--color-primary);
+            width: 16px;
+            text-align: center;
+        }
+
+        .modal-body .form-group input,
+        .modal-body .form-group select,
+        .modal-body .form-group textarea {
+            width: 100%;
+            min-height: 44px;
+            padding: 12px 16px;
+            border: 2px solid var(--color-bg-secondary);
+            border-radius: var(--border-radius);
+            font-size: 15px;
+            transition: var(--transition-smooth);
+            font-family: inherit;
+        }
+
+        .modal-body .form-group input:focus,
+        .modal-body .form-group select:focus,
+        .modal-body .form-group textarea:focus {
+            border-color: var(--color-primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(99, 142, 203, 0.1);
+        }
+
+        .modal-body .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .modal-body .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .modal-body .form-row .form-group {
+            margin-bottom: 20px;
+        }
+
+        .modal-footer {
+            padding: 20px 24px;
+            border-top: 2px solid var(--color-bg-light);
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .btn-cancel {
+            background: var(--color-white);
+            border: 2px solid var(--color-bg-secondary);
+            color: var(--color-dark);
+            padding: 12px 24px;
+            border-radius: var(--border-radius);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-cancel:hover {
+            background: var(--color-bg-light);
+            border-color: var(--color-primary);
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent-warm) 100%);
+            color: var(--color-white);
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 12px 32px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-submit::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 142, 203, 0.4);
+        }
+
+        .btn-submit:hover::before {
+            left: 100%;
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .form-error {
+            color: var(--color-danger);
+            font-size: 12px;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .form-group.error input,
+        .form-group.error select,
+        .form-group.error textarea {
+            border-color: var(--color-danger);
+        }
+
+        .form-group.error .form-error {
+            display: block;
+        }
+
+        /* Modal loading state */
+        .modal.loading .modal-body {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .modal.loading .btn-submit::after {
+            content: '';
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top-color: var(--color-white);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-left: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Mobile responsive modal */
+        @media (max-width: 768px) {
+            .modal-overlay {
+                padding: 0;
+                align-items: flex-end;
+            }
+
+            .modal {
+                max-width: 100%;
+                max-height: 95vh;
+                border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+                transform: translateY(100%);
+            }
+
+            .modal-overlay.active .modal {
+                transform: translateY(0);
+            }
+
+            .modal-header {
+                padding: 20px 20px 16px;
+            }
+
+            .modal-header h2 {
+                font-size: 20px;
+            }
+
+            .modal-body {
+                padding: 20px;
+            }
+
+            .modal-body .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .modal-body .form-group input,
+            .modal-body .form-group select,
+            .modal-body .form-group textarea {
+                font-size: 16px; /* Prevents iOS zoom */
+                min-height: 48px;
+            }
+
+            .modal-footer {
+                flex-direction: column-reverse;
+                padding: 16px 20px;
+            }
+
+            .modal-footer button {
+                width: 100%;
+                justify-content: center;
+                min-height: 48px;
+            }
+
+            .modal-close {
+                top: 16px;
+                right: 16px;
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .modal-header h2 {
+                font-size: 18px;
+            }
+
+            .modal-header h2 i {
+                font-size: 20px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -960,6 +1302,142 @@
 
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Order Creation Modal -->
+    <div class="modal-overlay" id="orderModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-plus-circle"></i> Оформление нового заказа</h2>
+                <button class="modal-close" onclick="closeOrderModal()" aria-label="Закрыть">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="orderForm" onsubmit="saveOrder(event)">
+                <div class="modal-body">
+                    <!-- Route Section -->
+                    <div class="form-row">
+                        <div class="form-group" id="startLocationGroup">
+                            <label for="startLocation">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Место отгрузки
+                            </label>
+                            <input 
+                                type="text" 
+                                id="startLocation" 
+                                name="startLocation"
+                                placeholder="Город, адрес..."
+                                required
+                            >
+                            <div class="form-error" id="startLocationError">Укажите место отгрузки</div>
+                        </div>
+                        <div class="form-group" id="endLocationGroup">
+                            <label for="endLocation">
+                                <i class="fas fa-flag-checkered"></i>
+                                Место доставки
+                            </label>
+                            <input 
+                                type="text" 
+                                id="endLocation" 
+                                name="endLocation"
+                                placeholder="Город, адрес..."
+                                required
+                            >
+                            <div class="form-error" id="endLocationError">Укажите место доставки</div>
+                        </div>
+                    </div>
+
+                    <!-- Cargo Section -->
+                    <div class="form-group" id="cargoDescriptionGroup">
+                        <label for="cargoDescription">
+                            <i class="fas fa-box-open"></i>
+                            Описание груза
+                        </label>
+                        <textarea 
+                            id="cargoDescription" 
+                            name="cargoDescription"
+                            placeholder="Подробное описание груза, характеристики, особые требования..."
+                            required
+                        ></textarea>
+                        <div class="form-error" id="cargoDescriptionError">Добавьте описание груза</div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group" id="weightGroup">
+                            <label for="weight">
+                                <i class="fas fa-weight-hanging"></i>
+                                Вес груза (кг)
+                            </label>
+                            <input 
+                                type="number" 
+                                id="cargoWeight" 
+                                name="weight"
+                                placeholder="0.00"
+                                min="0.01"
+                                step="0.01"
+                                required
+                            >
+                            <div class="form-error" id="weightError">Укажите корректный вес</div>
+                        </div>
+                        <div class="form-group" id="cargoTypeGroup">
+                            <label for="cargoType">
+                                <i class="fas fa-tags"></i>
+                                Тип груза
+                            </label>
+                            <select id="cargoType" name="cargoType" required>
+                                <option value="">Выберите тип груза</option>
+                                <option value="general">Генеральный</option>
+                                <option value="bulk">Насыпной</option>
+                                <option value="liquid">Жидкий</option>
+                                <option value="fragile">Хрупкий</option>
+                                <option value="dangerous">Опасный</option>
+                                <option value="perishable">Скоропортящийся</option>
+                                <option value="other">Другое</option>
+                            </select>
+                            <div class="form-error" id="cargoTypeError">Выберите тип груза</div>
+                        </div>
+                    </div>
+
+                    <!-- Delivery Date -->
+                    <div class="form-group" id="deliveryDateGroup">
+                        <label for="deliveryDate">
+                            <i class="fas fa-calendar-alt"></i>
+                            Желаемая дата доставки
+                        </label>
+                        <input 
+                            type="date" 
+                            id="deliveryDate" 
+                            name="deliveryDate"
+                            required
+                        >
+                        <div class="form-error" id="deliveryDateError">Укажите дату доставки</div>
+                    </div>
+
+                    <!-- Additional Info -->
+                    <div class="form-group">
+                        <label for="additionalInfo">
+                            <i class="fas fa-comment-dots"></i>
+                            Дополнительная информация
+                        </label>
+                        <textarea 
+                            id="additionalInfo" 
+                            name="additionalInfo"
+                            placeholder="Комментарии, пожелания, особые условия доставки..."
+                            style="min-height: 80px;"
+                        ></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeOrderModal()">
+                        <i class="fas fa-times"></i> Отмена
+                    </button>
+                    <button type="submit" class="btn-submit" id="submitOrderBtn">
+                        <i class="fas fa-paper-plane"></i> Создать заказ
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <aside class="sidebar">
         <div class="sidebar-header">
@@ -1056,9 +1534,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="loading-row">
-                            <td colspan="8">Загрузка данных...</td>
-                        </tr>
+                        <tr class="skeleton-row skeleton"></tr>
+                        <tr class="skeleton-row skeleton"></tr>
+                        <tr class="skeleton-row skeleton"></tr>
                     </tbody>
                 </table>
             </div>
@@ -1084,398 +1562,6 @@
     </main>
 
     <script src="../js/auth.js"></script>
-    <script>
-        const API_BASE_URL = '/api';
-        let currentPage = 1;
-        let searchTimeout = null;
-
-        document.addEventListener('DOMContentLoaded', function() {
-            loadOrders();
-        });
-
-        function debounceSearch() {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => loadOrders(), 500);
-        }
-
-        function onSearchInput() {
-            const searchInput = document.getElementById('searchOrder');
-            const clearBtn = document.getElementById('clearSearchBtn');
-
-            // Show/hide clear button
-            if (clearBtn) {
-                clearBtn.classList.toggle('visible', searchInput.value.length > 0);
-            }
-
-            debounceSearch();
-        }
-
-        function clearSearch() {
-            document.getElementById('searchOrder').value = '';
-            document.getElementById('clearSearchBtn').classList.remove('visible');
-            loadOrders();
-        }
-
-        function onFilterChange() {
-            // Add visual feedback
-            const tableContainer = document.querySelector('.table-container');
-            if (tableContainer) {
-                tableContainer.classList.add('filters-changing');
-                setTimeout(() => tableContainer.classList.remove('filters-changing'), 400);
-            }
-
-            // Highlight active filters
-            document.querySelectorAll('.filters-wrapper .form-group').forEach(group => {
-                group.classList.remove('filter-active');
-            });
-
-            const statusFilter = document.getElementById('statusFilter').value;
-            const dateFilter = document.getElementById('dateFilter').value;
-
-            if (statusFilter) {
-                document.getElementById('statusFilterGroup').classList.add('filter-active');
-            }
-            if (dateFilter !== 'all') {
-                document.getElementById('dateFilterGroup').classList.add('filter-active');
-            }
-
-            loadOrders();
-        }
-
-        function getDateRange() {
-            const dateFilter = document.getElementById('dateFilter').value;
-            const now = new Date();
-            let dateFrom = null;
-
-            switch (dateFilter) {
-                case 'week':
-                    dateFrom = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-                    break;
-                case 'month':
-                    dateFrom = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-                    break;
-                case 'year':
-                    dateFrom = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
-                    break;
-                default:
-                    return { from: null, to: null };
-            }
-
-            return { from: dateFrom.toISOString(), to: now.toISOString() };
-        }
-
-        function showSkeletonLoading() {
-            const tbody = document.querySelector('#ordersTable tbody');
-            let skeletonRows = '';
-            for (let i = 0; i < 5; i++) {
-                skeletonRows += `
-                    <tr class="skeleton-row">
-                        <td><div class="skeleton short"></div></td>
-                        <td><div class="skeleton medium"></div></td>
-                        <td><div class="skeleton long"></div></td>
-                        <td><div class="skeleton short"></div></td>
-                        <td><div class="skeleton medium"></div></td>
-                        <td><div class="skeleton medium"></div></td>
-                        <td><div class="skeleton short"></div></td>
-                        <td class="hide-mobile"><div class="skeleton short"></div></td>
-                    </tr>
-                `;
-            }
-            tbody.innerHTML = skeletonRows;
-        }
-
-        async function loadOrders() {
-            showSkeletonLoading();
-
-            const statusFilter = document.getElementById('statusFilter').value;
-            const searchQuery = document.getElementById('searchOrder').value.trim();
-            const dateRange = getDateRange();
-
-            const params = new URLSearchParams({
-                page: currentPage.toString(),
-                pageSize: '10'
-            });
-
-            if (statusFilter) params.append('status', statusFilter);
-            if (searchQuery) params.append('search', searchQuery);
-            if (dateRange.from) params.append('dateFrom', dateRange.from);
-            if (dateRange.to) params.append('dateTo', dateRange.to);
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/orders?${params}`);
-
-                if (!response.ok) {
-                    throw new Error('Ошибка загрузки данных');
-                }
-
-                const data = await response.json();
-                const orders = data.items || data;
-                const totalCount = data.totalCount || data.length;
-
-                renderOrders(orders, totalCount, data);
-            } catch (error) {
-                console.error('Ошибка:', error);
-                const tbody = document.querySelector('#ordersTable tbody');
-                tbody.innerHTML = `
-                    <tr class="empty-state">
-                        <td colspan="8">
-                            <div class="empty-state-content">
-                                <div class="empty-state-icon">
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                </div>
-                                <h3>Ошибка загрузки</h3>
-                                <p>Не удалось загрузить данные. Попробуйте обновить страницу или обратитесь в поддержку.</p>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            }
-        }
-
-        function renderOrders(orders, totalCount, data) {
-            const tbody = document.querySelector('#ordersTable tbody');
-
-            // Update count badge
-            const badge = document.getElementById('orderCountBadge');
-            if (badge) {
-                badge.textContent = totalCount;
-                badge.style.display = totalCount > 0 ? 'inline-block' : 'none';
-            }
-
-            if (orders.length === 0) {
-                const searchQuery = document.getElementById('searchOrder').value.trim();
-                const statusFilter = document.getElementById('statusFilter').value;
-
-                let message = 'У вас пока нет заказов';
-                let subMessage = 'Создайте свой первый заказ, чтобы начать работу с логистикой';
-
-                if (searchQuery || statusFilter) {
-                    message = 'Заказы не найдены';
-                    subMessage = 'Попробуйте изменить параметры поиска или фильтры';
-                }
-
-                tbody.innerHTML = `
-                    <tr class="empty-state">
-                        <td colspan="8">
-                            <div class="empty-state-content">
-                                <div class="empty-state-icon">
-                                    <i class="fas fa-inbox"></i>
-                                </div>
-                                <h3>${message}</h3>
-                                <p>${subMessage}</p>
-                                ${!searchQuery && !statusFilter ? `
-                                    <button class="btn-new-order" onclick="createNewOrder()" style="display: inline-flex;">
-                                        <i class="fas fa-plus-circle"></i> Создать первый заказ
-                                    </button>
-                                ` : ''}
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            } else {
-                const isMobile = window.innerWidth <= 768;
-
-                tbody.innerHTML = orders.map(order => `
-                    <tr data-status="${order.status?.toLowerCase() || 'pending'}">
-                        <td data-label="<i class='fas fa-hashtag'></i> № заказа"><span class="order-number">#${order.id.toString().padStart(6, '0')}</span></td>
-                        <td data-label="<i class='fas fa-route'></i> Маршрут">${order.startLocation || '—'} → ${order.endLocation || '—'}</td>
-                        <td data-label="<i class='fas fa-box'></i> Груз">${order.cargoDescription || '—'}${order.weight ? ` (${order.weight} кг)` : ''}</td>
-                        <td data-label="<i class='fas fa-circle-notch'></i> Статус"><span class="status-badge ${getStatusClass(order.status)}">${getStatusText(order.status)}</span></td>
-                        <td data-label="<i class='fas fa-calendar-plus'></i> Создан">${formatDate(order.createdDate)}</td>
-                        <td data-label="<i class='fas fa-calendar-check'></i> Доставка">${order.deliveryDate ? formatDate(order.deliveryDate) : '—'}</td>
-                        <td data-label="<i class='fas fa-ruble-sign'></i> Стоимость"><strong>${formatCost(order.cost)}</strong></td>
-                        <td data-label="Действия" class="${isMobile ? '' : 'hide-mobile'}">
-                            ${isMobile ? `
-                                <div class="mobile-actions">
-                                    <button class="action-btn view-btn" onclick="viewOrder(${order.id})" title="Просмотр">
-                                        <i class="fas fa-eye"></i> <span>Просмотр</span>
-                                    </button>
-                                    <button class="action-btn track-btn" onclick="trackOrder(${order.id})" title="Отследить">
-                                        <i class="fas fa-map-marker-alt"></i> <span>Отследить</span>
-                                    </button>
-                                </div>
-                            ` : `
-                                <button class="action-btn view-btn" onclick="viewOrder(${order.id})" title="Просмотр">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="action-btn track-btn" onclick="trackOrder(${order.id})" title="Отследить">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                </button>
-                            `}
-                        </td>
-                    </tr>
-                `).join('');
-            }
-
-            document.getElementById('showingCount').textContent = orders.length;
-            document.getElementById('totalCount').textContent = totalCount;
-            document.getElementById('prevBtn').disabled = currentPage === 1;
-            document.getElementById('nextBtn').disabled = currentPage >= (data.totalPages || 1);
-        }
-
-        function getStatusClass(status) {
-            const statusMap = {
-                'pending': 'pending',
-                'in-transit': 'in-transit',
-                'delivered': 'delivered',
-                'cancelled': 'cancelled'
-            };
-            return statusMap[status?.toLowerCase()] || 'pending';
-        }
-
-        function getStatusText(status) {
-            const statusMap = {
-                'pending': 'Ожидание',
-                'in-transit': 'В пути',
-                'delivered': 'Доставлен',
-                'cancelled': 'Отменён'
-            };
-            return statusMap[status?.toLowerCase()] || 'Неизвестно';
-        }
-
-        function formatDate(dateString) {
-            if (!dateString) return '—';
-            const date = new Date(dateString);
-            return date.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
-        }
-
-        function formatCost(cost) {
-            if (!cost && cost !== 0) return '—';
-            return new Intl.NumberFormat('ru-RU').format(Math.round(cost)) + ' ₽';
-        }
-
-        function createNewOrder() {
-            window.location.href = 'create-order.html';
-        }
-
-        function viewOrder(orderId) {
-            showToast('Просмотр заказа #' + orderId, 'info');
-        }
-
-        function trackOrder(orderId) {
-            window.location.href = 'cargo-map.html?order=' + orderId;
-        }
-
-        function goToPrevPage() {
-            if (currentPage > 1) {
-                currentPage--;
-                loadOrders();
-            }
-        }
-
-        function goToNextPage() {
-            currentPage++;
-            loadOrders();
-        }
-
-        // Pagination button listeners (legacy support)
-        document.getElementById('prevBtn').addEventListener('click', () => {
-            if (currentPage > 1) {
-                currentPage--;
-                loadOrders();
-            }
-        });
-
-        document.getElementById('nextBtn').addEventListener('click', () => {
-            currentPage++;
-            loadOrders();
-        });
-
-        // Toast notification system
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `toast toast-${type}`;
-
-            const icons = {
-                'info': 'fas fa-info-circle',
-                'success': 'fas fa-check-circle',
-                'warning': 'fas fa-exclamation-circle',
-                'error': 'fas fa-times-circle'
-            };
-
-            toast.innerHTML = `
-                <i class="toast-icon ${icons[type] || icons['info']}"></i>
-                <div class="toast-content">${message}</div>
-                <button class="toast-close" onclick="this.parentElement.remove()">
-                    <i class="fas fa-times"></i>
-                </button>
-            `;
-
-            container.appendChild(toast);
-
-            // Auto-remove after 5 seconds
-            setTimeout(() => {
-                if (toast.parentElement) {
-                    toast.style.animation = 'toastSlideOut 0.4s ease forwards';
-                    setTimeout(() => toast.remove(), 400);
-                }
-            }, 5000);
-        }
-
-        // Legacy alert function (backward compatibility)
-        function showAlert(message, type = 'info') {
-            showToast(message, type);
-        }
-
-        // Переключение бокового меню на мобильных
-        function toggleSidebar() {
-            const sidebar = document.querySelector('.sidebar');
-            const menuToggle = document.querySelector('.menu-toggle');
-
-            if (sidebar) {
-                sidebar.classList.toggle('active');
-            }
-
-            if (menuToggle) {
-                menuToggle.classList.toggle('active');
-            }
-
-            let overlay = document.getElementById('sidebarOverlay');
-            if (overlay) {
-                overlay.remove();
-            } else {
-                const newOverlay = document.createElement('div');
-                newOverlay.id = 'sidebarOverlay';
-                newOverlay.className = 'sidebar-overlay';
-                newOverlay.onclick = toggleSidebar;
-                document.body.appendChild(newOverlay);
-            }
-        }
-
-        // Закрытие меню при клике на ссылку (для мобильных)
-        document.querySelectorAll('.sidebar-menu a').forEach(link => {
-            link.addEventListener('click', () => {
-                if (window.innerWidth <= 768) {
-                    toggleSidebar();
-                }
-            });
-        });
-
-        // Handle window resize for mobile/desktop view switching
-        let resizeTimeout;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(() => {
-                // Re-render orders to switch between mobile card view and desktop table
-                const tbody = document.querySelector('#ordersTable tbody');
-                if (tbody && tbody.querySelector('tr')) {
-                    const isMobile = window.innerWidth <= 768;
-                    const actionsCells = tbody.querySelectorAll('tr td:last-child');
-                    actionsCells.forEach(cell => {
-                        if (isMobile) {
-                            cell.classList.remove('hide-mobile');
-                            if (!cell.querySelector('.mobile-actions')) {
-                                // Re-render needed for mobile layout
-                                loadOrders();
-                            }
-                        } else {
-                            cell.classList.add('hide-mobile');
-                        }
-                    });
-                }
-            }, 250);
-        });
-    </script>
+    <script src="../js/order.js"></script>
 </body>
 </html>

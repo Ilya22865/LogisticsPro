@@ -43,8 +43,12 @@ public class DriversService : IDriversService
                     TruckModel = x.truck!.ModelName,
                     TruckRegisterNumber = x.truck.RegisterNumber,
                     DriverStatus = x.driver.Status,
-                    RouteStart = route != null ? route.StartLocation : null,
-                    RouteEnd = route != null ? route.EndLocation : null
+                    Route = route != null ? new DTOs.Order.RouteDto
+                    {
+                        StartLocation = route.StartLocation,
+                        EndLocation = route.EndLocation,
+                        DeliveryDate = route.DeliveryDate
+                    } : null
                 })
             .ToListAsync();
 
@@ -81,8 +85,12 @@ public class DriversService : IDriversService
                     TruckModel = x.truck!.ModelName,
                     TruckRegisterNumber = x.truck.RegisterNumber,
                     DriverStatus = x.driver.Status,
-                    RouteStart = route != null ? route.StartLocation : null,
-                    RouteEnd = route != null ? route.EndLocation : null
+                    Route = route != null ? new DTOs.Order.RouteDto
+                    {
+                        StartLocation = route.StartLocation,
+                        EndLocation = route.EndLocation,
+                        DeliveryDate = route.DeliveryDate
+                    } : null
                 }).Where(s => s.DriverStatus == driverStatus).ToListAsync();
             return drivers;
     }
