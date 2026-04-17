@@ -4,7 +4,6 @@ namespace LogisticsWebAPI.Queries;
 
 public class GetOrdersQuery
 {
-    public int UserId { get; set; }
     public OrderStatus? OrderStatusFilter { get; set; }
     public int OrderNumFilter { get; set; }
     public string? SearchTerm { get; set; }

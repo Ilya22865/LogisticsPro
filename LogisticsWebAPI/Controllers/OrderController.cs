@@ -1,6 +1,8 @@
+using System.Data.Entity;
 using System.Security.Claims;
 using LogisticsWebAPI.DTOs.Order;
 using LogisticsWebAPI.Models;
+using LogisticsWebAPI.Queries;
 using LogisticsWebAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -70,7 +72,26 @@ public class OrderController : ControllerBase
         return Ok(allOrders);
     }
 
-    // [Authorize]
-    // [HttpGet("getOrdersListForUser")]
+    [Authorize]
+    [HttpGet("getOrdersListForUser")]
+    public async Task<IActionResult> GetOrdersByIdAsync([FromQuery] GetOrdersQuery query)
+    {
+        var dtoQuery = _userContext.Orders
+            .Include(o => o.Cargos)
+            .Include(o => o.Route)
+            .Select(o => new OrderWithDetailsDto
+            {
+                OrderId = o.Id,
+                OrderStatus = o.Status,
+                DeliveryDate = o.DeliveryDate,
+                Route = o.Route != null ? o.Route.StartLocation + "->" + o.Route.EndLocation : null,
+                Price = o.Price,
+            });
+
+            var filteredDtoQuery = query.Execute(dtoQuery);
+            var result = await filteredDtoQuery.ToListAsync();
+
+            return Ok(result);
+    }
 
 }
