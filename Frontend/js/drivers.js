@@ -45,7 +45,7 @@ async function loadDrivers() {
       const statusClass = getStatusClass(driver.driverStatus);
       const routeInfo = (driver.routeStart && driver.routeEnd) 
         ? `${driver.routeStart} → ${driver.routeEnd}` 
-        : '—';
+        : 'Нет маршрута';
 
       return `
         <tr>

@@ -135,21 +135,21 @@ function getDateRange() {
 
   return { from: dateFrom.toISOString(), to: now.toISOString() };
 }
-
+const token = localStorage.getItem('token')
 async function loadOrders() {
     try {
         const response = await fetch(`${API_BASE_URL_ORDERS}/Order/getOrdersListForAdmin`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             }
         });
         if(!response.ok) throw new Error('Failed to load orders');
         const orders = await response.json();
         const tbody = document.querySelector('#ordersTable tbody');
-        console.log(orders)
         tbody.innerHTML = '';
-        
+        console.log(orders)
         if (!orders || orders.length === 0) {
             tbody.innerHTML = `
                   <tr>
@@ -167,13 +167,14 @@ async function loadOrders() {
         
         tbody.innerHTML = orders.map(order => {
             const statusText = getStatusText(order.orderStatus)
+            const routeInfo = (order.startLocation && order.endLocation) ? `${order.startLocation} → ${order.endLocation}` : 'Нет маршрута'
             return `
                 <tr>
                     <td>${order.orderId}</td>
-                    <td>${order.orderDate}</td>
+                    <td>${order.orderDat}</td>
                     <td>${order.orderStatus}</td>
                     <td>${order.orderTotal}</td>
-                    <td>${order.orderAddress}</td>
+                    <td>${order.routeInfo}</td>
                     <td>${statusText}</td>
                 </tr>
             `;
