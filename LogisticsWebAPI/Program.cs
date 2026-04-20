@@ -19,6 +19,7 @@ builder.Services.AddDbContext<UserContext>(options =>
 builder.Services.AddScoped<IEmailService, EmailValidationService>();
 builder.Services.AddScoped<IGenerateTokenService, GenerateTokenService>();
 builder.Services.AddScoped<IDriversService, DriversService>();
+builder.Services.AddScoped<IOrdersService, OrdersService>();
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var KEY = jwtSettings["Key"];

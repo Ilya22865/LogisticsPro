@@ -6,6 +6,9 @@ let searchTimeout = null;
 document.addEventListener('DOMContentLoaded', function() {
   loadOrders();
 });
+
+const table = document.getElementById('ordersTable');
+
 async function saveOrder(event) {
     event.preventDefault();
     if(!validateOrderForm()) {
@@ -60,6 +63,7 @@ async function saveOrder(event) {
       submitBtn.disabled = false;
     }
 }
+
 function debounceSearch() {
   clearTimeout(searchTimeout);
   searchTimeout = setTimeout(() => loadOrders(), 500);
@@ -133,7 +137,52 @@ function getDateRange() {
 }
 
 async function loadOrders() {
-  
+    try {
+        const response = await fetch(`${API_BASE_URL_ORDERS}/Order/getOrdersListForAdmin`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        if(!response.ok) throw new Error('Failed to load orders');
+        const orders = await response.json();
+        const tbody = document.querySelector('#ordersTable tbody');
+        console.log(orders)
+        tbody.innerHTML = '';
+        
+        if (!orders || orders.length === 0) {
+            tbody.innerHTML = `
+                  <tr>
+                    <td colspan="6" style="text-align: center; color: var(--color-primary); padding: 40px;">
+                      <div class="empty-state">
+                        <div class="empty-icon">📋</div>
+                        <h3>Заказы не найдены</h3>
+                        <p>В системе пока нет зарегистрированных заказов</p>
+                      </div>
+                    </td>
+                  </tr>
+                `;
+            return;
+        }
+        
+        tbody.innerHTML = orders.map(order => {
+            const statusText = getStatusText(order.orderStatus)
+            return `
+                <tr>
+                    <td>${order.orderId}</td>
+                    <td>${order.orderDate}</td>
+                    <td>${order.orderStatus}</td>
+                    <td>${order.orderTotal}</td>
+                    <td>${order.orderAddress}</td>
+                    <td>${statusText}</td>
+                </tr>
+            `;
+        }).join('');
+    } catch (error) {
+        console.error(error);
+        const tbody = document.querySelector('#ordersTable tbody');
+        tbody.innerHTML = '<tr><td colspan="6">Ошибка загрузки заказов</td></tr>';
+    }
 }
 
 function getStatusClass(status) {

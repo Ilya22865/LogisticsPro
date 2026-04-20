@@ -17,7 +17,7 @@ public class DriverController : ControllerBase
     private readonly IDriversService _driversService;
     private readonly IGenerateTokenService _generateTokenService;
 
-    public DriverController(UserContext userContext, 
+     public DriverController(UserContext userContext, 
         IConfiguration configuration, 
         IEmailService emailService, 
         IGenerateTokenService generateTokenService,

@@ -18,17 +18,18 @@ public class OrderController : ControllerBase
     private readonly IOrdersService _ordersService;
 
 
-    public OrderController(UserContext userContext, IConfiguration configuration)
+    public OrderController(UserContext userContext, IConfiguration configuration, IOrdersService ordersService)
     {
         _userContext = userContext;
         _configuration = configuration;
+        _ordersService = ordersService;
     }
     [Authorize]
     [HttpPost("addOrder")]
     public async Task<IActionResult> AddOrder([FromBody] OrderDto dto)
     {
         var userClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-        if(userClaim == null)
+        if (userClaim == null)
         {
             return Unauthorized();
         }
@@ -36,7 +37,7 @@ public class OrderController : ControllerBase
         var userId = int.Parse(userClaim.Value);
 
         var order = new Order
-        {   
+        {
             Cargos = dto.Cargos != null
                 ? dto.Cargos.Select(c => new Cargo
                 {
@@ -83,15 +84,14 @@ public class OrderController : ControllerBase
             {
                 OrderId = o.Id,
                 OrderStatus = o.Status,
-                DeliveryDate = o.DeliveryDate,
-                Route = o.Route != null ? o.Route.StartLocation + "->" + o.Route.EndLocation : null,
+                DeliveryDate = o.Route.DeliveryDate,
+                RouteString = o.Route.StartLocation + "->" + o.Route.EndLocation,
                 Price = o.Price,
             });
+        
+        var filteredDtoQuery = query.Execute(dtoQuery);
+        var result = await filteredDtoQuery.ToListAsync();
 
-            var filteredDtoQuery = query.Execute(dtoQuery);
-            var result = await filteredDtoQuery.ToListAsync();
-
-            return Ok(result);
+        return Ok(result);
     }
-
 }

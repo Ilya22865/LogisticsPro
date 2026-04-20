@@ -24,7 +24,7 @@ public class OrdersService : IOrdersService
         {
             OrderId = o.Id,
             OrderStatus = o.Status,
-            DeliveryDate = o.DeliveryDate,
+            DeliveryDate = o.Route.DeliveryDate,
             Price = o.Price,
             Route = o.Route != null ? new RouteDto
             {
