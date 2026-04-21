@@ -1,155 +1,170 @@
-const API_BASE_URL_ORDERS = 'http://localhost:5000/api'
+const API_BASE_URL_ORDERS = "http://localhost:5000/api";
 
 let currentPage = 1;
 let searchTimeout = null;
 
-document.addEventListener('DOMContentLoaded', function() {
-  loadOrders();
+document.addEventListener("DOMContentLoaded", function () {
+    loadOrders();
 });
 
-const table = document.getElementById('ordersTable');
+const table = document.getElementById("ordersTable");
 
 async function saveOrder(event) {
     event.preventDefault();
-    if(!validateOrderForm()) {
-      showToast('Пожалуйста заполните все обязательные поля')
+    if (!validateOrderForm()) {
+        showToast("Пожалуйста заполните все обязательные поля");
     }
     const orderData = {
         route: {
-            startLocation: document.getElementById('startLocation').value,
-            endLocation: document.getElementById('endLocation').value,
-            deliveryDate: document.getElementById('deliveryDate').value
+            startLocation: document.getElementById("startLocation").value,
+            endLocation: document.getElementById("endLocation").value,
+            deliveryDate: document.getElementById("deliveryDate").value,
         },
-        cargos: [{
-            description: document.getElementById('cargoDescription').value,
-            cargoWeight: parseFloat(document.getElementById('cargoWeight').value),
-            cargoType: document.getElementById('cargoType').value
-        }],
-        addtitionalInfo: document.getElementById('additionalInfo').value
-    }
-    console.log(orderData)
-    const modal = document.getElementById('orderModal');
-    const submitBtn = document.getElementById('submitOrderBtn');
-    modal.classList.add('loading');
+        cargos: [
+            {
+                description: document.getElementById("cargoDescription").value,
+                cargoWeight: parseFloat(
+                    document.getElementById("cargoWeight").value,
+                ),
+                cargoType: document.getElementById("cargoType").value,
+            },
+        ],
+        addtitionalInfo: document.getElementById("additionalInfo").value,
+    };
+    console.log(orderData);
+    const modal = document.getElementById("orderModal");
+    const submitBtn = document.getElementById("submitOrderBtn");
+    modal.classList.add("loading");
     submitBtn.disabled = true;
-    
+
     try {
-      const token = localStorage.getItem('token')
-      const response = await fetch(`${API_BASE_URL_ORDERS}/Order/addOrder`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(orderData),
-      });
+        const token = localStorage.getItem("token");
+        const response = await fetch(`${API_BASE_URL_ORDERS}/Order/addOrder`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(orderData),
+        });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        showToast(errorText || 'Ошибка добавления заказа');
-        modal.classList.remove('loading');
+        if (!response.ok) {
+            const errorText = await response.text();
+            showToast(errorText || "Ошибка добавления заказа");
+            modal.classList.remove("loading");
+            submitBtn.disabled = false;
+            return;
+        }
+
+        const result = await response.json();
+        showToast("Заказ успешно добавлен");
+        closeOrderModal();
+        loadOrders();
+    } catch (error) {
+        console.error(error);
+        showToast("Ошибка сети. Попробуйте позже");
+        modal.classList.remove("loading");
         submitBtn.disabled = false;
-        return;
-      }
-
-      const result = await response.json();
-      showToast('Заказ успешно добавлен');
-      closeOrderModal();
-      loadOrders();
-    } catch(error) {
-      console.error(error)
-      showToast('Ошибка сети. Попробуйте позже');
-      modal.classList.remove('loading');
-      submitBtn.disabled = false;
     }
 }
 
 function debounceSearch() {
-  clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(() => loadOrders(), 500);
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => loadOrders(), 500);
 }
 
 function onSearchInput() {
-  const searchInput = document.getElementById('searchOrder');
-  const clearBtn = document.getElementById('clearSearchBtn');
+    const searchInput = document.getElementById("searchOrder");
+    const clearBtn = document.getElementById("clearSearchBtn");
 
-  // Show/hide clear button
-  if (clearBtn) {
-    clearBtn.classList.toggle('visible', searchInput.value.length > 0);
-  }
+    // Show/hide clear button
+    if (clearBtn) {
+        clearBtn.classList.toggle("visible", searchInput.value.length > 0);
+    }
 
-  debounceSearch();
+    debounceSearch();
 }
 
 function clearSearch() {
-  document.getElementById('searchOrder').value = '';
-  document.getElementById('clearSearchBtn').classList.remove('visible');
-  loadOrders();
-
+    document.getElementById("searchOrder").value = "";
+    document.getElementById("clearSearchBtn").classList.remove("visible");
+    loadOrders();
 }
 
 function onFilterChange() {
-  // Add visual feedback
-  const tableContainer = document.querySelector('.table-container');
-  if (tableContainer) {
-    tableContainer.classList.add('filters-changing');
-    setTimeout(() => tableContainer.classList.remove('filters-changing'), 400);
-  }
+    // Add visual feedback
+    const tableContainer = document.querySelector(".table-container");
+    if (tableContainer) {
+        tableContainer.classList.add("filters-changing");
+        setTimeout(
+            () => tableContainer.classList.remove("filters-changing"),
+            400,
+        );
+    }
 
-  // Highlight active filters
-  document.querySelectorAll('.filters-wrapper .form-group').forEach(group => {
-    group.classList.remove('filter-active');
-  });
+    // Highlight active filters
+    document
+        .querySelectorAll(".filters-wrapper .form-group")
+        .forEach((group) => {
+            group.classList.remove("filter-active");
+        });
 
-  const statusFilter = document.getElementById('statusFilter').value;
-  const dateFilter = document.getElementById('dateFilter').value;
+    const statusFilter = document.getElementById("statusFilter").value;
+    const dateFilter = document.getElementById("dateFilter").value;
 
-  if (statusFilter) {
-    document.getElementById('statusFilterGroup').classList.add('filter-active');
-  }
-  if (dateFilter !== 'all') {
-    document.getElementtById('dateFilterGroup').classList.add('filter-active');
-  }
+    if (statusFilter) {
+        document
+            .getElementById("statusFilterGroup")
+            .classList.add("filter-active");
+    }
+    if (dateFilter !== "all") {
+        document
+            .getElementtById("dateFilterGroup")
+            .classList.add("filter-active");
+    }
 
-  loadOrders();
+    loadOrders();
 }
 
 function getDateRange() {
-  const dateFilter = document.getElementById('dateFilter').value;
-  const now = new Date();
-  let dateFrom = null;
+    const dateFilter = document.getElementById("dateFilter").value;
+    const now = new Date();
+    let dateFrom = null;
 
-  switch (dateFilter) {
-    case 'week':
-      dateFrom = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-      break;
-    case 'month':
-      dateFrom = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-      break;
-    case 'year':
-      dateFrom = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
-      break;
-    default:
-      return { from: null, to: null };
-  }
+    switch (dateFilter) {
+        case "week":
+            dateFrom = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            break;
+        case "month":
+            dateFrom = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+            break;
+        case "year":
+            dateFrom = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+            break;
+        default:
+            return { from: null, to: null };
+    }
 
-  return { from: dateFrom.toISOString(), to: now.toISOString() };
+    return { from: dateFrom.toISOString(), to: now.toISOString() };
 }
-const token = localStorage.getItem('token')
+const token = localStorage.getItem("token");
 async function loadOrders() {
     try {
-        const response = await fetch(`${API_BASE_URL_ORDERS}/Order/getOrdersListForAdmin`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            }
-        });
-        if(!response.ok) throw new Error('Failed to load orders');
+        const response = await fetch(
+            `${API_BASE_URL_ORDERS}/Order/getOrdersListForAdmin`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            },
+        );
+        if (!response.ok) throw new Error("Failed to load orders");
         const orders = await response.json();
-        const tbody = document.querySelector('#ordersTable tbody');
-        tbody.innerHTML = '';
-        console.log(orders)
+        const tbody = document.querySelector("#ordersTable tbody");
+        tbody.innerHTML = "";
+        console.log(orders);
         if (!orders || orders.length === 0) {
             tbody.innerHTML = `
                   <tr>
@@ -164,301 +179,323 @@ async function loadOrders() {
                 `;
             return;
         }
-        
-        tbody.innerHTML = orders.map(order => {
-            const statusText = getStatusText(order.orderStatus)
-            const routeInfo = (order.startLocation && order.endLocation) ? `${order.startLocation} → ${order.endLocation}` : 'Нет маршрута'
-            return `
+
+        tbody.innerHTML = orders
+            .map((order) => {
+                const statusText = getStatusText(order.orderStatus);
+                const statusClass = getStatusClass(order.orderStatus);
+                const routeDisplay =
+                    order.route &&
+                    order.route.startLocation &&
+                    order.route.endLocation
+                        ? `${order.route.startLocation} → ${order.route.endLocation}`
+                        : "Маршрут не указан";
+
+                const cargoInfo =
+                    order.cargos && order.cargos.length > 0
+                        ? `${order.cargos[0].cargoType}, ${order.cargos[0].cargoWeight} кг`
+                        : "Нет грузов";
+
+                const date = new Date(order.deliveryDate).toLocaleDateString();
+
+                return `
                 <tr>
-                    <td>${order.orderId}</td>
-                    <td>${order.orderDat}</td>
-                    <td>${order.orderStatus}</td>
-                    <td>${order.orderTotal}</td>
-                    <td>${order.routeInfo}</td>
-                    <td>${statusText}</td>
+                  <td>${order.orderId}</td>
+                  <td class="${statusClass}">${statusText}</td>
+                  <td>${routeDisplay}</td>
+                  <td>${cargoInfo}</td>
+                  <td>${date}</td>
+                  <td>${order.price} BYN</td>
                 </tr>
-            `;
-        }).join('');
+              `;
+            })
+            .join("");
     } catch (error) {
         console.error(error);
-        const tbody = document.querySelector('#ordersTable tbody');
-        tbody.innerHTML = '<tr><td colspan="6">Ошибка загрузки заказов</td></tr>';
+        const tbody = document.querySelector("#ordersTable tbody");
+        tbody.innerHTML =
+            '<tr><td colspan="6">Ошибка загрузки заказов</td></tr>';
     }
 }
 
 function getStatusClass(status) {
-  const statusMap = {
-    'pending': 'pending',
-    'in-transit': 'in-transit',
-    'delivered': 'delivered',
-    'cancelled': 'cancelled'
-  };
-  return statusMap[status?.toLowerCase()] || 'pending';
+    const statusMap = {
+        pending: "pending",
+        "in-transit": "in-transit",
+        delivered: "delivered",
+        cancelled: "cancelled",
+    };
+    return statusMap[status?.toLowerCase()] || "pending";
 }
 
 function getStatusText(status) {
-  const statusMap = {
-    'pending': 'Ожидание',
-    'in-transit': 'В пути',
-    'delivered': 'Доставлен',
-    'cancelled': 'Отменён'
-  };
-  return statusMap[status?.toLowerCase()] || 'Неизвестно';
+    const statusMap = {
+        pending: "Ожидание",
+        "in-transit": "В пути",
+        delivered: "Доставлен",
+        cancelled: "Отменён",
+    };
+    return statusMap[status?.toLowerCase()] || "Неизвестно";
 }
 
 function formatDate(dateString) {
-  if (!dateString) return '—';
-  const date = new Date(dateString);
-  return date.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    if (!dateString) return "—";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("ru-RU", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+    });
 }
 
 function formatCost(cost) {
-  if (!cost && cost !== 0) return '—';
-  return new Intl.NumberFormat('ru-RU').format(Math.round(cost)) + ' ₽';
+    if (!cost && cost !== 0) return "—";
+    return new Intl.NumberFormat("ru-RU").format(Math.round(cost)) + " ₽";
 }
 
 function createNewOrder() {
-  openOrderModal();
+    openOrderModal();
 }
 
 // Modal functions
 function openOrderModal() {
-  const modal = document.getElementById('orderModal');
-  modal.classList.add('active');
-  document.body.style.overflow = 'hidden';
+    const modal = document.getElementById("orderModal");
+    modal.classList.add("active");
+    document.body.style.overflow = "hidden";
 
-  // Set minimum date to today
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('deliveryDate').setAttribute('min', today);
+    // Set minimum date to today
+    const today = new Date().toISOString().split("T")[0];
+    document.getElementById("deliveryDate").setAttribute("min", today);
 
-  // Reset form
-  resetOrderForm();
+    // Reset form
+    resetOrderForm();
 }
 
 function closeOrderModal() {
-  const modal = document.getElementById('orderModal');
-  modal.classList.remove('active');
-  document.body.style.overflow = '';
-  resetOrderForm();
+    const modal = document.getElementById("orderModal");
+    modal.classList.remove("active");
+    document.body.style.overflow = "";
+    resetOrderForm();
 }
 
 function resetOrderForm() {
-  const form = document.getElementById('orderForm');
-  form.reset();
+    const form = document.getElementById("orderForm");
+    form.reset();
 
-  // Clear all error states
-  document.querySelectorAll('.form-group').forEach(group => {
-    group.classList.remove('error');
-  });
+    // Clear all error states
+    document.querySelectorAll(".form-group").forEach((group) => {
+        group.classList.remove("error");
+    });
 
-  // Remove loading state
-  const modal = document.getElementById('orderModal');
-  modal.classList.remove('loading');
+    // Remove loading state
+    const modal = document.getElementById("orderModal");
+    modal.classList.remove("loading");
 
-  // Enable submit button
-  const submitBtn = document.getElementById('submitOrderBtn');
-  submitBtn.disabled = false;
+    // Enable submit button
+    const submitBtn = document.getElementById("submitOrderBtn");
+    submitBtn.disabled = false;
 }
 
 function validateOrderForm() {
-  let isValid = true;
+    let isValid = true;
 
-  // Clear previous errors
-  document.querySelectorAll('.form-group').forEach(group => {
-    group.classList.remove('error');
-  });
+    // Clear previous errors
+    document.querySelectorAll(".form-group").forEach((group) => {
+        group.classList.remove("error");
+    });
 
-  // Validate start location
-  const startLocation = document.getElementById('startLocation').value.trim();
-  if (!startLocation) {
-    document.getElementById('startLocationGroup').classList.add('error');
-    isValid = false;
-  }
+    // Validate start location
+    const startLocation = document.getElementById("startLocation").value.trim();
+    if (!startLocation) {
+        document.getElementById("startLocationGroup").classList.add("error");
+        isValid = false;
+    }
 
-  // Validate end location
-  const endLocation = document.getElementById('endLocation').value.trim();
-  if (!endLocation) {
-    document.getElementById('endLocationGroup').classList.add('error');
-    isValid = false;
-  }
+    // Validate end location
+    const endLocation = document.getElementById("endLocation").value.trim();
+    if (!endLocation) {
+        document.getElementById("endLocationGroup").classList.add("error");
+        isValid = false;
+    }
 
-  // Validate cargo description
-  const cargoDescription = document.getElementById('cargoDescription').value.trim();
-  if (!cargoDescription) {
-    document.getElementById('cargoDescriptionGroup').classList.add('error');
-    isValid = false;
-  }
+    // Validate cargo description
+    const cargoDescription = document
+        .getElementById("cargoDescription")
+        .value.trim();
+    if (!cargoDescription) {
+        document.getElementById("cargoDescriptionGroup").classList.add("error");
+        isValid = false;
+    }
 
-  // Validate weight
-  const weight = parseFloat(document.getElementById('cargoWeight').value);
-  if (!weight || weight <= 0) {
-    document.getElementById('weightGroup').classList.add('error');
-    isValid = false;
-  }
+    // Validate weight
+    const weight = parseFloat(document.getElementById("cargoWeight").value);
+    if (!weight || weight <= 0) {
+        document.getElementById("weightGroup").classList.add("error");
+        isValid = false;
+    }
 
-  // Validate cargo type
-  const cargoType = document.getElementById('cargoType').value;
-  if (!cargoType) {
-    document.getElementById('cargoTypeGroup').classList.add('error');
-    isValid = false;
-  }
+    // Validate cargo type
+    const cargoType = document.getElementById("cargoType").value;
+    if (!cargoType) {
+        document.getElementById("cargoTypeGroup").classList.add("error");
+        isValid = false;
+    }
 
-  // Validate delivery date
-  const deliveryDate = document.getElementById('deliveryDate').value;
-  if (!deliveryDate) {
-    document.getElementById('deliveryDateGroup').classList.add('error');
-    isValid = false;
-  }
+    // Validate delivery date
+    const deliveryDate = document.getElementById("deliveryDate").value;
+    if (!deliveryDate) {
+        document.getElementById("deliveryDateGroup").classList.add("error");
+        isValid = false;
+    }
 
-  return isValid;
+    return isValid;
 }
 
-
 // Close modal on overlay click
-document.addEventListener('DOMContentLoaded', function() {
-  const modal = document.getElementById('orderModal');
-  modal.addEventListener('click', function(e) {
-    if (e.target === modal) {
-      closeOrderModal();
-    }
-  });
+document.addEventListener("DOMContentLoaded", function () {
+    const modal = document.getElementById("orderModal");
+    modal.addEventListener("click", function (e) {
+        if (e.target === modal) {
+            closeOrderModal();
+        }
+    });
 
-  // Close modal on Escape key
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      const activeModal = document.getElementById('orderModal');
-      if (activeModal.classList.contains('active')) {
-        closeOrderModal();
-      }
-    }
-  });
+    // Close modal on Escape key
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+            const activeModal = document.getElementById("orderModal");
+            if (activeModal.classList.contains("active")) {
+                closeOrderModal();
+            }
+        }
+    });
 });
 
 function viewOrder(orderId) {
-  showToast('Просмотр заказа #' + orderId, 'info');
+    showToast("Просмотр заказа #" + orderId, "info");
 }
 
 function trackOrder(orderId) {
-  window.location.href = 'cargo-map.html?order=' + orderId;
+    window.location.href = "cargo-map.html?order=" + orderId;
 }
 
 function goToPrevPage() {
-  if (currentPage > 1) {
-    currentPage--;
-    loadOrders();
-  }
+    if (currentPage > 1) {
+        currentPage--;
+        loadOrders();
+    }
 }
 
 function goToNextPage() {
-  currentPage++;
-  loadOrders();
+    currentPage++;
+    loadOrders();
 }
 
 // Pagination button listeners (legacy support)
-document.getElementById('prevBtn').addEventListener('click', () => {
-  if (currentPage > 1) {
-    currentPage--;
-    loadOrders();
-  }
+document.getElementById("prevBtn").addEventListener("click", () => {
+    if (currentPage > 1) {
+        currentPage--;
+        loadOrders();
+    }
 });
 
-document.getElementById('nextBtn').addEventListener('click', () => {
-  currentPage++;
-  loadOrders();
+document.getElementById("nextBtn").addEventListener("click", () => {
+    currentPage++;
+    loadOrders();
 });
 
 // Toast notification system
-function showToast(message, type = 'info') {
-  const container = document.getElementById('toastContainer');
-  const toast = document.createElement('div');
-  toast.className = `toast toast-${type}`;
+function showToast(message, type = "info") {
+    const container = document.getElementById("toastContainer");
+    const toast = document.createElement("div");
+    toast.className = `toast toast-${type}`;
 
-  const icons = {
-    'info': 'fas fa-info-circle',
-    'success': 'fas fa-check-circle',
-    'warning': 'fas fa-exclamation-circle',
-    'error': 'fas fa-times-circle'
-  };
+    const icons = {
+        info: "fas fa-info-circle",
+        success: "fas fa-check-circle",
+        warning: "fas fa-exclamation-circle",
+        error: "fas fa-times-circle",
+    };
 
-  toast.innerHTML = `
-                <i class="toast-icon ${icons[type] || icons['info']}"></i>
+    toast.innerHTML = `
+                <i class="toast-icon ${icons[type] || icons["info"]}"></i>
                 <div class="toast-content">${message}</div>
                 <button class="toast-close" onclick="this.parentElement.remove()">
                     <i class="fas fa-times"></i>
                 </button>
             `;
 
-  container.appendChild(toast);
+    container.appendChild(toast);
 
-  // Auto-remove after 5 seconds
-  setTimeout(() => {
-    if (toast.parentElement) {
-      toast.style.animation = 'toastSlideOut 0.4s ease forwards';
-      setTimeout(() => toast.remove(), 400);
-    }
-  }, 5000);
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.style.animation = "toastSlideOut 0.4s ease forwards";
+            setTimeout(() => toast.remove(), 400);
+        }
+    }, 5000);
 }
 
 // Legacy alert function (backward compatibility)
-function showAlert(message, type = 'info') {
-  showToast(message, type);
+function showAlert(message, type = "info") {
+    showToast(message, type);
 }
 
 // Переключение бокового меню на мобильных
 function toggleSidebar() {
-  const sidebar = document.querySelector('.sidebar');
-  const menuToggle = document.querySelector('.menu-toggle');
+    const sidebar = document.querySelector(".sidebar");
+    const menuToggle = document.querySelector(".menu-toggle");
 
-  if (sidebar) {
-    sidebar.classList.toggle('active');
-  }
+    if (sidebar) {
+        sidebar.classList.toggle("active");
+    }
 
-  if (menuToggle) {
-    menuToggle.classList.toggle('active');
-  }
+    if (menuToggle) {
+        menuToggle.classList.toggle("active");
+    }
 
-  let overlay = document.getElementById('sidebarOverlay');
-  if (overlay) {
-    overlay.remove();
-  } else {
-    const newOverlay = document.createElement('div');
-    newOverlay.id = 'sidebarOverlay';
-    newOverlay.className = 'sidebar-overlay';
-    newOverlay.onclick = toggleSidebar;
-    document.body.appendChild(newOverlay);
-  }
+    let overlay = document.getElementById("sidebarOverlay");
+    if (overlay) {
+        overlay.remove();
+    } else {
+        const newOverlay = document.createElement("div");
+        newOverlay.id = "sidebarOverlay";
+        newOverlay.className = "sidebar-overlay";
+        newOverlay.onclick = toggleSidebar;
+        document.body.appendChild(newOverlay);
+    }
 }
 
 // Закрытие меню при клике на ссылку (для мобильных)
-document.querySelectorAll('.sidebar-menu a').forEach(link => {
-  link.addEventListener('click', () => {
-    if (window.innerWidth <= 768) {
-      toggleSidebar();
-    }
-  });
+document.querySelectorAll(".sidebar-menu a").forEach((link) => {
+    link.addEventListener("click", () => {
+        if (window.innerWidth <= 768) {
+            toggleSidebar();
+        }
+    });
 });
 
 // Handle window resize for mobile/desktop view switching
 let resizeTimeout;
-window.addEventListener('resize', () => {
-  clearTimeout(resizeTimeout);
-  resizeTimeout = setTimeout(() => {
-    // Re-render orders to switch between mobile card view and desktop table
-    const tbody = document.querySelector('#ordersTable tbody');
-    if (tbody && tbody.querySelector('tr')) {
-      const isMobile = window.innerWidth <= 768;
-      const actionsCells = tbody.querySelectorAll('tr td:last-child');
-      actionsCells.forEach(cell => {
-        if (isMobile) {
-          cell.classList.remove('hide-mobile');
-          if (!cell.querySelector('.mobile-actions')) {
-            // Re-render needed for mobile layout
-            loadOrders();
-          }
-        } else {
-          cell.classList.add('hide-mobile');
+window.addEventListener("resize", () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+        // Re-render orders to switch between mobile card view and desktop table
+        const tbody = document.querySelector("#ordersTable tbody");
+        if (tbody && tbody.querySelector("tr")) {
+            const isMobile = window.innerWidth <= 768;
+            const actionsCells = tbody.querySelectorAll("tr td:last-child");
+            actionsCells.forEach((cell) => {
+                if (isMobile) {
+                    cell.classList.remove("hide-mobile");
+                    if (!cell.querySelector(".mobile-actions")) {
+                        // Re-render needed for mobile layout
+                        loadOrders();
+                    }
+                } else {
+                    cell.classList.add("hide-mobile");
+                }
+            });
         }
-      });
-    }
-  }, 250);
+    }, 250);
 });
