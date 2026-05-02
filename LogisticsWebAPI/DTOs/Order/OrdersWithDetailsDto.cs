@@ -1,3 +1,4 @@
+using LogisticsWebAPI.DTOs.Auth;
 using LogisticsWebAPI.Models;
 
 namespace LogisticsWebAPI.DTOs.Order;
@@ -5,10 +6,10 @@ namespace LogisticsWebAPI.DTOs.Order;
 public class OrderWithDetailsDto
 {
     public int OrderId { get; set; }
-    public string? RouteString { get; set; }
+    public RegisterDto? User { get; set; }
     public RouteDto? Route { get; set; }
     public List<CargoDto>? Cargos { get; set; }
     public OrderStatus OrderStatus { get; set; }
-    public DateTime DeliveryDate { get; set; }
     public double Price { get; set; }
+    public DriverDto? Driver { get; set; }
 }

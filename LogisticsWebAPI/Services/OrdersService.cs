@@ -1,7 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using LogisticsWebAPI.DTOs.Order;
+using LogisticsWebAPI.DTOs.Auth;
 using LogisticsWebAPI.Models;
-
+using LogisticsWebAPI.DTOs;
 namespace LogisticsWebAPI.Services;
 
 public class OrdersService : IOrdersService
@@ -13,31 +14,48 @@ public class OrdersService : IOrdersService
         _context = context;
     }
 
-    public async Task<IEnumerable<OrderWithDetailsDto>> GetOrdersListAsync()
+    public async Task<IEnumerable<OrderWithDetailsDto>> GetOrdersListAsync(int? userId = null)
     {
-        var orders = await _context.Orders
-            .Include(o => o.Route)
-            .Include(o => o.Cargos)
-            .ToListAsync();
-
-        return orders.Select(o => new OrderWithDetailsDto
+        var query = _context.Orders.AsQueryable();
+    
+        if (userId.HasValue)
         {
-            OrderId = o.Id,
-            OrderStatus = o.Status,
-            DeliveryDate = o.Route.DeliveryDate,
-            Price = o.Price,
-            Route = o.Route != null ? new RouteDto
+            query = query.Where(o => o.UserID == userId.Value);
+        }
+    
+        return await query
+            .Select(o => new OrderWithDetailsDto
             {
-                StartLocation = o.Route.StartLocation,
-                EndLocation = o.Route.EndLocation,
-                DeliveryDate = o.Route.DeliveryDate
-            } : null,
-            Cargos = o.Cargos.Select(c => new CargoDto
-            {
-                CargoWeight = c.CargoWeight,
-                Description = c.Description,
-                CargoType = c.CargoType
-            }).ToList()
-        });
+                User = o.User != null ? new RegisterDto
+                {
+                    FullName = o.User.FullName,
+                    Email = o.User.Email,
+                } : null,
+                OrderId = o.Id,
+                OrderStatus = o.Status,
+                Price = o.Price,
+                Driver = o.Driver != null ? new DriverDto
+                {
+                    FullName = o.Driver.FullName,
+                    PhoneNumber = o.Driver.PhoneNumber,
+                    Email = o.Driver.Email,
+                    Status = o.Driver.Status,
+                } : null,
+                Route = o.Route != null ? new RouteDto
+                {
+                    StartLocation = o.Route.StartLocation,
+                    EndLocation = o.Route.EndLocation,
+                    DeliveryDate = o.Route.DeliveryDate
+                } : null,
+                Cargos = o.Cargos != null
+                    ? o.Cargos.Select(c => new CargoDto
+                    {
+                        CargoWeight = c.CargoWeight,
+                        Description = c.Description,
+                        CargoType = c.CargoType
+                    }).ToList()
+                    : new List<CargoDto>()
+            })
+            .ToListAsync();
     }
 }

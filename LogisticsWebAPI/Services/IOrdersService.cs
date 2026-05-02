@@ -3,5 +3,5 @@ namespace LogisticsWebAPI.Services;
 
 public interface IOrdersService
 {
-    Task<IEnumerable<OrderWithDetailsDto>> GetOrdersListAsync();
+    Task<IEnumerable<OrderWithDetailsDto>> GetOrdersListAsync(int? userId = null);
 }

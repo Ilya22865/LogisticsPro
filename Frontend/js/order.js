@@ -5,6 +5,7 @@ let searchTimeout = null;
 
 document.addEventListener("DOMContentLoaded", function () {
     loadOrders();
+    loadUserOrders();
 });
 
 const table = document.getElementById("ordersTable");
@@ -39,6 +40,7 @@ async function saveOrder(event) {
 
     try {
         const token = localStorage.getItem("token");
+        _O;
         const response = await fetch(`${API_BASE_URL_ORDERS}/Order/addOrder`, {
             method: "POST",
             headers: {
@@ -148,6 +150,7 @@ function getDateRange() {
     return { from: dateFrom.toISOString(), to: now.toISOString() };
 }
 const token = localStorage.getItem("token");
+
 async function loadOrders() {
     try {
         const response = await fetch(
@@ -160,15 +163,14 @@ async function loadOrders() {
                 },
             },
         );
+
         if (!response.ok) throw new Error("Failed to load orders");
         const orders = await response.json();
         const tbody = document.querySelector("#ordersTable tbody");
-        tbody.innerHTML = "";
-        console.log(orders);
         if (!orders || orders.length === 0) {
             tbody.innerHTML = `
                   <tr>
-                    <td colspan="6" style="text-align: center; color: var(--color-primary); padding: 40px;">
+                    <td colspan="7" style="text-align: center; color: var(--color-primary); padding: 40px;">
                       <div class="empty-state">
                         <div class="empty-icon">📋</div>
                         <h3>Заказы не найдены</h3>
@@ -182,56 +184,211 @@ async function loadOrders() {
 
         tbody.innerHTML = orders
             .map((order) => {
-                const statusText = getStatusText(order.orderStatus);
-                const statusClass = getStatusClass(order.orderStatus);
-                const routeDisplay =
+                const date = order.route.deliveryDate
+                    ? new Date(order.route.deliveryDate).toLocaleDateString(
+                          "ru-RU",
+                      )
+                    : "—";
+
+                const routeText =
                     order.route &&
                     order.route.startLocation &&
                     order.route.endLocation
                         ? `${order.route.startLocation} → ${order.route.endLocation}`
-                        : "Маршрут не указан";
+                        : "—";
 
-                const cargoInfo =
+                const cargoText =
                     order.cargos && order.cargos.length > 0
                         ? `${order.cargos[0].cargoType}, ${order.cargos[0].cargoWeight} кг`
-                        : "Нет грузов";
+                        : "—";
 
-                const date = new Date(order.deliveryDate).toLocaleDateString();
+                const statusText = order.orderStatus || "Неизвестно";
+
+                const clientText =
+                    order.user && order.user.fullName
+                        ? order.user.fullName
+                        : "—";
 
                 return `
-                <tr>
-                  <td>${order.orderId}</td>
-                  <td class="${statusClass}">${statusText}</td>
-                  <td>${routeDisplay}</td>
-                  <td>${cargoInfo}</td>
-                  <td>${date}</td>
-                  <td>${order.price} BYN</td>
-                </tr>
-              `;
+                    <tr>
+                        <td>${order.orderId}</td>
+                        <td>${clientText}</td>
+                        <td>${routeText}</td>
+                        <td>${cargoText}</td>
+                        <td><span class="status-badge ${getStatusClass(statusText)}">${statusText}</span></td>
+                        <td>${date}</td>
+                        <td>${order.price} BYN</td>
+                    </tr>
+                `;
             })
             .join("");
     } catch (error) {
         console.error(error);
         const tbody = document.querySelector("#ordersTable tbody");
         tbody.innerHTML =
-            '<tr><td colspan="6">Ошибка загрузки заказов</td></tr>';
+            '<tr><td colspan="7">Ошибка загрузки заказов</td></tr>';
+    }
+}
+
+async function filterOrders() {
+    const status = document.getElementById("statusFilter").value;
+    const search = document.getElementById("searchOrder").value;
+    if (status == "" && search == "") {
+        loadOrders();
+        return;
+    }
+    try {
+        const response = await fetch(
+            `${API_BASE_URL_ORDERS}/Order/getOrderBySearch?SearchTerm=${encodeURIComponent(search)}&StatusFilter=${status !== "" ? status : ""}`,
+            {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            },
+        );
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const orders = await response.json();
+        const tbody = document.querySelector("#ordersTable tbody");
+        tbody.innerHTML = "";
+        console.log(orders);
+        if (!orders || orders.length === 0) {
+            tbody.innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align: center; color: var(--color-primary); padding: 40px;">
+            <div class="empty-state">
+              <div class="empty-icon">📋</div>
+              <h3>Заказы не найдены</h3>
+              <p>В системе пока нет зарегистрированных заказов</p>
+            </div>
+          </td>
+        </tr>
+      `;
+            return;
+        }
+
+        tbody.innerHTML = orders
+            .map((order) => {
+                const date = order.route.deliveryDate
+                    ? new Date(order.route.deliveryDate).toLocaleDateString(
+                          "ru-RU",
+                      )
+                    : "—";
+
+                const routeText =
+                    order.route &&
+                    order.route.startLocation &&
+                    order.route.endLocation
+                        ? `${order.route.startLocation} → ${order.route.endLocation}`
+                        : "—";
+
+                const cargoText =
+                    order.cargos && order.cargos.length > 0
+                        ? `${order.cargos[0].cargoType}, ${order.cargos[0].cargoWeight} кг`
+                        : "—";
+
+                const statusText = order.orderStatus || "Неизвестно";
+                const clientText =
+                    order.user && order.user.fullName
+                        ? order.user.fullName
+                        : "—";
+
+                return `
+                 <tr>
+                 <td>${order.orderId}</td>
+                 <td>${clientText}</td>
+                 <td>${routeText}</td>
+                 <td>${cargoText}</td>
+                 <td><span class="status-badge ${getStatusClass(statusText)}">${statusText}</span></td>
+                 <td>${date}</td>
+                 <td>${order.price} BYN</td>
+                 </tr>
+             `;
+            })
+            .join("");
+    } catch (error) {
+        console.error("Ошибка загрузки заказов:", error);
+        const tbody = document.querySelector("#driversTable tbody");
+        tbody.innerHTML = `
+          < tr >
+          <td colspan="6" style="text-align: center; color: var(--color-danger); padding: 40px;">
+            <div class="empty-state">
+              <div class="empty-icon">⚠</div>
+              <h3>Ошибка загрузки</h3>
+              <p>Не удалось загрузить данные о заказах</p>
+            </div>
+          </td>
+      </tr >
+          `;
+    }
+}
+async function loadUserOrders() {
+    try {
+        const response = await fetch(
+            `${API_BASE_URL_ORDERS}/Order/getOrdersListForUser`,
+            {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token} `,
+                    "Content-Type": "application/json",
+                },
+            },
+        );
+        const orders = await response.json();
+        const tbody = document.querySelector("#ordersUserTable tbody");
+        tbody.innerHTML = orders
+            .map((order) => {
+                const routeText =
+                    order.route &&
+                    order.route.startLocation &&
+                    order.route.endLocation
+                        ? `${order.route.startLocation} → ${order.route.endLocation} `
+                        : "—";
+
+                const date = order.route.deliveryDate
+                    ? new Date(order.route.deliveryDate).toLocaleDateString(
+                          "ru-RU",
+                      )
+                    : "—";
+                const cargoText =
+                    order.cargos && order.cargos.length > 0
+                        ? `${order.cargos[0].cargoType}, ${order.cargos[0].cargoWeight} кг`
+                        : "—";
+
+                const statusText = order.orderStatus || "Неизвестно";
+                return `
+          < tr >
+                        <td>${order.orderId}</td>
+                        <td>${routeText}</td>
+                        <td>${cargoText}</td>
+                        <td><span class="status-badge ${getStatusClass(statusText)}">${statusText}</span></td>
+                        <td>${date}</td>
+                        <td>${order.price} BYN</td>
+                    </tr >
+          `;
+            })
+            .join("");
+    } catch (error) {
+        console.error(error);
     }
 }
 
 function getStatusClass(status) {
     const statusMap = {
         pending: "pending",
-        "in-transit": "in-transit",
+        "inTransit": "inTransit",
         delivered: "delivered",
         cancelled: "cancelled",
     };
-    return statusMap[status?.toLowerCase()] || "pending";
+    return statusMap[status?.toLowerCase()] || "Ожидание";
 }
 
 function getStatusText(status) {
     const statusMap = {
         pending: "Ожидание",
-        "in-transit": "В пути",
+        "inTransit": "В пути",
         delivered: "Доставлен",
         cancelled: "Отменён",
     };
@@ -257,17 +414,14 @@ function createNewOrder() {
     openOrderModal();
 }
 
-// Modal functions
 function openOrderModal() {
     const modal = document.getElementById("orderModal");
     modal.classList.add("active");
     document.body.style.overflow = "hidden";
 
-    // Set minimum date to today
     const today = new Date().toISOString().split("T")[0];
     document.getElementById("deliveryDate").setAttribute("min", today);
 
-    // Reset form
     resetOrderForm();
 }
 
@@ -282,16 +436,13 @@ function resetOrderForm() {
     const form = document.getElementById("orderForm");
     form.reset();
 
-    // Clear all error states
     document.querySelectorAll(".form-group").forEach((group) => {
         group.classList.remove("error");
     });
 
-    // Remove loading state
     const modal = document.getElementById("orderModal");
     modal.classList.remove("loading");
 
-    // Enable submit button
     const submitBtn = document.getElementById("submitOrderBtn");
     submitBtn.disabled = false;
 }
@@ -299,26 +450,22 @@ function resetOrderForm() {
 function validateOrderForm() {
     let isValid = true;
 
-    // Clear previous errors
     document.querySelectorAll(".form-group").forEach((group) => {
         group.classList.remove("error");
     });
 
-    // Validate start location
     const startLocation = document.getElementById("startLocation").value.trim();
     if (!startLocation) {
         document.getElementById("startLocationGroup").classList.add("error");
         isValid = false;
     }
 
-    // Validate end location
     const endLocation = document.getElementById("endLocation").value.trim();
     if (!endLocation) {
         document.getElementById("endLocationGroup").classList.add("error");
         isValid = false;
     }
 
-    // Validate cargo description
     const cargoDescription = document
         .getElementById("cargoDescription")
         .value.trim();
@@ -408,7 +555,7 @@ document.getElementById("nextBtn").addEventListener("click", () => {
 function showToast(message, type = "info") {
     const container = document.getElementById("toastContainer");
     const toast = document.createElement("div");
-    toast.className = `toast toast-${type}`;
+    toast.className = `toast toast - ${type} `;
 
     const icons = {
         info: "fas fa-info-circle",
@@ -418,12 +565,12 @@ function showToast(message, type = "info") {
     };
 
     toast.innerHTML = `
-                <i class="toast-icon ${icons[type] || icons["info"]}"></i>
+          < i class="toast-icon ${icons[type] || icons["info"]}" ></i >
                 <div class="toast-content">${message}</div>
                 <button class="toast-close" onclick="this.parentElement.remove()">
                     <i class="fas fa-times"></i>
                 </button>
-            `;
+        `;
 
     container.appendChild(toast);
 

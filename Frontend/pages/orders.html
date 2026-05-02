@@ -288,18 +288,6 @@
             position: relative;
         }
 
-        .orders-table-card tbody tr::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 3px;
-            background: var(--color-primary);
-            opacity: 0;
-            transition: opacity 0.25s ease;
-        }
-
         .orders-table-card tbody tr:hover {
             background: linear-gradient(90deg, rgba(99, 142, 203, 0.06) 0%, rgba(240, 243, 250, 0.3) 100%);
             box-shadow: 0 2px 8px rgba(99, 142, 203, 0.08);
@@ -1520,17 +1508,15 @@
                 <h2>Все заказы <span class="order-count-badge" id="orderCountBadge" style="display: none;">0</span></h2>
             </div>
             <div style="overflow-x: auto;">
-                <table id="ordersTable" class="orders-table-card">
+                <table id="ordersUserTable" class="orders-table-card">
                     <thead>
                         <tr>
                             <th>№ заказа</th>
                             <th>Маршрут</th>
                             <th>Груз</th>
                             <th>Статус</th>
-                            <th>Дата создания</th>
                             <th>Дата доставки</th>
                             <th>Стоимость</th>
-                            <th class="hide-mobile">Действия</th>
                         </tr>
                     </thead>
                     <tbody>

@@ -4,34 +4,31 @@ namespace LogisticsWebAPI.Queries;
 
 public class GetOrdersQuery
 {
-    public OrderStatus? OrderStatusFilter { get; set; }
-    public int OrderNumFilter { get; set; }
+    public OrderStatus? StatusFilter { get; set; }
+    public int? OrderNumFilter { get; set; }
     public string? SearchTerm { get; set; }
-    public double PriceFilter { get; set; }
-
+    public double? PriceFilter { get; set; }
     public IQueryable<OrderWithDetailsDto> Execute(IQueryable<OrderWithDetailsDto> query)
     {
-        if(!string.IsNullOrEmpty(SearchTerm))
+        if(!string.IsNullOrWhiteSpace(SearchTerm))
         {
             query = query.Where(o => o.OrderId.ToString().Contains(SearchTerm) ||
-            o.Price.ToString().Contains(SearchTerm));
+            o.Price.ToString().Contains(SearchTerm)); 
         }
-
-        if(!string.IsNullOrEmpty(OrderNumFilter.ToString()))
+        if(OrderNumFilter.HasValue)
         {
-            query = query.Where(on => on.OrderId.ToString().Contains(OrderNumFilter.ToString()));
+            query = query.Where(o => o.OrderId == OrderNumFilter.Value);
         }
 
-        if(!string.IsNullOrEmpty(PriceFilter.ToString()))
+        if (PriceFilter.HasValue)
         {
-            query = query.Where(p => p.Price.ToString().Contains(PriceFilter.ToString()));
+            query = query.Where(o => o.Price == PriceFilter.Value);
         }
 
-        if(OrderStatusFilter.HasValue)
+        if(StatusFilter.HasValue)
         {
-            query = query.Where(s => s.OrderStatus == OrderStatusFilter);
+            query = query.Where(s => s.OrderStatus == StatusFilter);
         }
-
         return query;
     }
 }
