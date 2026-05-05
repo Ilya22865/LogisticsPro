@@ -172,6 +172,12 @@ if (registerForm) {
             alert('Введите код сотрудника!');
             return;
         }
+
+        if(!company) {
+            alert('Введите название компании!');
+            return;
+        }
+        
         try {
             const response = await fetch(`${API_BASE_URL}/Auth/register`, {
                 method: 'POST',
