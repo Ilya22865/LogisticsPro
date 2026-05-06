@@ -1,5 +1,5 @@
 namespace LogisticsWebAPI.Models;
-
+// Тест комменты
 public enum DriverStatus
 {
     Active,
