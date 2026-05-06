@@ -217,7 +217,7 @@ async function loadOrders() {
                         <td>${cargoText}</td>
                         <td><span class="status-badge ${getStatusClass(statusText)}">${statusText}</span></td>
                         <td>${date}</td>
-                    <td>${order.price}Br </td>
+                    <td>${order.price}<i class="nbrb-icon">&#xe901;</i></td>
                     </tr>
                 `;
             })
