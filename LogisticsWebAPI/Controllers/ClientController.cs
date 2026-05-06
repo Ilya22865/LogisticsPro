@@ -1,4 +1,4 @@
-using LogisticsWebAPI.DTOs;
+using LogisticsWebAPI.DTOs.Auth;
 using LogisticsWebAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using LogisticsWebAPI.Services;
@@ -25,5 +25,12 @@ public class ClientController : ControllerBase
     {
         var clients = await _userService.GetUsersAsync();
         return Ok(clients);
+    }
+
+    [HttpPost("editUserInfo")]
+    public async Task<ActionResult> EditUserInfo([FromBody] UserWithDetailsDto user)
+    {
+        var result = await _userService.EditUserInfoAsync(user);
+        return Ok(result);
     }
 }

@@ -217,7 +217,7 @@ async function loadOrders() {
                         <td>${cargoText}</td>
                         <td><span class="status-badge ${getStatusClass(statusText)}">${statusText}</span></td>
                         <td>${date}</td>
-                        <td>${order.price} BYN</td>
+                    <td>${order.price}Br </td>
                     </tr>
                 `;
             })
@@ -378,7 +378,7 @@ async function loadUserOrders() {
 function getStatusClass(status) {
     const statusMap = {
         pending: "pending",
-        "inTransit": "inTransit",
+        inTransit: "inTransit",
         delivered: "delivered",
         cancelled: "cancelled",
     };
@@ -388,7 +388,7 @@ function getStatusClass(status) {
 function getStatusText(status) {
     const statusMap = {
         pending: "Ожидание",
-        "inTransit": "В пути",
+        inTransit: "В пути",
         delivered: "Доставлен",
         cancelled: "Отменён",
     };
