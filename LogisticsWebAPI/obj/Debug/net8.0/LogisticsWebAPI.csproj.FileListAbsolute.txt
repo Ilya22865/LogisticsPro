@@ -75,8 +75,6 @@
 /home/user/IRVR/Kursach2/LogisticsWebAPI/obj/Debug/net8.0/LogisticsWebAPI.pdb
 /home/user/IRVR/Kursach2/LogisticsWebAPI/obj/Debug/net8.0/LogisticsWebAPI.genruntimeconfig.cache
 /home/user/IRVR/Kursach2/LogisticsWebAPI/obj/Debug/net8.0/ref/LogisticsWebAPI.dll
-/home/user/IRVR/Kursach2/LogisticsWebAPI/bin/Debug/net8.0/package-lock.json
-/home/user/IRVR/Kursach2/LogisticsWebAPI/bin/Debug/net8.0/package.json
 /home/user/IRVR/Kursach2/LogisticsWebAPI/bin/Debug/net8.0/Humanizer.dll
 /home/user/IRVR/Kursach2/LogisticsWebAPI/bin/Debug/net8.0/Microsoft.EntityFrameworkCore.Design.dll
 /home/user/IRVR/Kursach2/LogisticsWebAPI/bin/Debug/net8.0/Microsoft.Extensions.DependencyModel.dll
