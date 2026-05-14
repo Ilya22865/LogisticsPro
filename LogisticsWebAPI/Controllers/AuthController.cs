@@ -102,7 +102,6 @@ public class AuthController : ControllerBase
     {
         return BCrypt.Net.BCrypt.HashPassword(password);
     }
-
     private bool VerifyPassword(string password, string hash)
     {
         return BCrypt.Net.BCrypt.Verify(password, hash);
@@ -150,6 +149,6 @@ public class AuthController : ControllerBase
 
         var token = await _generateTokenService.GenerateUsersToken(user.Id, user.Email, user.FullName, user.Role);
 
-        return Redirect($"http://localhost:5000/pages/index.html?token={Uri.EscapeDataString(token.ToString()!)}&user_id={user.Id}&email={Uri.EscapeDataString(email)}&name={Uri.EscapeDataString(user.FullName)}&role={Uri.EscapeDataString(user.Role.ToString())}");
+        return Redirect($"http://localhost:3000/auth/callback?token={Uri.EscapeDataString(token.ToString()!)}&user_id={user.Id}&email={Uri.EscapeDataString(email)}&name={Uri.EscapeDataString(user.FullName)}&role={Uri.EscapeDataString(user.Role.ToString())}");
     }
 }

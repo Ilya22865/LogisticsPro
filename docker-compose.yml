@@ -1,0 +1,48 @@
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-8044}
+      MYSQL_DATABASE: ${DB_NAME:-logistics_db}
+      MYSQL_USER: ${DB_USER:-logistics_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-iloveMySql}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 10s
+      retries: 10
+
+  backend:
+    build:
+      context: ./LogisticsWebAPI
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      ConnectionStrings__DefaultConnection: "server=mysql;port=3306;database=${DB_NAME:-logistics_db};user=root;password=${DB_ROOT_PASSWORD:-8044}"
+      JwtSettings__Key: ${JWT_KEY:-SuperSecretKeyForLogisticsPro1234567890!}
+      JwtSettings__Issuer: ${JWT_ISSUER:-LogisticsPro}
+      JwtSettings__Audience: ${JWT_AUDIENCE:-LogisticsProUser}
+      GoogleAuth__ClientID: ${GOOGLE_AUTH__CLIENT_ID:-}
+      GoogleAuth__ClientSecret: ${GOOGLE_AUTH__CLIENT_SECRET:-}
+      Hunter__ApiKey: ${HUNTER__API_KEY:-}
+      AdminCode__Code: ${ADMIN_CODE:-}
+    ports:
+      - "5000:5000"
+
+  frontend:
+    build:
+      context: ./Frontend/react-app
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:5000/api
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+
+volumes:
+  mysql_data:

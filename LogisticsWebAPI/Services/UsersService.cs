@@ -15,6 +15,7 @@ public class UsersService : IUsersService {
             .Where(u => u.Role == UserRole.User)
            .Select(u => new UserWithDetailsDto
            {
+               UserId = u.Id,
                NameOfCompany = u.NameOfCompany,
                FullName = u.FullName,
                Email = u.Email,

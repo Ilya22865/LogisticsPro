@@ -1,4 +1,5 @@
 using LogisticsWebAPI.DTOs;
+using LogisticsWebAPI.DTOs.Order;
 using LogisticsWebAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using LogisticsWebAPI.Services;
@@ -86,7 +87,18 @@ public class DriverController : ControllerBase
                 DriverPhoneNumber = d.PhoneNumber,
                 TruckModel = d.Truck != null ? d.Truck.ModelName : null,
                 TruckRegisterNumber = d.Truck != null ? d.Truck.RegisterNumber : null,
-                DriverStatus = d.Status
+                DriverStatus = d.Status,
+                Route = d.Orders
+                    .Where(o => o.RouteId != null)
+                    .OrderByDescending(o => o.Id)
+                    .Select(o => o.Route)
+                    .Select(r => new RouteDto
+                    {
+                        StartLocation = r.StartLocation,
+                        EndLocation = r.EndLocation,
+                        DeliveryDate = r.DeliveryDate
+                    })
+                    .FirstOrDefault()
             });
         
         var filteredDtoQuery = query.Execute(dtoQuery);

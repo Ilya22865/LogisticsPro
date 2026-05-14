@@ -12,8 +12,13 @@ public class GetOrdersQuery
     {
         if(!string.IsNullOrWhiteSpace(SearchTerm))
         {
-            query = query.Where(o => o.OrderId.ToString().Contains(SearchTerm) ||
-            o.Price.ToString().Contains(SearchTerm)); 
+            query = query.Where(o =>
+                o.OrderId.ToString().Contains(SearchTerm) ||
+                o.Price.ToString().Contains(SearchTerm) ||
+                (o.User != null && o.User.FullName != null && o.User.FullName.ToLower().Contains(SearchTerm.ToLower())) ||
+                (o.Route != null && o.Route.StartLocation != null && o.Route.StartLocation.ToLower().Contains(SearchTerm.ToLower())) ||
+                (o.Route != null && o.Route.EndLocation != null && o.Route.EndLocation.ToLower().Contains(SearchTerm.ToLower()))
+            );
         }
         if(OrderNumFilter.HasValue)
         {

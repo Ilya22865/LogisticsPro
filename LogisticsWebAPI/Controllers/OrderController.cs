@@ -89,6 +89,41 @@ public class OrderController : ControllerBase
         return Ok(orders);
     }
 
+    [Authorize(Roles = "Admin")]
+    [HttpPut("assignRoute")]
+    public async Task<IActionResult> AssignRoute([FromBody] AssignRouteDto dto)
+    {
+        var result = await _ordersService.AssignRouteAsync(
+            dto.OrderId, dto.DriverId, dto.StartLocation, dto.EndLocation, dto.StopPoints, dto.DeliveryDate);
+        if (!result)
+            return NotFound(new { message = "Заказ не найден" });
+        return Ok(new { message = "Маршрут назначен" });
+    }
+
+    [Authorize]
+    [HttpPut("cancelOrder")]
+    public async Task<IActionResult> CancelOrder([FromBody] UpdateOrderDto dto)
+    {
+        var userClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        if (userClaim == null) return Unauthorized();
+        var userId = int.Parse(userClaim.Value);
+
+        var result = await _ordersService.CancelOrderAsync(dto.OrderId, userId);
+        if (!result)
+            return BadRequest(new { message = "Заказ не найден или не может быть отменён" });
+        return Ok(new { message = "Заказ отменён" });
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPut("updateOrder")]
+    public async Task<IActionResult> UpdateOrder([FromBody] UpdateOrderDto dto)
+    {
+        var result = await _ordersService.UpdateOrderAsync(dto.OrderId, dto.Status, dto.Price);
+        if (!result)
+            return NotFound(new { message = "Заказ не найден" });
+        return Ok(new { message = "Заказ обновлён" });
+    }
+
     [HttpGet("getOrderBySearch")]
     public async Task<IActionResult> GetOrderBySearchAsync([FromQuery] GetOrdersQuery search)
     {
