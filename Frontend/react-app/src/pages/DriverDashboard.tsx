@@ -51,9 +51,9 @@ export default function DriverDashboard() {
   const timeStr = now.toLocaleDateString('ru-RU', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
 
   const stats = useMemo(() => {
-    const active = orders.filter((o) => o.orderStatus === 'pending' || o.orderStatus === 'intransit').length
-    const inDelivery = orders.filter((o) => o.orderStatus === 'intransit').length
-    const completed = orders.filter((o) => o.orderStatus === 'delivered').length
+    const active = orders.filter((o) => o.orderStatus === 'Pending' || o.orderStatus === 'InTransit').length
+    const inDelivery = orders.filter((o) => o.orderStatus === 'InTransit').length
+    const completed = orders.filter((o) => o.orderStatus === 'Delivered').length
     return { active, inDelivery, completed }
   }, [orders])
 
