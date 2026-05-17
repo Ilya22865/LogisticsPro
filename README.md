@@ -42,14 +42,3 @@ cd LogisticsPro
   "DefaultConnection": "Server=localhost;Port=3306;Database=LogisticsProDB;User Id=root;Password=ВАШ_ПАРОЛЬ;"
 }
 
-Структура проекта.
-LogisticsPro/
-├── LogisticsWebAPI/
-│   ├── Controllers/      # Обработка HTTP запросов (Endpoints)
-│   ├── Models/           # Сущности базы данных (EF Core)
-│   ├── DTOs/             # Объекты передачи данных (Request/Response)
-│   ├── Services/         # Бизнес-логика и интерфейс сервисов
-│   ├── Migrations/       # Миграции EF Core (история БД)
-│   ├── Program.cs        # Точка входа, настройка DI и Middleware
-│   └── appsettings.json  # Конфигурация приложения
-└── Frontend/             # Статические файлы клиентской части (если есть)
